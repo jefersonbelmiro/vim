@@ -1,3 +1,7 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =1
+let g:netrw_dirhist_cnt =5
 let g:netrw_dirhist_1='/home/jeferson/.vim/plugin/cvsgit'
+let g:netrw_dirhist_2='/var/www/agafarma/js'
+let g:netrw_dirhist_3='/opt/lampp/htdocs/phpcli'
+let g:netrw_dirhist_4='/opt/lampp/htdocs/phpcli/lib'
+let g:netrw_dirhist_5='/opt/lampp/htdocs/phpcli/lib/cli'
