@@ -71,45 +71,4 @@ function PadraoUTF()
 
 endfunction
 
-let g:commitInputTag = ''
-let g:commitInputTipo = ''
-
-function Commit(argumentos) 
-
-  let commitArquivo = '/home/dbseller/.vim/tools/commit/commit add '. FileName() . ' '
-
-  if !empty(a:argumentos)
-
-    let commitArquivo .= a:argumentos
-
-  else
-
-    let l:commitMensagem = inputdialog('mensagem: ') 
-    let l:commitTag      = inputdialog('tag: ', g:commitInputTag)
-    let l:commitTipo     = inputdialog('tipo: ', g:commitInputTipo)
-
-    let commitArquivo .= '-m "' . l:commitMensagem . '" -t '. l:commitTag.' -'. l:commitTipo
-
-    if !empty(l:commitTag) 
-      let g:commitInputTag = l:commitTag
-    endif
-
-    if !empty(l:commitTipo) 
-      let g:commitInputTipo = l:commitTipo
-    endif
-
-  endif
-
-  let respostaArquivo = system(commitArquivo)
-
-  if v:shell_error && respostaArquivo != ""
-    echohl WarningMsg | echon "\r" . respostaArquivo 
-    return
-  endif
-
-  echon "\rArquivo adicionado a lista para commit" 
-
-endfunction;
-
-command -nargs=? Commit call Commit("<args>")
-
+source ~/.vim/plugin/cvsgit/cvsgit.vim
