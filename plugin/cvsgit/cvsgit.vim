@@ -46,7 +46,7 @@ function! CvsGit(sArgumentos)
   let respostaArquivo = system(commitArquivo)
 
   " cvsgit respondeu com erro, mostra na tela o erro
-  if v:shell_error && respostaArquivo != ""
+  if v:shell_error || respostaArquivo != ""
     echohl WarningMsg | echon "\r" . respostaArquivo 
     return
   endif

@@ -2,7 +2,7 @@
 <?php
 /**
 * -----------------------------------------------------------------------------
- * cvsgit - trabalhando com cvs parecido com git
+ * cvsgit - trabalhando com cvs como git
 * -----------------------------------------------------------------------------
  *
  * @require phpcli
@@ -32,14 +32,14 @@ switch ($sOpcao) {
 
   default : 
 
-    CvsGit::output("\n Nenhuma opão escolhida");
-    CvsGit::output("Usar: cvsgit [comando] [opcoes do comando]");
-    CvsGit::output("Comandos: status, add, push, rm e pull\n");
+    CvsGit::output("Nenhuma opão escolhida", 'aviso');
+    CvsGit::output(" Usar: cvsgit [comando] [opcoes do comando]");
+    CvsGit::output(" Comandos: status, add, init, push, pull, rm e log\n");
 
   break;
 
   case 'status' :
-    CvsGit::status();
+    CvsGit::status($aArgumentos);
   break;
 
   case 'add':
@@ -72,8 +72,20 @@ class CvsGit {
   
   public static $sDiretorioObjetos = '/home/jeferson/.vim/plugin/cvsgit/objects/';
 
-  public static function output($sMensagem, $sColor = 'normal') {
-    echo ' ' . Shell::colorString($sMensagem, $sColor) . "\n";
+  public static function output($sMensagem, $sPerfil = null) {
+
+    switch( $sPerfil ) {
+
+      case 'erro' :
+        $sMensagem = "\n " . Shell::colorString($sMensagem, 'red') . "\n";
+      break;
+
+      case 'aviso' : 
+        $sMensagem = "\n " . Shell::colorString($sMensagem, 'normal') . "\n";
+      break;
+    }
+
+    echo $sMensagem . "\n";
   }
 
   private static function getArquivos() {
@@ -81,7 +93,9 @@ class CvsGit {
     $sDiretorioObjetos = self::$sDiretorioObjetos . md5(getcwd());
 
     if ( !file_exists($sDiretorioObjetos) ) {
-      return array();
+
+      self::output(getcwd() . " não é um projeto");
+      exit(1);
     }
 
     return unserialize(file_get_contents($sDiretorioObjetos));
@@ -90,10 +104,6 @@ class CvsGit {
   private static function setArquivos(Array $aArquivos) {
 
     $sDiretorioObjetos = self::$sDiretorioObjetos . md5(getcwd());
-
-    if ( empty($aArquivos) ) {
-      return unlink($sDiretorioObjetos); 
-    }
 
     return file_put_contents($sDiretorioObjetos, serialize($aArquivos));
   }
@@ -105,8 +115,8 @@ class CvsGit {
    * @access public
    * @return void
    */
-  public static function iniciar() {
-
+  public static function iniciar($aParametros) {
+    self::setArquivos(array());
   }
 
   /**
@@ -116,8 +126,75 @@ class CvsGit {
    * @access public
    * @return void
    */
-  public static function log() {
+  public static function log($aParametros) {
 
+    if ( empty($aParametros) ) {
+
+      self::output('Nenhum parametro informado');
+      return;
+    }
+
+    // @todo aceitar varios arquivos
+    foreach ($aParametros as $iIndice => $sParametro) {
+
+      if ( file_exists($sParametro) ) {
+
+        $sArquivo = $sParametro;
+        break;
+      }
+    }
+
+    if ( empty($sArquivo) ) {
+
+      self::output('arquivo nao econtrado');
+      return;
+    } 
+
+    $sComando = 'cvs log -N ';
+
+    foreach ($aParametros as $iIndice => $sParametro) {
+
+      switch ( $sParametro ) {
+
+        case $sArquivo :
+          $sComando .= $sArquivo;
+        break;
+
+        case '-u' :
+        case '-user' :
+
+          $iProximoIndice = $iIndice + 1;
+
+          if ( empty($aParametros[$iProximoIndice] )) {
+            continue;
+          }
+
+          $sComando .= ' -w[' . $aParametros[$iProximoIndice] . ']';
+          continue;
+
+        break;
+      }
+    }
+
+    exec($sComando, $aRetornoComando, $iStatusComando);
+
+    if ( $iStatusComando > 0 ) {
+      self::output('Erro ao execurar log', 'erro');
+    }
+
+    $aLog = array();
+
+    print_r($aRetornoComando);
+
+    foreach ( $aRetornoComando as $sLinhaRetorno ) {
+
+      if ( strpos($sLinhaRetorno, 'revision') !== false ) {
+
+        self::output('versao: '. strpos($sLinhaRetorno, 'revision') );
+        self::output($sLinhaRetorno[strpos($sLinhaRetorno, 'revision')] );
+      } 
+
+    }
   }
 
   public static function push() {
@@ -126,7 +203,7 @@ class CvsGit {
 
     if ( empty($aArquivos) ) {
 
-      self::output("\n Nenhum arquivo para comitar.\n");
+      self::output("Nenhum arquivo para comitar");
       return;
     }
 
@@ -189,7 +266,7 @@ class CvsGit {
         $sComandoCommit = "cvs commit -m '$oCommit->sTipoAbreviado: $oCommit->sMensagem ($oCommit->sTipoCompleto #$oCommit->iTag)' $oCommit->sArquivo";
         $sComandoTag    = "cvs tag -F T{$oCommit->iTag} $oCommit->sArquivo";
 
-        self::output("$sArquivo: ", 'green');
+        self::output("$sArquivo: ");
         self::output("   " . $sComandoCommit);
         self::output("   " . $sComandoTag);
       }
@@ -213,6 +290,12 @@ class CvsGit {
 
     foreach ( $aParametros as $sParametro ) {
 
+      if ( in_array($sParametro, array('.', '*', 'all')) ) {
+
+        $aArquivos = array();
+        break;
+      }
+
       if ( !empty($aArquivos[$sParametro]) || in_array($sParametro, array('.', '*', 'all')) ) {
         unset($aArquivos[$sParametro]);
       }
@@ -221,25 +304,53 @@ class CvsGit {
     self::setArquivos($aArquivos);
   }
   
-  public static function status() {
+  public static function status($aParametros) {
 
     $aArquivos = self::getArquivos();
 
     if ( empty($aArquivos) ) {
 
-      self::output("\n Nenhum arquivo para comitar.\n");
+      self::output("Nenhum arquivo para comitar");
       return;
     }
 
-    $oTabela = new Table();
-    $oTabela->setHeaders(array('Arquivo', 'Tag', 'Mensagem', 'Tipo'));
-    $aLinhas = array();
+    foreach ( $aParametros as $sParametro ) {
+
+      switch ($sParametro) {
+
+        case '-table' :
+        case '-t' :
+
+          $oTabela = new Table();
+          $oTabela->setHeaders(array('Arquivo', 'Tag', 'Mensagem', 'Tipo'));
+          $aLinhas = array();
+
+          foreach ($aArquivos as $oCommit) {
+            $oTabela->addRow(array($oCommit->sArquivo, $oCommit->iTag, $oCommit->sMensagem, $oCommit->sTipoCompleto));
+          }
+
+          self::output($oTabela->render());
+          return;
+
+        break;
+      } 
+
+    } 
+
+    $sListaArquivos = "";
 
     foreach ($aArquivos as $oCommit) {
-      $oTabela->addRow(array($oCommit->sArquivo, $oCommit->iTag, $oCommit->sMensagem, $oCommit->sTipoCompleto));
+
+      $sListaArquivos .= "\n $oCommit->sArquivo ";
+
+      if ( !empty($oCommit->iTag) ) {
+        $sListaArquivos .= "#$oCommit->iTag ";
+      }
+
+      $sListaArquivos .= $oCommit->sTipoAbreviado;
     }
 
-    self::output($oTabela->render());
+    self::output("$sListaArquivos\n");
   }
 
   public static function pull() {
@@ -247,7 +358,9 @@ class CvsGit {
   }
 
   public static function adicionar($aArgumentos) {
-  
+
+    $aArquivos = self::getArquivos();
+
     /**
      * Procura o arquivo
      * @todo aceitar varios arquivos
@@ -267,10 +380,8 @@ class CvsGit {
       $sMensagemErro .= " - Arquivo para commit nao informado ou invalido\n";
 
       self::output($sMensagemErro);
-      exit(1);
+      return false;
     } 
-
-    $aArquivos = self::getArquivos();
 
     if ( !empty($aArquivos) && !empty($aArquivos[$sArquivo]) ) {
 
@@ -376,22 +487,6 @@ class CvsGit {
       }
 
     }
-
-    $aMensagemErro = array();
-    $sEspacamento = ' ';
-
-      
-   //if ( empty($oParametros->sMensagem) ) {
-   //  $aMensagemErro[] = 'Mensagem do commit nao informado';
-   //}
-   //
-   //if ( empty($oParametros->iTag) || strlen($oParametros->iTag) < 4 ) {
-   //  $aMensagemErro[] = 'Tag nao informada, ou invalida';
-   //}
-   //
-   //if ( empty($oParametros->sTipoAbreviado) || empty($oParametros->sTipoCompleto) ) {
-   //  $aMensagemErro[] = "Tipo de commit nao informado ou invalido | Tipos de commit: addeded(a, add), fixed(fix, f), enhanced(enh, e), style(s)";
-   //}
 
     $aArquivos[ $oParametros->sArquivo ] = $oParametros;
     self::setArquivos($aArquivos);

@@ -58,6 +58,9 @@ inoremap <A-UP> <Esc>:m-2<CR>==gi
 vnoremap <A-UP> :m'<-2<CR>gv=`>my`<mzgv`yo`z
 vnoremap <A-DOWN> :m'>+<CR>gv=`<my`>mzgv`yo`z
 
+" tagbar
+nnoremap <silent> tg :TagbarToggle<CR>
+
 "                                                                                 
 " Atalhos de Plugins : {{{
 let g:ctrlp_map = '<c-p>'
