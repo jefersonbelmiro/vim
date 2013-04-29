@@ -1,0 +1,9 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =7
+let g:netrw_dirhist_1='/home/jeferson/.vim'
+let g:netrw_dirhist_2='/home/jeferson/.vim/.git'
+let g:netrw_dirhist_3='/home/jeferson/.vim'
+let g:netrw_dirhist_4='/home/jeferson/.vim/.git'
+let g:netrw_dirhist_5='/home/jeferson/.vim'
+let g:netrw_dirhist_6='/home/jeferson/.vim/plugin'
+let g:netrw_dirhist_7='/home/jeferson/.vim/plugin/cvsgit'

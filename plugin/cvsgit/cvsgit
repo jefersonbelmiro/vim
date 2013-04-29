@@ -33,7 +33,7 @@ switch ($sOpcao) {
 
   default : 
 
-    CvsGit::output("Nenhuma opão escolhida", 'aviso');
+    CvsGit::output("Nenhum comando informado", 'aviso');
     CvsGit::output(" Usar: cvsgit [comando] [opcoes do comando]");
     CvsGit::output(" Comandos: status, add, init, push, pull, rm e log\n");
 
@@ -86,7 +86,7 @@ class CvsGit {
       break;
     }
 
-    echo utf8_encode($sMensagem . "\n");
+    echo $sMensagem . "\n";
   }
 
   private static function getArquivos() {
@@ -95,7 +95,7 @@ class CvsGit {
 
     if ( !file_exists($sDiretorioObjetos) ) {
 
-      self::output(getcwd() . " não é um projeto");
+      self::output(getcwd() . " nao inicializado");
       exit(1);
     }
 
@@ -473,7 +473,7 @@ class CvsGit {
     }
 
     /**
-     * Arquivo nao iformado, invalido ou é um diretorio 
+     * Arquivo nao iformado, invalido ou eh um diretorio 
      */
     if ( empty($sArquivo) || is_dir($sArquivo) ) {
 
