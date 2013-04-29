@@ -14,7 +14,7 @@ let g:commitInputTipo = ''
 function! CvsGit(sArgumentos) 
 
   " arquivo em php que adiciona arquivo a lista para commit 
-  let commitArquivo = '~/.vim/plugin/cvsgit/cvsgit add '. FileName() . ' '
+  let commitArquivo = '~/.vim/plugin/cvsgit/cvsgit '
 
   " caso passar argumentos para a funcao, exemplo: :CvsGit -m 'mensagem do  comit' -t 99999 -fix 
   if !empty(a:sArgumentos)
@@ -28,7 +28,7 @@ function! CvsGit(sArgumentos)
     let l:commitTag      = inputdialog('tag: ', g:commitInputTag)
     let l:commitTipo     = inputdialog('tipo: ', g:commitInputTipo)
 
-    let commitArquivo .= '-m "' . l:commitMensagem . '" -t '. l:commitTag.' -'. l:commitTipo
+    let commitArquivo .= 'add -m "' . l:commitMensagem . '" -t '. l:commitTag.' -'. l:commitTipo
 
     " guarga ultima tag digitada para mostrar no proximo commit
     if !empty(l:commitTag) 
@@ -42,8 +42,10 @@ function! CvsGit(sArgumentos)
 
   endif
 
+  "exec '!clear & '.commitArquivo . ' ' . FileName()
+
   " executa cvsgit em php e guarda retorno na variavel respostaArquivo
-  let respostaArquivo = system(commitArquivo)
+  let respostaArquivo = system(commitArquivo . ' ' . FileName())
 
   " cvsgit respondeu com erro, mostra na tela o erro
   if v:shell_error || respostaArquivo != ""
@@ -51,30 +53,8 @@ function! CvsGit(sArgumentos)
     return
   endif
 
-  " nenhum erro 
-  echon "\rArquivo adicionado a lista para commit" 
-
 endfunction;
 
 " registra comando CvsGit que pode ter 1 ou nenhum argumento
 command! -nargs=? -complete=buffer CvsGit call CvsGit("<args>")
-
-"command! -nargs=? -complete=customlist,CvsGitComplete CvsGit call CvsGit("<args>")
-"
-"function! CvsGitComplete(argLead, cmdLine, cursorPos)
-"
-"  let a:teste = ['add', 'enhanced', 'fixed']
-"
-"  return a:teste
-"
-"  if a:cursorPos == 7 && a:argLead != 'add'
-"    return ['add']
-"  endif
-"
-"  "return ['argLead: ' . a:argLead, 'cmdLine: ' . a:cmdLine, 'cursorPos: ' . a:cursorPos]
-"
-"  return []
-"
-"endfunction
-
-map <F6> :CvsGit 
+command! -nargs=? -complete=buffer CG call CvsGit("<args>")
