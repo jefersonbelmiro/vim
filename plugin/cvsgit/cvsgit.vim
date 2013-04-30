@@ -42,7 +42,8 @@ function! CvsGit(sArgumentos)
 
   endif
 
-  "exec '!clear & '.commitArquivo . ' ' . FileName()
+  exec '!clear & '.commitArquivo . ' ' . FileName()
+  return
 
   " executa cvsgit em php e guarda retorno na variavel respostaArquivo
   let respostaArquivo = system(commitArquivo . ' ' . FileName())

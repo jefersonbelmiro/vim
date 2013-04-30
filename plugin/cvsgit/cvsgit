@@ -1,14 +1,21 @@
 #!/usr/bin/php -q 
 <?php
 /**
-* -----------------------------------------------------------------------------
+ * -----------------------------------------------------------------------------
  * cvsgit - Algumas Funcionalidas do GIT para CVS
-* -----------------------------------------------------------------------------
+ * -----------------------------------------------------------------------------
+ *
+ * @todo - metodo push, verificar usando cvs -qn update para verificar se arquivo ja existe
+ *         para usar cvs add nome_aquivo
+ * @todo - comentar tudo
+ * @todo - separar classes em arquivos
+ * @todo - criar metodos para reaproveitar codigo
+ * @todo - remover statics, utilizar instancia da classe CvsGit
  *
  * @require phpcli
  * @require cvs client
- * @version 1.0
-* -----------------------------------------------------------------------------
+ * @version 0.1
+ * -----------------------------------------------------------------------------
  */
 
 /**
@@ -73,6 +80,49 @@ class CvsGit {
   
   public static $sDiretorioObjetos = '/home/jeferson/.vim/plugin/cvsgit/objects/';
 
+  /**
+   * Tipos de commit  
+   */
+  public static $aTipoCommit = array(
+
+    /**
+     * Tem arquivo no projeto mas nao no servidor, cvs add
+     */
+    '?' => 'Novo', 
+
+    /**
+     * Tem alteracoes que nao tem no servidor 
+     */
+    'M' => 'Modificado',
+
+    /**
+     * Conflito, e cvs tentou fazer merge
+     * cvs altera arquivo colocando as diferencas 
+     */
+    'C' => 'Modificado',
+
+    /**
+     * modificado no servidor
+     * versao do servidor é maior que a do projeto 
+     */
+    'U' => 'Atualizado',
+
+    /**
+     * Igual U, diferenca que servidor manda um path 
+     */
+    'P' => 'Atualizado',
+
+    /**
+     * Apos dar cvs add, arquivo pronto para ser comitado 
+     */
+    'A' => 'Adicionado',
+
+    /**
+     * Apos remover arquivo do projeto, ira remover do servidor se for commitado 
+     */
+    'R' => '-Removido'
+  );
+
   public static function output($sMensagem, $sPerfil = null) {
 
     switch( $sPerfil ) {
@@ -116,7 +166,7 @@ class CvsGit {
    * @access public
    * @return void
    */
-  public static function iniciar($aParametros) {
+  public static function iniciar($aParametros = array()) {
     self::setArquivos(array());
   }
 
@@ -239,7 +289,7 @@ class CvsGit {
         }
 
         if ( $iVersao == $iVersaoAtual ) {
-          $iVersao .= Shell::colorString('*', 'green');
+          $iVersao .= '*';
         } 
 
         $oTabela->addRow(array($sAutor, $sData, $iVersao, $sTagsPorVersao, $sMensagem));
@@ -367,6 +417,8 @@ class CvsGit {
         self::output("$sArquivo: ");
         self::output("   " . $sComandoCommit);
         self::output("   " . $sComandoTag);
+        //system($sComandoCommit);
+        //system($sComandoTag);
       }
 
       echo "\n";
@@ -402,14 +454,42 @@ class CvsGit {
     self::setArquivos($aArquivos);
   }
   
-  public static function status($aParametros) {
+  public static function status($aParametros = array()) {
 
+    /**
+     * lista dos arquivos adicionados para commit 
+     */
     $aArquivos = self::getArquivos();
 
-    if ( empty($aArquivos) ) {
+    exec('cvs -qn update -dR 2> /tmp/cvsupdate', $aRetornoComandoUpdate, $iStatusComandoUpdate);
 
-      self::output("Nenhum arquivo para comitar");
+    if ( $iStatusComandoUpdate > 0 ) {
+
+      self::output('Erro ao execurar cvs -qn update -dR', 'erro');
       return;
+    }
+
+    $aArquivosParaCommit = array();
+    $aLinhaUpdate        = array();
+
+    $sStatusOutput    = "";
+    $sListaUpdate     = "";
+    $sListaArquivos   = "";
+    $aTipoModificacao = array();
+
+    foreach ($aArquivos as $oCommit) {
+      $aArquivosParaCommit[] = $oCommit->sArquivo;
+    }
+
+    foreach ($aRetornoComandoUpdate as $sLinhaUpdate) {
+
+      $aLinha = explode(' ', $sLinhaUpdate);
+      $oLinha = new StdClass();
+
+      $oLinha->sTipo    = strtr(trim($aLinha[0]), self::$aTipoCommit);
+      $oLinha->sArquivo = trim($aLinha[1]);
+
+      $aLinhaUpdate[] = $oLinha;
     }
 
     foreach ( $aParametros as $sParametro ) {
@@ -419,15 +499,38 @@ class CvsGit {
         case '-table' :
         case '-t' :
 
-          $oTabela = new Table();
-          $oTabela->setHeaders(array('Arquivo', 'Tag', 'Mensagem', 'Tipo'));
+          $oTabelaUpdate = new Table();
+          $oTabelaUpdate->setHeaders(array('Tipo', 'Arquivo'));
+
+          foreach ($aLinhaUpdate as $oLinhaUpdate) {
+
+            if ( in_array($oLinhaUpdate->sArquivo, $aArquivosParaCommit) ) {
+              continue;
+            } 
+
+            $oTabelaUpdate->addRow(array($oLinhaUpdate->sTipo, $oLinhaUpdate->sArquivo));
+          }
+
+          if ( count($oTabelaUpdate->getRows()) > 0 ) {
+
+            self::output("Modificacoes não tratadas: ");
+            self::output($oTabelaUpdate->render());
+          }
+
+          $oTabelaArquivos = new Table();
+          $oTabelaArquivos->setHeaders(array('Arquivo', 'Tag', 'Mensagem', 'Tipo'));
           $aLinhas = array();
 
           foreach ($aArquivos as $oCommit) {
-            $oTabela->addRow(array($oCommit->sArquivo, $oCommit->iTag, $oCommit->sMensagem, $oCommit->sTipoCompleto));
+            $oTabelaArquivos->addRow(array($oCommit->sArquivo, $oCommit->iTag, $oCommit->sMensagem, $oCommit->sTipoCompleto));
           }
 
-          self::output($oTabela->render());
+          if ( count($oTabelaArquivos->getRows()) > 0 ) {
+
+            self::output("Arquivos prontos para commit: ");
+            self::output($oTabelaArquivos->render());
+          }
+
           return;
 
         break;
@@ -435,11 +538,36 @@ class CvsGit {
 
     } 
 
-    $sListaArquivos = "";
+    /**
+     * exibe modificacoes em linha
+     */
+
+    foreach ($aLinhaUpdate as $oLinhaUpdate) {
+
+      if ( in_array($oLinhaUpdate->sArquivo, $aArquivosParaCommit) ) {
+
+        $aTipoModificacao[ $oLinhaUpdate->sArquivo ] = $oLinhaUpdate->sTipo;
+        continue;
+      } 
+
+      $sListaUpdate .= "\n " . str_pad($oLinhaUpdate->sTipo, 13, ' ') .': ' . $oLinhaUpdate->sArquivo;
+    }
+
+    if ( !empty($sListaUpdate) ) {
+
+      $sStatusOutput .= "Modificacoes não tratadas: ";
+      $sStatusOutput .= "\n " . Shell::colorString($sListaUpdate, 'red') . "\n";
+    }
 
     foreach ($aArquivos as $oCommit) {
 
-      $sListaArquivos .= "\n $oCommit->sArquivo ";
+      $sTipoMoficacao = '[*]Modificado';
+
+      if ( !empty($aTipoModificacao[$oCommit->sArquivo]) ) {
+        $sTipoMoficacao = $aTipoModificacao[$oCommit->sArquivo];
+      } 
+
+      $sListaArquivos .= "\n " . str_pad($sTipoMoficacao, 13, ' ') .': ' . $oCommit->sArquivo . " ";
 
       if ( !empty($oCommit->iTag) ) {
         $sListaArquivos .= "#$oCommit->iTag ";
@@ -448,11 +576,32 @@ class CvsGit {
       $sListaArquivos .= $oCommit->sTipoAbreviado;
     }
 
-    self::output("$sListaArquivos\n");
+    if ( !empty($sListaArquivos) ) {
+
+      $sStatusOutput .= "\nArquivos prontos para commit: ";
+      $sStatusOutput .= "\n " . Shell::colorString($sListaArquivos, 'green') . "\n";
+    }
+
+    if ( empty($sStatusOutput) ) {
+
+      self::output('Nenhuma modificacao encontrada');
+      return;
+    }
+
+    self::output($sStatusOutput);
   }
 
   public static function pull() {
-    self::output('cvsgit::pull');
+
+    exec('cvs update -dR 2> /tmp/cvspull', $aRetornoComandoUpdate, $iStatusComandoUpdate);
+
+    if ( $iStatusComandoUpdate > 0 ) {
+
+      self::output('Erro ao execurar cvs update -dR', 'erro');
+      return;
+    }
+
+    self::status();
   }
 
   public static function adicionar($aArgumentos) {
@@ -694,6 +843,10 @@ class Table {
 		foreach ($rows as $row) {
 			$this->addRow($row);
 		}
+	}
+
+	public function getRows() {
+		return $this->aRows;
 	}
 
 }
