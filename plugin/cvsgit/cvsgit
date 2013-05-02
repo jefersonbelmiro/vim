@@ -136,7 +136,7 @@ class CvsGit {
       break;
     }
 
-    echo $sMensagem . "\n";
+    echo Encode::UTF8ToISO($sMensagem . "\n");
   }
 
   private static function getArquivos() {
@@ -145,7 +145,7 @@ class CvsGit {
 
     if ( !file_exists($sDiretorioObjetos) ) {
 
-      self::output(getcwd() . " nao inicializado");
+      self::output(getcwd() . " não inicializado");
       exit(1);
     }
 
@@ -417,8 +417,8 @@ class CvsGit {
         self::output("$sArquivo: ");
         self::output("   " . $sComandoCommit);
         self::output("   " . $sComandoTag);
-        //system($sComandoCommit);
-        //system($sComandoTag);
+        //system( output::toISO($sComandoCommit) );
+        //system( output::toISO($sComandoTag) );
       }
 
       echo "\n";
@@ -939,5 +939,24 @@ class Shell {
 		return str_pad($sString, $iLength);
 	}
 
+}
+
+class Encode {
+
+  static public function ISOToUTF8($sText) {
+    return mb_convert_encoding($sText, 'UTF-8', 'ISO-8859-1'); 
+  }
+
+  static public function UTF8ToISO($sText) {
+    return mb_convert_encoding($sText, 'ISO-8859-1', 'UTF-8'); 
+  }
+
+  static public function toUTF8($sText) {
+    return mb_convert_encoding($sText, 'UTF-8'); 
+  }
+
+  static public function toISO($sText) {
+    return mb_convert_encoding($sText, 'ISO-8859-1'); 
+  }
 }
 
