@@ -136,17 +136,39 @@ class CvsGit {
       break;
     }
 
-    echo Encode::UTF8ToISO($sMensagem . "\n");
+    //echo Encode::toISO($sMensagem . "\n");
+    echo Encode::toUTF8($sMensagem . "\n");
+  }
+
+  private static function getProjeto() {
+
+    if ( !file_exists(self::$sDiretorioObjetos . 'Objects') ) {
+
+      self::output(getcwd() . " não inicializado");
+      exit(1);
+    }
+
+    $aProjetos = unserialize(file_get_contents(self::$sDiretorioObjetos . 'Objects'));
+    $sDiretorioAtual = getcwd();
+
+    foreach ($aProjetos as $sProjeto) {
+
+      if ( strpos($sDiretorioAtual, $sProjeto) !== false && strpos($sDiretorioAtual, $sProjeto) == 0 ) {
+        return $sProjeto;
+      }
+    }
+
+    self::output(getcwd() . " não inicializado");
+    exit(1);
   }
 
   private static function getArquivos() {
     
-    $sDiretorioObjetos = self::$sDiretorioObjetos . md5(getcwd());
+    $sDiretorioProjeto = self::getProjeto();
+    $sDiretorioObjetos = self::$sDiretorioObjetos . md5($sDiretorioProjeto);
 
     if ( !file_exists($sDiretorioObjetos) ) {
-
-      self::output(getcwd() . " não inicializado");
-      exit(1);
+      return array();
     }
 
     return unserialize(file_get_contents($sDiretorioObjetos));
@@ -154,7 +176,8 @@ class CvsGit {
 
   private static function setArquivos(Array $aArquivos) {
 
-    $sDiretorioObjetos = self::$sDiretorioObjetos . md5(getcwd());
+    $sDiretorioProjeto = self::getProjeto();
+    $sDiretorioObjetos = self::$sDiretorioObjetos . md5($sDiretorioProjeto);
 
     return file_put_contents($sDiretorioObjetos, serialize($aArquivos));
   }
@@ -167,7 +190,20 @@ class CvsGit {
    * @return void
    */
   public static function iniciar($aParametros = array()) {
-    self::setArquivos(array());
+
+    if ( !file_exists(self::$sDiretorioObjetos . 'Objects') ) {
+      file_put_contents(self::$sDiretorioObjetos . 'Objects', serialize(array()));
+    }
+
+    $aProjetos = unserialize(file_get_contents(self::$sDiretorioObjetos . 'Objects'));
+    $sDiretorioAtual = getcwd();
+
+    if ( in_array($sDiretorioAtual, $aProjetos) ) {
+      return true;
+    }   
+
+    $aProjetos[] = $sDiretorioAtual;
+    file_put_contents(self::$sDiretorioObjetos . 'Objects', serialize($aProjetos));
   }
 
   /**
@@ -478,7 +514,7 @@ class CvsGit {
     $aTipoModificacao = array();
 
     foreach ($aArquivos as $oCommit) {
-      $aArquivosParaCommit[] = $oCommit->sArquivo;
+      $aArquivosParaCommit[] = self::clearPath($oCommit->sArquivo);
     }
 
     foreach ($aRetornoComandoUpdate as $sLinhaUpdate) {
@@ -486,10 +522,13 @@ class CvsGit {
       $aLinha = explode(' ', $sLinhaUpdate);
       $oLinha = new StdClass();
 
-      $oLinha->sTipo    = strtr(trim($aLinha[0]), self::$aTipoCommit);
+      $sTipo = trim($aLinha[0]);
+      $oLinha->sTipo    = "[$sTipo] " . strtr($sTipo, self::$aTipoCommit);
       $oLinha->sArquivo = trim($aLinha[1]);
 
       $aLinhaUpdate[] = $oLinha;
+      //$aArquivosModificados[] = $oLinha;
+      //$aArquivosNovos[] = $oLinha;
     }
 
     foreach ( $aParametros as $sParametro ) {
@@ -522,7 +561,7 @@ class CvsGit {
           $aLinhas = array();
 
           foreach ($aArquivos as $oCommit) {
-            $oTabelaArquivos->addRow(array($oCommit->sArquivo, $oCommit->iTag, $oCommit->sMensagem, $oCommit->sTipoCompleto));
+            $oTabelaArquivos->addRow(array(self::clearPath($oCommit->sArquivo), $oCommit->iTag, $oCommit->sMensagem, $oCommit->sTipoCompleto));
           }
 
           if ( count($oTabelaArquivos->getRows()) > 0 ) {
@@ -542,23 +581,26 @@ class CvsGit {
      * exibe modificacoes em linha
      */
 
-    foreach ($aLinhaUpdate as $oLinhaUpdate) {
+    foreach ($aLinhaUpdate as $sTipo => $oLinhaUpdate) {
 
       if ( in_array($oLinhaUpdate->sArquivo, $aArquivosParaCommit) ) {
 
-        $aTipoModificacao[ $oLinhaUpdate->sArquivo ] = $oLinhaUpdate->sTipo;
+        $aTipoModificacao[ realpath($oLinhaUpdate->sArquivo) ] = $oLinhaUpdate->sTipo;
         continue;
       } 
 
-      $sListaUpdate .= "\n " . str_pad($oLinhaUpdate->sTipo, 13, ' ') .': ' . $oLinhaUpdate->sArquivo;
+      $sListaUpdate .= "\n " . str_pad($oLinhaUpdate->sTipo, 15, ' ') .': ' . $oLinhaUpdate->sArquivo;
     }
 
     if ( !empty($sListaUpdate) ) {
 
-      $sStatusOutput .= "Modificacoes não tratadas: ";
+      $sStatusOutput .= "Modificações não tratadas: ";
       $sStatusOutput .= "\n " . Shell::colorString($sListaUpdate, 'red') . "\n";
     }
 
+    /**
+     * Arquivos para commit 
+     */
     foreach ($aArquivos as $oCommit) {
 
       $sTipoMoficacao = '[*]Modificado';
@@ -567,7 +609,7 @@ class CvsGit {
         $sTipoMoficacao = $aTipoModificacao[$oCommit->sArquivo];
       } 
 
-      $sListaArquivos .= "\n " . str_pad($sTipoMoficacao, 13, ' ') .': ' . $oCommit->sArquivo . " ";
+      $sListaArquivos .= "\n " . str_pad($sTipoMoficacao, 15, ' ') .': ' . self::clearPath($oCommit->sArquivo) . " ";
 
       if ( !empty($oCommit->iTag) ) {
         $sListaArquivos .= "#$oCommit->iTag ";
@@ -616,7 +658,7 @@ class CvsGit {
 
       if ( file_exists($sArgumento) && $sArgumento != '.' ) {
 
-        $sArquivo = str_replace(getcwd() . '/', '', $sArgumento);
+        $sArquivo = realpath($sArgumento);
         break;
       }
     }
@@ -741,6 +783,10 @@ class CvsGit {
 
     $aArquivos[ $oParametros->sArquivo ] = $oParametros;
     self::setArquivos($aArquivos);
+  }
+
+  static function clearPath($sPath) {
+    return str_replace( getcwd() . '/', '', $sPath );
   }
 
 }
@@ -952,11 +998,12 @@ class Encode {
   }
 
   static public function toUTF8($sText) {
-    return mb_convert_encoding($sText, 'UTF-8'); 
+    return mb_convert_encoding($sText, "UTF-8", mb_detect_encoding($sText, "UTF-8, ISO-8859-1, ISO-8859-15", true));
   }
 
   static public function toISO($sText) {
-    return mb_convert_encoding($sText, 'ISO-8859-1'); 
+    return mb_convert_encoding($sText, "ISO-8859-1", mb_detect_encoding($sString, "UTF-8, ISO-8859-1, ISO-8859-15", true)); 
   }
+
 }
 
