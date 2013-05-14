@@ -81,4 +81,5 @@ au FileType javascript inoremap <F7> <ESC>:call WriteJSDocComment()<CR>
 au FileType javascript nnoremap <F7>      :call WriteJSDocComment()<CR>
 au FileType javascript vnoremap <F7>      :call WriteJSDocComment()<CR>
 au FileType javascript set      omnifunc=javascriptcomplete#CompleteJS
+
 au Filetype sql setfiletype pgsql

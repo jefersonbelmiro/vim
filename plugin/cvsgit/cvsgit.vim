@@ -42,7 +42,7 @@ function! CvsGit(sArgumentos)
 
   endif
 
-  exec '!clear & '.commitArquivo . ' ' . FileName()
+  exec '!clear & '.commitArquivo . ' ' . FileName() . ' | less'
   return
 
   " executa cvsgit em php e guarda retorno na variavel respostaArquivo

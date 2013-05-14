@@ -43,9 +43,10 @@ set wildmenu
 set wildmode           =list:longest,full              " Command <tab> completion, list matches, then longest common, then all.
 
 
-set encoding     =latin1                         " Codificação padrão
-set fileencoding =latin1                         " Codificação do arquivo
-set termencoding =utf-8                          " Codificação do terminal
+set encoding      =latin1 " Codificação padrão
+set fileencoding  =latin1 " Codificação do arquivo
+set fileencodings =latin1 " Codificação do arquivo
+set termencoding  =utf-8  " Codificação do terminal
 
 set fileformats =unix,dos,mac                   " Use unix as the standard file type
 

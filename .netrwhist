@@ -1,9 +1,8 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =7
-let g:netrw_dirhist_1='/home/jeferson/.vim'
-let g:netrw_dirhist_2='/home/jeferson/.vim/.git'
-let g:netrw_dirhist_3='/home/jeferson/.vim'
-let g:netrw_dirhist_4='/home/jeferson/.vim/.git'
-let g:netrw_dirhist_5='/home/jeferson/.vim'
-let g:netrw_dirhist_6='/home/jeferson/.vim/plugin'
-let g:netrw_dirhist_7='/home/jeferson/.vim/plugin/cvsgit'
+let g:netrw_dirhist_cnt =6
+let g:netrw_dirhist_1='/opt/lampp/htdocs/garfao/admin/controller'
+let g:netrw_dirhist_2='/opt/lampp/htdocs/garfao/admin'
+let g:netrw_dirhist_3='/opt/lampp/htdocs/garfao'
+let g:netrw_dirhist_4='/opt/lampp/htdocs/garfao/system'
+let g:netrw_dirhist_5='/opt/lampp/htdocs/garfao/system/library'
+let g:netrw_dirhist_6='/home/jeferson/Downloads/series/the following'

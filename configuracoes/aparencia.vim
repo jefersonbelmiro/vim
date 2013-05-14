@@ -10,8 +10,8 @@ set laststatus         =2
 " Formata Barra de Status
 set statusline         =%<%f\ \ %h%m%r%Y%=\www.dbseller.com.br\ linha:\ %l,total\ :%L,%c%V\ %P 
 "set statusline         =%<%f\ \ %h%m%r%Y\ \ \%{tagbar#currenttag('%s','','sf')}\%=\ \ linha:\ %l,total\ :%L,%c%V\ %P 
-set cursorline                                         " destaca linha  atual
-set cursorcolumn                                       " destaca coluna atual
+"set cursorline                                         " destaca linha  atual
+"set cursorcolumn                                       " destaca coluna atual
 set number
 source ~/.vim/configuracoes/cores.vim
 

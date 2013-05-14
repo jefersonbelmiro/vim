@@ -7,10 +7,10 @@
  *
  * @todo - metodo push, verificar usando cvs -qn update para verificar se arquivo ja existe
  *         para usar cvs add nome_aquivo
- * @todo - comentar tudo
+ * @todo - comentar
  * @todo - separar classes em arquivos
  * @todo - criar metodos para reaproveitar codigo
- * @todo - remover statics, utilizar instancia da classe CvsGit
+ * @todo - remover statics, utilizar instancia
  *
  * @require phpcli
  * @require cvs client
@@ -78,7 +78,7 @@ switch ($sOpcao) {
 
 class CvsGit {
   
-  public static $sDiretorioObjetos = '/home/jeferson/.vim/plugin/cvsgit/objects/';
+  public static $sDiretorioObjetos = '/home/dbseller/.vim/plugin/cvsgit/objects/';
 
   /**
    * Tipos de commit  
@@ -128,7 +128,7 @@ class CvsGit {
     switch( $sPerfil ) {
 
       case 'erro' :
-        $sMensagem = "\n " . $sMensagem . "\n";
+        $sMensagem = "\n " . Shell::colorString($sMensagem, 'red') . "\n";
       break;
 
       case 'aviso' : 
@@ -136,7 +136,6 @@ class CvsGit {
       break;
     }
 
-    //echo Encode::toISO($sMensagem . "\n");
     echo Encode::toUTF8($sMensagem . "\n");
   }
 
@@ -320,8 +319,7 @@ class CvsGit {
         $sTagsPorVersao = null;
 
         if ( !empty($aTagsPorVersao[$iVersao]) ) {
-          //$sTagsPorVersao = implode(', ', $aTagsPorVersao[$iVersao]);
-          $sTagsPorVersao = count($aTagsPorVersao[$iVersao]);
+          $sTagsPorVersao = implode(', ', $aTagsPorVersao[$iVersao]);
         }
 
         if ( $iVersao == $iVersaoAtual ) {
@@ -447,18 +445,56 @@ class CvsGit {
 
       foreach($aCommits as $oCommit) {
 
-        $sComandoCommit = "cvs commit -m '$oCommit->sTipoAbreviado: $oCommit->sMensagem ($oCommit->sTipoCompleto #$oCommit->iTag)' $oCommit->sArquivo";
-        $sComandoTag    = "cvs tag -F T{$oCommit->iTag} $oCommit->sArquivo";
+        $sComandoCommit = "cvs commit -m '$oCommit->sTipoAbreviado: $oCommit->sMensagem ($oCommit->sTipoCompleto #$oCommit->iTag)' " . self::clearPath($oCommit->sArquivo);
+        $sComandoTag    = "cvs tag -F T{$oCommit->iTag} " . self::clearPath($oCommit->sArquivo);
 
         self::output("$sArquivo: ");
-        self::output("   " . $sComandoCommit);
-        self::output("   " . $sComandoTag);
-        //system( output::toISO($sComandoCommit) );
-        //system( output::toISO($sComandoTag) );
+        self::output("   " . Encode::toISO($sComandoCommit));
+        self::output("   " . Encode::toISO($sComandoTag));
       }
 
       echo "\n";
     }
+
+    $sLine = readline('Commitar?: (s/N): ');
+
+    if ( strtoupper($sLine) != 'S' ) {
+      exit;
+    } 
+
+    echo "\n";
+
+    foreach($aComandos as $sArquivo => $aCommits) {
+
+      foreach($aCommits as $oCommit) {
+
+        $sComandoCommit = "cvs commit -m '$oCommit->sTipoAbreviado: $oCommit->sMensagem ($oCommit->sTipoCompleto #$oCommit->iTag)' " . self::clearPath($oCommit->sArquivo) . " 2> /tmp/cvscommit_" . basename($oCommit->sArquivo);
+        $sComandoTag    = "cvs tag -F T{$oCommit->iTag} " . self::clearPath($oCommit->sArquivo). " 2> /tmp/cvstag_" . basename($oCommit->sArquivo);
+
+        exec( Encode::toISO($sComandoCommit), $aRetornoComandoCommit, $iStatusComandoCommit );
+        exec( Encode::toISO($sComandoTag), $aRetornoComandoTag, $iStatusComandoTag );
+        //echo Encode::toISO($sComandoCommit);
+        //echo Encode::toISO($sComandoTag);
+
+        if ( $iStatusComandoCommit > 0 ) {
+
+          self::output('Erro ao commitar arquivo: ' . self::clearPath($oCommit->sArquivo), 'erro');
+          continue;
+        }
+
+        if ( $iStatusComandoTag > 0 ) {
+
+          self::output('Erro ao por tag no arquivo: ' . self::clearPath($oCommit->sArquivo), 'erro');
+          continue;
+        }
+        
+        self::output(Shell::colorString(self::clearPath($oCommit->sArquivo) . ' commitado', 'green'));
+        self::remover(array($oCommit->sArquivo));
+      }
+
+    }
+
+    echo "\n";
 
   }
 
@@ -485,6 +521,10 @@ class CvsGit {
       if ( !empty($aArquivos[$sParametro]) || in_array($sParametro, array('.', '*', 'all')) ) {
         unset($aArquivos[$sParametro]);
       }
+
+      if ( !empty($aArquivos[getcwd() . '/' . $sParametro]) ) {
+        unset($aArquivos[getcwd() . '/' . $sParametro]);
+      } 
     }
 
     self::setArquivos($aArquivos);
@@ -502,7 +542,7 @@ class CvsGit {
     if ( $iStatusComandoUpdate > 0 ) {
 
       self::output('Erro ao execurar cvs -qn update -dR', 'erro');
-      return;
+      //return;
     }
 
     $aArquivosParaCommit = array();
@@ -1002,7 +1042,7 @@ class Encode {
   }
 
   static public function toISO($sText) {
-    return mb_convert_encoding($sText, "ISO-8859-1", mb_detect_encoding($sString, "UTF-8, ISO-8859-1, ISO-8859-15", true)); 
+    return mb_convert_encoding($sText, "ISO-8859-1", mb_detect_encoding($sText, "UTF-8, ISO-8859-1, ISO-8859-15", true)); 
   }
 
 }
