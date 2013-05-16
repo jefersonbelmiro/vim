@@ -397,7 +397,7 @@ class CvsGit {
 
     foreach ( $aArquivos as $oCommit ) {
 
-      $sArquivo      = $oCommit->sArquivo;
+      $sArquivo      = self::clearPath($oCommit->sArquivo);
       $iTag          = $oCommit->iTag;
       $sMensagem     = $oCommit->sMensagem;
       $sTipoCompleto = $oCommit->sTipoCompleto;
@@ -405,7 +405,7 @@ class CvsGit {
 
       if ( !file_exists($oCommit->sArquivo) ) {
 
-        $sArquivo = $sErro . $oCommit->sArquivo;
+        $sArquivo = $sErro . $sArquivo;
         $iErros++;
       }
 
@@ -448,9 +448,9 @@ class CvsGit {
         $sComandoCommit = "cvs commit -m '$oCommit->sTipoAbreviado: $oCommit->sMensagem ($oCommit->sTipoCompleto #$oCommit->iTag)' " . self::clearPath($oCommit->sArquivo);
         $sComandoTag    = "cvs tag -F T{$oCommit->iTag} " . self::clearPath($oCommit->sArquivo);
 
-        self::output("$sArquivo: ");
-        self::output("   " . Encode::toISO($sComandoCommit));
-        self::output("   " . Encode::toISO($sComandoTag));
+        self::output("-- " . self::clearPath($sArquivo) . ": ");
+        self::output("   " . Encode::UTF8ToISO($sComandoCommit));
+        self::output("   " . Encode::UTF8ToISO($sComandoTag));
       }
 
       echo "\n";
@@ -471,10 +471,8 @@ class CvsGit {
         $sComandoCommit = "cvs commit -m '$oCommit->sTipoAbreviado: $oCommit->sMensagem ($oCommit->sTipoCompleto #$oCommit->iTag)' " . self::clearPath($oCommit->sArquivo) . " 2> /tmp/cvscommit_" . basename($oCommit->sArquivo);
         $sComandoTag    = "cvs tag -F T{$oCommit->iTag} " . self::clearPath($oCommit->sArquivo). " 2> /tmp/cvstag_" . basename($oCommit->sArquivo);
 
-        exec( Encode::toISO($sComandoCommit), $aRetornoComandoCommit, $iStatusComandoCommit );
-        exec( Encode::toISO($sComandoTag), $aRetornoComandoTag, $iStatusComandoTag );
-        //echo Encode::toISO($sComandoCommit);
-        //echo Encode::toISO($sComandoTag);
+        exec( Encode::UTF8ToISO($sComandoCommit), $aRetornoComandoCommit, $iStatusComandoCommit );
+        exec( Encode::UTF8ToISO($sComandoTag), $aRetornoComandoTag, $iStatusComandoTag );
 
         if ( $iStatusComandoCommit > 0 ) {
 
@@ -488,7 +486,7 @@ class CvsGit {
           continue;
         }
         
-        self::output(Shell::colorString(self::clearPath($oCommit->sArquivo) . ' commitado', 'green'));
+        self::output(Shell::colorString(self::clearPath($oCommit->sArquivo) . ' - commitado', 'green'));
         self::remover(array($oCommit->sArquivo));
       }
 
