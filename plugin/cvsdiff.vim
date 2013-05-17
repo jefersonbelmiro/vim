@@ -93,9 +93,9 @@ endfunction
 
 
 " s:InitWindow() {{{2
-function! s:InitWindow(autoclose) abort
+function! s:InitWindow() abort
 
-    call s:LogDebugMessage('InitWindow called with autoclose: ' . a:autoclose)
+    call s:LogDebugMessage('InitWindow Called')
     let s:inicializado = 1 
 
     setlocal filetype=cvsdiff
@@ -115,16 +115,16 @@ function! s:InitWindow(autoclose) abort
     setlocal winfixwidth
     setlocal textwidth=0
     setlocal nospell
-    exe 'resize 5'
+    exe 'resize 15'
 
-	  if line('$') > winheight(0) 
+	  if line('$') < 15 
       exe 'resize ' . line('$')
     endif
 
     if exists('+relativenumber')
         setlocal norelativenumber
     endif
-
+    setlocal encoding=UTF8
     setlocal nofoldenable
     setlocal foldcolumn=0
     " Reset fold settings in case a plugin set them globally to something
@@ -167,17 +167,19 @@ endfunction
 
 function s:Init() 
 
-  let g:cvsRevisions = []
-  let openpos = g:tagbar_left ? 'topleft vertical ' : 'botright vertical '
-  exe 'silent keepalt botright split  cvsdiff'
+  let arquivo = FileName()
+  let comando = '/home/dbseller/.vim/plugin/cvsgit/cvsgit logvim ' . arquivo . ' > /tmp/cvs'
+  let arquivos = system(comando)
 
+  let g:cvsRevisions = []
+  exe 'silent keepalt botright split  cvsdiff'
   let autoclose = 'autoclose'
 
   if s:inicializado > 0 
     return
   endif
 
-  call s:InitWindow(autoclose)
+  call s:InitWindow()
 
 endfunction
 
@@ -232,6 +234,6 @@ function! Selecionar()
   "let versoes = insert(g:cvsRevisions, versao, atual)
   
   exe 'call matchadd("WildMenu", "' . linha . '")'
-  echo 'Versao: ' . versao . ' lista: ' . join(g:cvsRevisions, ', ')
+  "echo 'Versao: ' . versao . ' lista: ' . join(g:cvsRevisions, ', ')
 
 endfunction

@@ -63,6 +63,10 @@ switch ($sOpcao) {
     CvsGit::log($aArgumentos);
   break;
 
+  case 'logvim':
+    CvsGit::log2($aArgumentos);
+  break;
+
   case 'rm':
     CvsGit::remover($aArgumentos);
   break;
@@ -205,6 +209,180 @@ class CvsGit {
     file_put_contents(self::$sDiretorioObjetos . 'Objects', serialize($aProjetos));
   }
 
+  /**
+   * log
+   *
+   * @static
+   * @access public
+   * @return void
+   */
+  public static function log2($aParametros) {
+
+    if ( empty($aParametros) ) {
+
+      self::output('Nenhum parametro informado');
+      return;
+    }
+
+    // @todo aceitar varios arquivos
+    foreach ($aParametros as $iIndice => $sParametro) {
+
+      if ( file_exists($sParametro) ) {
+
+        $sArquivo = $sParametro;
+        break;
+      }
+    }
+
+    if ( empty($sArquivo) ) {
+
+      self::output('arquivo nao econtrado');
+      return;
+    } 
+
+    $sArquivo = str_replace(getcwd() . '/', '', $sArquivo);
+
+    /**
+     * Lista somenta as tags
+     */
+    exec('cvs log -h ' . $sArquivo . ' 2> /tmp/cvslog-header-error', $aRetornoComandoTags, $iStatusComandoTags);
+
+    if ( $iStatusComandoTags > 0 ) {
+
+      self::output('Erro ao execurar cvs log -h ' . $sArquivo, 'erro');
+      return;
+    }
+
+    $aTagsPorVersao = array();
+    $iVersaoAtual = 0;
+    $lInicioListaTags = false;
+
+    foreach( $aRetornoComandoTags as $iIndiceTags => $sLinhaRetornoTag ) {
+
+      if ( strpos($sLinhaRetornoTag, 'head:') !== false ) {
+
+        $iVersaoAtual = trim(str_replace('head:', '', $sLinhaRetornoTag));
+        continue;
+      }
+
+      if ( strpos($sLinhaRetornoTag, 'symbolic names:') !== false ) {
+
+        $lInicioListaTags = true;
+        continue;
+      }
+
+      if ( $lInicioListaTags ) {
+
+        if ( strpos($sLinhaRetornoTag, 'keyword substitution') !== false ) {
+          break;
+        }
+
+        if ( strpos($sLinhaRetornoTag, 'total revisions') !== false ) {
+          break;
+        }
+
+        $aLinhaTag = explode(':', $sLinhaRetornoTag);
+        $iVersao   = trim($aLinhaTag[1]);
+        $sTag      = trim($aLinhaTag[0]);
+
+        $aTagsPorVersao[$iVersao][] = $sTag;
+      }
+    }
+
+    /**
+     * Lista informacoes do commit, sem as tags
+     */
+    exec('cvs log -N ' . $sArquivo . ' 2> /tmp/cvslog-info-error', $aRetornoComandoInformacoes, $iStatusComandoInformacoes);
+
+    if ( $iStatusComandoInformacoes > 0 ) {
+
+      self::output('Erro ao execurar cvs log -N ' . $sArquivo, 'erro');
+      return;
+    }
+
+    $aLog = array();
+    $iLinhaInformacaoCommit = 0;
+
+
+    $oTabela = new Table();
+    $oTabela->setHeaders(array('Versao', 'Autor', 'Data', 'Versao', 'Tag', 'Mensagem'));
+    $aLinhas = array();
+
+    $iVersao   = null;
+    $sAutor    = null;
+    $sData     = null;
+    $sMensagem = null;
+
+    foreach ( $aRetornoComandoInformacoes as $iIndice => $sLinhaRetorno ) {
+
+      if ( strpos($sLinhaRetorno, '------') !== false ) {
+        continue;
+      } 
+
+      if ( $iLinhaInformacaoCommit == 0 && $iIndice > 11 ) {
+
+        $sTagsPorVersao = null;
+
+        if ( !empty($aTagsPorVersao[$iVersao]) ) {
+          $sTagsPorVersao = implode(', ', $aTagsPorVersao[$iVersao]);
+        }
+
+        if ( $iVersao == $iVersaoAtual ) {
+          $iVersao .= '*';
+        } 
+
+        $oTabela->addRow(array($sAutor, $sData, $iVersao, $sTagsPorVersao, $sMensagem));
+        $iVersao   = '';
+        $sAutor    = '';
+        $sData     = '';
+        $sMensagem = '';
+      }
+
+      if ( $iLinhaInformacaoCommit > 0 ) {
+        $iLinhaInformacaoCommit--;
+      } 
+
+      /**
+       * Versao
+       */
+      if ( strpos($sLinhaRetorno, 'revision') !== false && strpos($sLinhaRetorno, 'revision') === 0 ) {
+        $iLinhaInformacaoCommit = 2;
+      } 
+      
+      /**
+       * Versao
+       */
+      if ( $iLinhaInformacaoCommit == 2 ) {
+
+        $iVersao = trim(str_replace('revision', '', $sLinhaRetorno));
+        continue;
+      }
+
+      /**
+       * Data e autor 
+       */
+      if ( $iLinhaInformacaoCommit == 1 ) {
+        
+        $sLinhaRetorno = strtr($sLinhaRetorno, array('date:' => '', 'author:' => ''));
+        $aLinhaInformacoesCommit = explode(';', $sLinhaRetorno);
+        $sLinhaData = array_shift($aLinhaInformacoesCommit);
+        $aLinhaData = explode(' ', $sLinhaData);
+        $sData .= implode('/', array_reverse(explode('/', $aLinhaData[1])));
+
+        $sAutor = trim(array_shift($aLinhaInformacoesCommit));
+        continue;
+      } 
+
+      /**
+       * Mensagem 
+       */
+      if ( $iLinhaInformacaoCommit == 0 ) {
+        $sMensagem = $sLinhaRetorno;
+      }
+    }
+
+    print($oTabela->render( $mostra_com_espacos = true ));
+  }
   /**
    * log
    *
@@ -860,36 +1038,40 @@ class Table {
 		return $row;
 	}
 
-	public function render() {
+	public function render( $lEspacos = false ) {
 		
 		$borderStr = '';
 
-		foreach ($this->aHeaders as $column => $header) {
+    if ( !$lEspacos ) {
 
-      if ( $column > 0 ) {
-		    $borderStr .= '+';
+      foreach ($this->aHeaders as $column => $header) {
+      
+        if ( $column > 0 ) {
+          $borderStr .= '+';
+        }
+      
+      	$borderStr .= '-' . str_repeat('-', $this->aWidth[$column]) . '-';
       }
-
-			$borderStr .= '-' . str_repeat('-', $this->aWidth[$column]) . '-';
-		}
-
-		$sTabela  = "\n" . $this->renderRow($this->aHeaders);
-		$sTabela .= "\n" . $borderStr;
+      $sTabela  = "\n" . $this->renderRow($this->aHeaders);
+      $sTabela .= "\n" . $borderStr;
+    }
 
 		foreach ($this->aRows as $row) {
-			$sTabela .= "\n" . $this->renderRow($row);
+			$sTabela .= "\n" . $this->renderRow($row, $lEspacos);
 		}
 
     return $sTabela . "\n";
 	}
 
-	protected function renderRow(array $row) {
+	protected function renderRow(array $row, $lEspacos = false) {
 
 		$render = '';
 
 		foreach ($row as $column => $val) {
 
-      if ( $column > 0 ) {
+      $render .= ' ';
+
+      if ( $column > 0 && !$lEspacos ) {
 		    $render .= '|';
       }
 
