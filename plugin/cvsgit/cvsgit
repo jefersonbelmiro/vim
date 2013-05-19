@@ -305,7 +305,7 @@ class CvsGit {
 
 
     $oTabela = new Table();
-    $oTabela->setHeaders(array('Versao', 'Autor', 'Data', 'Versao', 'Tag', 'Mensagem'));
+    $oTabela->setHeaders(array('1', '2', '3', '4', '5'));
     $aLinhas = array();
 
     $iVersao   = null;
@@ -324,14 +324,11 @@ class CvsGit {
         $sTagsPorVersao = null;
 
         if ( !empty($aTagsPorVersao[$iVersao]) ) {
-          $sTagsPorVersao = implode(', ', $aTagsPorVersao[$iVersao]);
+          //$sTagsPorVersao = implode(', ', $aTagsPorVersao[$iVersao]);
+          $sTagsPorVersao = '72324';
         }
 
-        if ( $iVersao == $iVersaoAtual ) {
-          $iVersao .= '*';
-        } 
-
-        $oTabela->addRow(array($sAutor, $sData, $iVersao, $sTagsPorVersao, $sMensagem));
+        $oTabela->addRow(array($iVersao, $sTagsPorVersao, $sAutor, $sData, $sMensagem));
         $iVersao   = '';
         $sAutor    = '';
         $sData     = '';
@@ -381,7 +378,7 @@ class CvsGit {
       }
     }
 
-    print($oTabela->render( $mostra_com_espacos = true ));
+    echo trim($oTabela->render( $mostra_com_espacos = true )) . "\n";
   }
   /**
    * log
@@ -1041,6 +1038,7 @@ class Table {
 	public function render( $lEspacos = false ) {
 		
 		$borderStr = '';
+    $sTabela = '';
 
     if ( !$lEspacos ) {
 
@@ -1052,6 +1050,7 @@ class Table {
       
       	$borderStr .= '-' . str_repeat('-', $this->aWidth[$column]) . '-';
       }
+
       $sTabela  = "\n" . $this->renderRow($this->aHeaders);
       $sTabela .= "\n" . $borderStr;
     }
@@ -1069,13 +1068,17 @@ class Table {
 
 		foreach ($row as $column => $val) {
 
-      $render .= ' ';
+      $render .= '';
 
       if ( $column > 0 && !$lEspacos ) {
 		    $render .= '|';
       }
 
-			$render .= ' ' . Shell::str_pad($val, $this->aWidth[$column]) . ' ';
+      if ( !$lEspacos) {
+			  $render .= ' ';
+      } 
+
+			$render .= Shell::str_pad($val, $this->aWidth[$column]) . ' ';
 		}
 
 		return $render;

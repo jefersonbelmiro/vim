@@ -42,7 +42,7 @@ function ShowMouseMode()
 endfunction
 
 function! FileName()
-  return expand('%:p')
+  return expand('%')
 endfunction
 
 function! PathName()
