@@ -125,6 +125,13 @@ endfunction
 
 function! Processar() 
 
+  if len(s:cvsRevisions) == 1 
+
+    echo 'Nenhum arquivo selecionado'
+    return
+
+  endif
+
   echo 'Processando: Gerando arquivos...'
   let l:sVersoes = ''
   let l:sComandoCheckout = 'cvs checkout '
