@@ -2,29 +2,39 @@
 " description:
 "   vim plugin to use vim split diff on cvs
 
-let s:debug        = 0
-let s:debug_file   = '/tmp/debugcvs'
-let s:inicializado = 0
-let s:cvsRevisions = []
+" ligar debug
+let s:lDebug = 0
 
-" s:LogDebugMessage() {{{2
+" arquivo do debug
+let s:debug_file   = '/tmp/debugcvs'
+
+let s:lJanelaCriada = 0
+
+let s:oVersoes = {}
+let s:oVersoes.primeiraVersao  = ''
+let s:oVersoes.primeiraSelecao = ''
+let s:oVersoes.segundaVersao   = ''
+let s:oVersoes.segundaSelecao  = ''
+
 function! s:LogDebugMessage(msg) abort
-  if s:debug
+
+  if s:lDebug
+
     execute 'redir >> ' . s:debug_file
     silent echon strftime('%H:%M:%S') . ': ' . a:msg . "\n"
     redir END
+
   endif
+
 endfunction
 
 function! GenerateStatusline() abort
   return '[CVS Diff]'
 endfunction
 
-" s:InitWindow() {{{2
-function! s:InitWindow() abort
+function! s:CriarJanela() abort
 
-  call s:LogDebugMessage('InitWindow Called')
-  let s:inicializado = 1 
+  let s:lJanelaCriada = 1 
 
   setlocal filetype=cvsdiff
 
@@ -44,6 +54,7 @@ function! s:InitWindow() abort
   setlocal winfixwidth
   setlocal textwidth=0
   setlocal nospell
+
   exe 'resize 10'
 
   if line('$') < 10 
@@ -53,9 +64,11 @@ function! s:InitWindow() abort
   if exists('+relativenumber')
     setlocal norelativenumber
   endif
+
   setlocal encoding=UTF8
   setlocal nofoldenable
   setlocal foldcolumn=0
+
   " Reset fold settings in case a plugin set them globally to something
   " expensive. Apparently 'foldexpr' gets executed even if 'foldenable' is
   " off, and then for every appended line (like with :put).
@@ -72,13 +85,10 @@ function! s:InitWindow() abort
   let cpoptions_save = &cpoptions
   set cpoptions&vim
 
-  call s:LogDebugMessage('InitWindow finished')
-
 endfunction
 
 function! s:MapKeys() abort
 
-  call s:LogDebugMessage('Mapping keys')
   nnoremap <script> <silent> <buffer> <CR>  :call Processar()<CR>
   nnoremap <script> <silent> <buffer> <ESC> :call Sair()<CR>
   nnoremap <script> <silent> <buffer> m     :call Selecionar()<CR>
@@ -88,30 +98,38 @@ endfunction
 
 function Cvsdiff() 
 
-  call s:Init()
+  call s:Bootstrap()
   call s:MapKeys()
 
 endfunction
 
-function s:Init() 
+function s:Bootstrap() 
 
   let s:iJanelaMae = winnr()
   let s:sArquivo   = FileName()
   let s:sDiretorioAtual = system('pwd')
 
-  echo 'Processando: Gerando log dos arquivos...'
-  let comando = '/home/dbseller/.vim/plugin/cvsgit/cvsgit logvim ' . s:sArquivo . ' > /tmp/cvs'
-  let comando = '~/.vim/plugin/cvsgit/cvsgit logvim ' . s:sArquivo . ' > /tmp/cvs'
+  let comando = $HOME . '/.vim/plugin/cvsgit/cvsgit logvim ' . s:sArquivo . ' > /tmp/cvs'
   call Executar(comando)
+  
+  call LimparVersoes()
 
-  let s:cvsRevisions = []
   exe 'silent keepalt botright split  cvsdiff'
 
-  if s:inicializado > 0 
+  if s:lJanelaCriada > 0 
     return
   endif
 
-  call s:InitWindow()
+  call s:CriarJanela()
+
+endfunction
+
+function! LimparVersoes() 
+
+  let s:oVersoes.primeiraVersao  = ''
+  let s:oVersoes.primeiraSelecao = ''
+  let s:oVersoes.segundaVersao   = ''
+  let s:oVersoes.segundaSelecao  = ''
 
 endfunction
 
@@ -125,74 +143,91 @@ endfunction
 
 function! Processar() 
 
-  if len(s:cvsRevisions) == 0 
+  if empty(s:oVersoes.primeiraVersao)
 
-    echo 'Nenhum arquivo selecionado'
+    echohl WarningMsg | echo 'Nenhuma versao selecionada'
     return
 
   endif
 
-  echo 'Processando: Gerando arquivos...'
+  exit
+
   let l:sVersoes = ''
   let l:sComandoCheckout = 'cvs checkout '
   let l:sProjeto = 'dbportal_prj/' | "@todo usar cvsgit para buscar projeto
   let l:sArquivo = expand('%:t')
   let l:sSeparador = '__'
   let l:sComandoMover = 'mv ' . l:sProjeto . s:sArquivo . ' /tmp/' . l:sArquivo . l:sSeparador
-  exit
 
-  if len(s:cvsRevisions) == 1 
+  " selecinou 1 versao apenas
+  if empty(s:oVersoes.segundaVersao)
 
-    let l:sVersoes .= ' -r ' . s:cvsRevisions[0]
-    call Executar(l:sComandoCheckout . '-r ' . s:cvsRevisions[0] . ' '.  l:sProjeto . s:sArquivo)
-    call Executar(sComandoMover . s:cvsRevisions[0])
+    let l:sVersoes .= ' -r ' . s:oVersoes.primeiraVersao
+    call Executar(l:sComandoCheckout . '-r ' . s:oVersoes.primeiraVersao . ' '.  l:sProjeto . s:sArquivo)
+    call Executar(sComandoMover . s:oVersoes.primeiraVersao)
 
     exe 'tabnew ' . s:sArquivo
-    exe 'vert diffsplit /tmp/' . l:sArquivo . l:sSeparador . s:cvsRevisions[0]
+    exe 'vert diffsplit /tmp/' . l:sArquivo . l:sSeparador . s:oVersoes.primeiraVersao
+
+  else
+
+    let l:sVersoes .= ' -r ' . s:oVersoes.primeiraVersao . ' -r ' . s:oVersoes.segundaVersao
+    call Executar(l:sComandoCheckout . '-r ' . s:oVersoes.primeiraVersao . ' '.  l:sProjeto . s:sArquivo)
+    call Executar(sComandoMover . s:oVersoes.primeiraVersao)
+    call Executar(l:sComandoCheckout . '-r ' . s:oVersoes.segundaVersao . ' '.  l:sProjeto . s:sArquivo)
+    call Executar(sComandoMover . s:oVersoes.segundaVersao)
+
+    exe 'tabnew /tmp/' . l:sArquivo . l:sSeparador . s:oVersoes.primeiraVersao
+    exe 'vert diffsplit /tmp/' . l:sArquivo . l:sSeparador . s:oVersoes.segundaVersao
 
   endif
 
-  if len(s:cvsRevisions) == 2 
-
-    let l:sVersoes .= ' -r ' . s:cvsRevisions[0] . ' -r ' . s:cvsRevisions[1]
-    call Executar(l:sComandoCheckout . '-r ' . s:cvsRevisions[0] . ' '.  l:sProjeto . s:sArquivo)
-    call Executar(sComandoMover . s:cvsRevisions[0])
-    call Executar(l:sComandoCheckout . '-r ' . s:cvsRevisions[1] . ' '.  l:sProjeto . s:sArquivo)
-    call Executar(sComandoMover . s:cvsRevisions[1])
-
-    exe 'tabnew /tmp/' . l:sArquivo . l:sSeparador . s:cvsRevisions[0]
-    exe 'vert diffsplit /tmp/' . l:sArquivo . l:sSeparador . s:cvsRevisions[1]
-
-  endif
-
+  " remove pasta do projeto criada pelo cvs checkout
   call Executar('mv -f ' . l:sProjeto . ' ' . tempname())
-  "exe "normal \<C-W>L"
+
+  exe "normal \<C-W>L"
+  exe "normal \<C-h>"
 
 endfunction
 
 " @see :help matchadd e matchdelete
 function! Selecionar() 
 
-  let linha   = getline('.')
-  let versao  = split(linha, ' ')[0]
+  let sLinha  = getline('.')
+  let nVersao = split(sLinha, ' ')[0]
 
-  if get(s:cvsRevisions, 1, 0) > 0 
+  if ( nVersao == s:oVersoes.primeiraVersao )
+
+    call matchdelete(s:oVersoes.primeiraSelecao)
+    let s:oVersoes.primeiraVersao = ''
+    return
+
+  endif
+
+  if ( nVersao == s:oVersoes.segundaVersao )
+
+    call matchdelete(s:oVersoes.segundaSelecao)
+    let s:oVersoes.segundaVersao = ''
+    return
+
+  endif
+
+  " ja selecionou 2 versoes
+  if !empty(s:oVersoes.segundaVersao) && !empty(s:oVersoes.primeiraVersao)
     return
   endif
 
-  "for i in s:cvsRevisions 
-  "  if i == versao 
-  "    echo "versao atual: " . i
-  "    exe 'call matchdelete("'. i .'")'
-  "    return
-  "  endif
-  "endfor
+  if empty(s:oVersoes.primeiraVersao) 
 
-  let versoes = add(s:cvsRevisions, versao)
-  "let versoes = insert(s:cvsRevisions, versao, atual)
+    let s:oVersoes.primeiraVersao  = nVersao
+    let s:oVersoes.primeiraSelecao = matchadd("WildMenu", sLinha)
 
-  exe 'call matchadd("WildMenu", "' . linha . '")'
-  "echo 'Versao: ' . versao . ' lista: ' . join(s:cvsRevisions, ', ')
+  else 
+
+    let s:oVersoes.segundaVersao  = nVersao
+    let s:oVersoes.segundaSelecao = matchadd("WildMenu", sLinha)
+
+  endif
 
 endfunction
 

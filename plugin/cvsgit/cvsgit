@@ -19,6 +19,13 @@
  */
 
 /**
+ * Caminha da home 
+ */
+if ( getenv('HOME') != '' ) {
+  CvsGit::$sDiretorioObjetos = getenv('HOME') . '/' . CvsGit::$sDiretorioObjetos;
+} 
+
+/**
  * remove primeiro indice com nome do arquivo atual 
  */
 array_shift($argv);
@@ -82,7 +89,7 @@ switch ($sOpcao) {
 
 class CvsGit {
   
-  public static $sDiretorioObjetos = '/home/dbseller/.vim/plugin/cvsgit/objects/';
+  public static $sDiretorioObjetos = '.vim/plugin/cvsgit/objects/';
 
   /**
    * Tipos de commit  
@@ -324,8 +331,7 @@ class CvsGit {
         $sTagsPorVersao = null;
 
         if ( !empty($aTagsPorVersao[$iVersao]) ) {
-          //$sTagsPorVersao = implode(', ', $aTagsPorVersao[$iVersao]);
-          $sTagsPorVersao = '72324';
+          $sTagsPorVersao = implode(', ', $aTagsPorVersao[$iVersao]);
         }
 
         $oTabela->addRow(array($iVersao, $sTagsPorVersao, $sAutor, $sData, $sMensagem));
