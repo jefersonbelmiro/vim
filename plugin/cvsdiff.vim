@@ -6,16 +6,25 @@
 let s:lDebug = 0
 
 " arquivo do debug
-let s:debug_file   = '/tmp/debugcvs'
+let s:debug_file = '/tmp/debugcvs'
 
+" janela do cvsdiff ja iniciada
 let s:lJanelaCriada = 0
 
+" string com erro dos comandos executados
+" @see Executar
+let s:sErroExecutar = ''
+
+" Objeto com versoes a serem comparadas
 let s:oVersoes = {}
 let s:oVersoes.primeiraVersao  = ''
 let s:oVersoes.primeiraSelecao = ''
 let s:oVersoes.segundaVersao   = ''
 let s:oVersoes.segundaSelecao  = ''
 
+"
+" Gera log da execucao do script
+"
 function! s:LogDebugMessage(msg) abort
 
   if s:lDebug
@@ -29,7 +38,7 @@ function! s:LogDebugMessage(msg) abort
 endfunction
 
 function! GenerateStatusline() abort
-  return '[CVS Diff]'
+  return expand('%:t')
 endfunction
 
 function! s:CriarJanela() abort
@@ -40,7 +49,7 @@ function! s:CriarJanela() abort
 
   silent read /tmp/cvs
   exe ':0d'
-  setlocal noreadonly " in case the "view" mode is used
+  setlocal noreadonly     " in case the "view" mode is used
   setlocal buftype=nofile
   setlocal bufhidden=hide
   setlocal nobackup
@@ -105,13 +114,11 @@ endfunction
 
 function s:Bootstrap() 
 
-  let s:iJanelaMae = winnr()
-  let s:sArquivo   = FileName()
-  let s:sDiretorioAtual = system('pwd')
+  let s:iJanelaMae  = winnr()
+  let s:sArquivo    = FileName()
+  let l:sComandoLog = $HOME . '/.vim/plugin/cvsgit/cvsgit logvim ' . s:sArquivo . ' > /tmp/cvs'
 
-  let comando = $HOME . '/.vim/plugin/cvsgit/cvsgit logvim ' . s:sArquivo . ' > /tmp/cvs'
-  call Executar(comando)
-  
+  call Executar(l:sComandoLog)
   call LimparVersoes()
 
   exe 'silent keepalt botright split  cvsdiff'
@@ -141,61 +148,86 @@ function! Sair()
 
 endfunction
 
+"
+" Processar, abre aba com diffs
+"
 function! Processar() 
 
-  if empty(s:oVersoes.primeiraVersao)
+  try 
 
-    echohl WarningMsg | echo 'Nenhuma versao selecionada'
-    return
+    let l:sLinhaCursor  = getline('.')
+    let l:nVersaoCursor = split(l:sLinhaCursor, ' ')[0]
 
-  endif
+    " fecha janela com as versoes
+    exit
 
-  exit
+    let l:sVersoes         = ''
+    let l:sPathArquivos    = '/tmp/'
+    let l:sComandoCheckout = 'cvs checkout '
+    let l:sProjeto         = 'dbportal_prj/' | "@todo usar cvsgit para buscar projeto
+    let s:sArquivo         = FileName()
+    let l:sArquivo         = expand('%:t')
+    let l:sSeparador       = '__'
+    let l:sComandoMover    = 'mv ' . l:sProjeto . s:sArquivo . ' '. l:sPathArquivos . l:sArquivo . l:sSeparador
+    let l:sComandoDiff     = 'vert diffsplit ' . l:sPathArquivos
 
-  let l:sVersoes = ''
-  let l:sComandoCheckout = 'cvs checkout '
-  let l:sProjeto = 'dbportal_prj/' | "@todo usar cvsgit para buscar projeto
-  let l:sArquivo = expand('%:t')
-  let l:sSeparador = '__'
-  let l:sComandoMover = 'mv ' . l:sProjeto . s:sArquivo . ' /tmp/' . l:sArquivo . l:sSeparador
+    " Nao selecionou versao para comparar
+    " Abre nova aba com versao da linha do cursor
+    if empty(s:oVersoes.primeiraVersao)
 
-  " selecinou 1 versao apenas
-  if empty(s:oVersoes.segundaVersao)
+      call Executar(l:sComandoCheckout . '-r ' . l:nVersaoCursor . ' '.  l:sProjeto . s:sArquivo)
+      call Executar(sComandoMover . l:nVersaoCursor)
 
-    let l:sVersoes .= ' -r ' . s:oVersoes.primeiraVersao
-    call Executar(l:sComandoCheckout . '-r ' . s:oVersoes.primeiraVersao . ' '.  l:sProjeto . s:sArquivo)
-    call Executar(sComandoMover . s:oVersoes.primeiraVersao)
+      exe 'tabnew ' . l:sPathArquivos . l:sArquivo . l:sSeparador . l:nVersaoCursor
+      return
 
-    exe 'tabnew ' . s:sArquivo
-    exe 'vert diffsplit /tmp/' . l:sArquivo . l:sSeparador . s:oVersoes.primeiraVersao
+    endif
 
-  else
+    " selecinou 1 versao apenas
+    if empty(s:oVersoes.segundaVersao)
 
-    let l:sVersoes .= ' -r ' . s:oVersoes.primeiraVersao . ' -r ' . s:oVersoes.segundaVersao
-    call Executar(l:sComandoCheckout . '-r ' . s:oVersoes.primeiraVersao . ' '.  l:sProjeto . s:sArquivo)
-    call Executar(sComandoMover . s:oVersoes.primeiraVersao)
-    call Executar(l:sComandoCheckout . '-r ' . s:oVersoes.segundaVersao . ' '.  l:sProjeto . s:sArquivo)
-    call Executar(sComandoMover . s:oVersoes.segundaVersao)
+      let l:sVersoes .= ' -r ' . s:oVersoes.primeiraVersao
+      call Executar(l:sComandoCheckout . '-r ' . s:oVersoes.primeiraVersao . ' '.  l:sProjeto . s:sArquivo)
+      call Executar(sComandoMover . s:oVersoes.primeiraVersao)
 
-    exe 'tabnew /tmp/' . l:sArquivo . l:sSeparador . s:oVersoes.primeiraVersao
-    exe 'vert diffsplit /tmp/' . l:sArquivo . l:sSeparador . s:oVersoes.segundaVersao
+      exe 'tabnew ' . s:sArquivo
+      exe l:sComandoDiff . l:sArquivo . l:sSeparador . s:oVersoes.primeiraVersao
 
-  endif
+    else
 
-  " remove pasta do projeto criada pelo cvs checkout
-  call Executar('mv -f ' . l:sProjeto . ' ' . tempname())
+      let l:sVersoes .= ' -r ' . s:oVersoes.primeiraVersao . ' -r ' . s:oVersoes.segundaVersao
+      call Executar(l:sComandoCheckout . '-r ' . s:oVersoes.primeiraVersao . ' '.  l:sProjeto . s:sArquivo)
+      call Executar(sComandoMover . s:oVersoes.primeiraVersao)
+      call Executar(l:sComandoCheckout . '-r ' . s:oVersoes.segundaVersao . ' '.  l:sProjeto . s:sArquivo)
+      call Executar(sComandoMover . s:oVersoes.segundaVersao)
 
-  exe "normal \<C-W>L"
-  exe "normal \<C-h>"
+      exe 'tabnew ' . l:sPathArquivos . l:sArquivo . l:sSeparador . s:oVersoes.primeiraVersao
+      exe l:sComandoDiff . l:sArquivo . l:sSeparador . s:oVersoes.segundaVersao
+
+    endif
+
+    " remove pasta do projeto criada pelo cvs checkout
+    call Executar('mv -f ' . l:sProjeto . ' ' . tempname())
+
+    " Troca lado dos splits do diff e retorna cursor pra primeiro split
+    exe "normal \<C-W>L"
+    exe "normal \<C-h>"
+
+  catch
+    echohl WarningMsg | echon "Erro:\n" . v:exception 
+  endtry
 
 endfunction
 
-" @see :help matchadd e matchdelete
+"
+" Selecionar linha
+"
 function! Selecionar() 
 
   let sLinha  = getline('.')
   let nVersao = split(sLinha, ' ')[0]
 
+  " Remove selecao da primeira versao
   if ( nVersao == s:oVersoes.primeiraVersao )
 
     call matchdelete(s:oVersoes.primeiraSelecao)
@@ -204,6 +236,7 @@ function! Selecionar()
 
   endif
 
+  " Remove selecao da segunda versao
   if ( nVersao == s:oVersoes.segundaVersao )
 
     call matchdelete(s:oVersoes.segundaSelecao)
@@ -212,11 +245,12 @@ function! Selecionar()
 
   endif
 
-  " ja selecionou 2 versoes
+  " ja selecionou 2 versoes, retorna funcao
   if !empty(s:oVersoes.segundaVersao) && !empty(s:oVersoes.primeiraVersao)
     return
   endif
 
+  " seleciona primeira e segunda versao
   if empty(s:oVersoes.primeiraVersao) 
 
     let s:oVersoes.primeiraVersao  = nVersao
@@ -231,15 +265,15 @@ function! Selecionar()
 
 endfunction
 
+"
+" Executa um comando e retorna resposta do comando ou erro
+"
 function! Executar(comando) 
 
-  let retorno = system(a:comando)
+  let l:retornoComando = system(a:comando)
 
-  if v:shell_error && retorno != ""
-    echohl WarningMsg | echon retorno 
-    return
+  if v:shell_error 
+    throw l:retornoComando
   endif
-
-  return retorno
 
 endfunction

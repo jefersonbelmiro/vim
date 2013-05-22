@@ -1,7 +1,7 @@
 
 set background =dark
 "colorscheme Tomorrow-Night-Bright 
-colorscheme Tomorrow
+"colorscheme Tomorrow
 "hi clear CursorColumn
 "hi clear CursorLine  
 "hi clear TabLineFill
