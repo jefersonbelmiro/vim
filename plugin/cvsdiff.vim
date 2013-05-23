@@ -6,14 +6,7 @@
 let s:lDebug = 0
 
 " arquivo do debug
-let s:debug_file = '/tmp/debugcvs'
-
-" janela do cvsdiff ja iniciada
-let s:lJanelaCriada = 0
-
-" string com erro dos comandos executados
-" @see Executar
-let s:sErroExecutar = ''
+let s:sDebugFile = '/tmp/debugcvs'
 
 " Objeto com versoes a serem comparadas
 let s:oVersoes = {}
@@ -29,7 +22,7 @@ function! s:LogDebugMessage(msg) abort
 
   if s:lDebug
 
-    execute 'redir >> ' . s:debug_file
+    execute 'redir >> ' . s:sDebugFile
     silent echon strftime('%H:%M:%S') . ': ' . a:msg . "\n"
     redir END
 
@@ -38,18 +31,18 @@ function! s:LogDebugMessage(msg) abort
 endfunction
 
 function! GenerateStatusline() abort
-  return expand('%:t')
+  return s:sArquivo
 endfunction
 
 function! s:CriarJanela() abort
 
-  let s:lJanelaCriada = 1 
-
-  setlocal filetype=cvsdiff
-
+  setlocal modifiable
+  exe ':%d'
   silent read /tmp/cvs
   exe ':0d'
-  setlocal noreadonly     " in case the "view" mode is used
+
+  setlocal filetype=cvsdiff
+  setlocal noreadonly 
   setlocal buftype=nofile
   setlocal bufhidden=hide
   setlocal nobackup
@@ -77,19 +70,11 @@ function! s:CriarJanela() abort
   setlocal encoding=UTF8
   setlocal nofoldenable
   setlocal foldcolumn=0
-
-  " Reset fold settings in case a plugin set them globally to something
-  " expensive. Apparently 'foldexpr' gets executed even if 'foldenable' is
-  " off, and then for every appended line (like with :put).
   setlocal foldmethod&
   setlocal foldexpr&
 
-  " Earlier versions have a bug in local, evaluated statuslines
-  if v:version > 701 || (v:version == 701 && has('patch097'))
-    setlocal statusline=%!GenerateStatusline()
-  else
-    setlocal statusline=cvsdiff
-  endif
+  "setlocal statusline=%!GenerateStatusline()
+  setlocal statusline=cvsdiff
 
   let cpoptions_save = &cpoptions
   set cpoptions&vim
@@ -114,20 +99,27 @@ endfunction
 
 function s:Bootstrap() 
 
-  let s:iJanelaMae  = winnr()
-  let s:sArquivo    = FileName()
-  let l:sComandoLog = $HOME . '/.vim/plugin/cvsgit/cvsgit logvim ' . s:sArquivo . ' > /tmp/cvs'
+  try 
 
-  call Executar(l:sComandoLog)
-  call LimparVersoes()
+    if !filereadable('CVS/Repository')
+      throw 'Projeto CVS nao encontrado'
+    endif
 
-  exe 'silent keepalt botright split  cvsdiff'
+    let s:sProjeto    = split(Executar('cat CVS/Repository'))[0] . '/'
+    let s:iJanelaMae  = winnr()
+    let s:sArquivo    = FileName()
+    let s:sFileType   = &filetype
 
-  if s:lJanelaCriada > 0 
-    return
-  endif
+    call Executar($HOME . '/.vim/plugin/cvsgit/cvsgit logvim ' . s:sArquivo . ' > /tmp/cvs')
+    call LimparVersoes()
 
-  call s:CriarJanela()
+    exe 'silent keepalt botright split ' . expand('%:t') . '[cvsdiff]'
+
+    call s:CriarJanela()
+
+  catch
+    echohl WarningMsg | echon "Erro:\n" . v:exception 
+  endtry
 
 endfunction
 
@@ -164,21 +156,21 @@ function! Processar()
     let l:sVersoes         = ''
     let l:sPathArquivos    = '/tmp/'
     let l:sComandoCheckout = 'cvs checkout '
-    let l:sProjeto         = 'dbportal_prj/' | "@todo usar cvsgit para buscar projeto
     let s:sArquivo         = FileName()
     let l:sArquivo         = expand('%:t')
     let l:sSeparador       = '__'
-    let l:sComandoMover    = 'mv ' . l:sProjeto . s:sArquivo . ' '. l:sPathArquivos . l:sArquivo . l:sSeparador
+    let l:sComandoMover    = 'mv ' . s:sProjeto . s:sArquivo . ' '. l:sPathArquivos . l:sArquivo . l:sSeparador
     let l:sComandoDiff     = 'vert diffsplit ' . l:sPathArquivos
 
     " Nao selecionou versao para comparar
     " Abre nova aba com versao da linha do cursor
     if empty(s:oVersoes.primeiraVersao)
 
-      call Executar(l:sComandoCheckout . '-r ' . l:nVersaoCursor . ' '.  l:sProjeto . s:sArquivo)
+      call Executar(l:sComandoCheckout . '-r ' . l:nVersaoCursor . ' '.  s:sProjeto . s:sArquivo)
       call Executar(sComandoMover . l:nVersaoCursor)
 
       exe 'tabnew ' . l:sPathArquivos . l:sArquivo . l:sSeparador . l:nVersaoCursor
+      exe 'set filetype=' . s:sFileType
       return
 
     endif
@@ -187,27 +179,30 @@ function! Processar()
     if empty(s:oVersoes.segundaVersao)
 
       let l:sVersoes .= ' -r ' . s:oVersoes.primeiraVersao
-      call Executar(l:sComandoCheckout . '-r ' . s:oVersoes.primeiraVersao . ' '.  l:sProjeto . s:sArquivo)
+      call Executar(l:sComandoCheckout . '-r ' . s:oVersoes.primeiraVersao . ' '.  s:sProjeto . s:sArquivo)
       call Executar(sComandoMover . s:oVersoes.primeiraVersao)
 
       exe 'tabnew ' . s:sArquivo
       exe l:sComandoDiff . l:sArquivo . l:sSeparador . s:oVersoes.primeiraVersao
+      exe 'set filetype=' . s:sFileType
 
     else
 
       let l:sVersoes .= ' -r ' . s:oVersoes.primeiraVersao . ' -r ' . s:oVersoes.segundaVersao
-      call Executar(l:sComandoCheckout . '-r ' . s:oVersoes.primeiraVersao . ' '.  l:sProjeto . s:sArquivo)
+      call Executar(l:sComandoCheckout . '-r ' . s:oVersoes.primeiraVersao . ' '.  s:sProjeto . s:sArquivo)
       call Executar(sComandoMover . s:oVersoes.primeiraVersao)
-      call Executar(l:sComandoCheckout . '-r ' . s:oVersoes.segundaVersao . ' '.  l:sProjeto . s:sArquivo)
+      call Executar(l:sComandoCheckout . '-r ' . s:oVersoes.segundaVersao . ' '.  s:sProjeto . s:sArquivo)
       call Executar(sComandoMover . s:oVersoes.segundaVersao)
 
       exe 'tabnew ' . l:sPathArquivos . l:sArquivo . l:sSeparador . s:oVersoes.primeiraVersao
+      exe 'set filetype=' . s:sFileType
       exe l:sComandoDiff . l:sArquivo . l:sSeparador . s:oVersoes.segundaVersao
+      exe 'set filetype=' . s:sFileType
 
     endif
 
     " remove pasta do projeto criada pelo cvs checkout
-    call Executar('mv -f ' . l:sProjeto . ' ' . tempname())
+    call Executar('mv -f ' . s:sProjeto . ' ' . tempname())
 
     " Troca lado dos splits do diff e retorna cursor pra primeiro split
     exe "normal \<C-W>L"
@@ -276,4 +271,10 @@ function! Executar(comando)
     throw l:retornoComando
   endif
 
+  return l:retornoComando
+
 endfunction
+
+" registra comando CvsGit que pode ter 1 ou nenhum argumento
+command! -nargs=? -complete=buffer Cvsdiff call Cvsdiff()
+command! -nargs=? -complete=buffer CD      call Cvsdiff()
