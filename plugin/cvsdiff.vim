@@ -38,7 +38,7 @@ function! s:CriarJanela() abort
 
   setlocal modifiable
   exe ':%d'
-  silent read /tmp/cvs
+  silent read /tmp/cvslogvim
   exe ':0d'
 
   setlocal filetype=cvsdiff
@@ -67,7 +67,9 @@ function! s:CriarJanela() abort
     setlocal norelativenumber
   endif
 
-  setlocal encoding=UTF8
+  setlocal encoding=latin1
+  setlocal fileencoding=latin1
+  setlocal fileencodings=latin1
   setlocal nofoldenable
   setlocal foldcolumn=0
   setlocal foldmethod&
@@ -110,7 +112,11 @@ function s:Bootstrap()
     let s:sArquivo    = FileName()
     let s:sFileType   = &filetype
 
-    call Executar($HOME . '/.vim/plugin/cvsgit/cvsgit logvim ' . s:sArquivo . ' > /tmp/cvs')
+    let s:sEncoding      = &encoding
+    let s:sFileEncoding  = &fileencoding
+    let s:sFileEncodings = &fileencodings
+
+    call Executar($HOME . '/.vim/plugin/cvsgit/cvsgit logvim ' . s:sArquivo)
     call LimparVersoes()
 
     exe 'silent keepalt botright split ' . expand('%:t') . '[cvsdiff]'
@@ -170,7 +176,7 @@ function! Processar()
       call Executar(sComandoMover . l:nVersaoCursor)
 
       exe 'tabnew ' . l:sPathArquivos . l:sArquivo . l:sSeparador . l:nVersaoCursor
-      exe 'set filetype=' . s:sFileType
+      exe 'setlocal filetype=' . s:sFileType
       return
 
     endif
@@ -184,7 +190,7 @@ function! Processar()
 
       exe 'tabnew ' . s:sArquivo
       exe l:sComandoDiff . l:sArquivo . l:sSeparador . s:oVersoes.primeiraVersao
-      exe 'set filetype=' . s:sFileType
+      exe 'setlocal filetype=' . s:sFileType
 
     else
 
@@ -195,9 +201,9 @@ function! Processar()
       call Executar(sComandoMover . s:oVersoes.segundaVersao)
 
       exe 'tabnew ' . l:sPathArquivos . l:sArquivo . l:sSeparador . s:oVersoes.primeiraVersao
-      exe 'set filetype=' . s:sFileType
+      exe 'setlocal filetype=' . s:sFileType
       exe l:sComandoDiff . l:sArquivo . l:sSeparador . s:oVersoes.segundaVersao
-      exe 'set filetype=' . s:sFileType
+      exe 'setlocal filetype=' . s:sFileType
 
     endif
 
