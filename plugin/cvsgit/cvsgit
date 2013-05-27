@@ -1063,19 +1063,34 @@ class CvsGit {
     self::output($sStatusOutput);
   }
 
+  /**
+   * Baixa modificacoes
+   *
+   * @static
+   * @access public
+   * @return void
+   */
   public static function pull() {
+
+    echo Encode::toUTF8("Baixando atualizações...\r");
 
     exec('cvs update -dR 2> /tmp/cvspull', $aRetornoComandoUpdate, $iStatusComandoUpdate);
 
     if ( $iStatusComandoUpdate > 0 ) {
-
       self::output('Erro ao execurar cvs update -dR', 'erro');
-      return;
     }
 
     self::status();
   }
 
+  /**
+   * Adiciona arquivo para lista de commit
+   *
+   * @param array $aArgumentos
+   * @static
+   * @access public
+   * @return void
+   */
   public static function adicionar($aArgumentos) {
 
     $aArquivos = self::getArquivos();
