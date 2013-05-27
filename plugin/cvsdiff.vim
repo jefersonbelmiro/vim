@@ -37,18 +37,17 @@ endfunction
 function! s:CriarJanela() abort
 
   setlocal modifiable
+  setlocal noreadonly 
   exe ':%d'
   silent read /tmp/cvslogvim
   exe ':0d'
 
   setlocal filetype=cvsdiff
-  setlocal noreadonly 
   setlocal buftype=nofile
   setlocal bufhidden=hide
   setlocal nobackup
   setlocal noswapfile
   setlocal nobuflisted
-  setlocal nomodifiable
   setlocal nolist
   setlocal cursorline
   setlocal nonumber
@@ -80,6 +79,7 @@ function! s:CriarJanela() abort
 
   let cpoptions_save = &cpoptions
   set cpoptions&vim
+  setlocal nomodifiable
 
 endfunction
 
