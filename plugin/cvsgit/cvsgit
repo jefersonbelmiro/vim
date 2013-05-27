@@ -593,7 +593,7 @@ class CvsGit {
         $iErros++;
       }
 
-      if ( empty($oCommit->iTag) || strlen($oCommit->iTag) < 4 ) {
+      if ( empty($oCommit->iTag) || mb_strlen($oCommit->iTag, 'utf8') < 4 ) {
 
         $iTag = $sErro;
         $iErros++;
@@ -922,7 +922,7 @@ class CvsGit {
       $sStatusOutput .= "\n" . str_repeat('-', Shell::columns());
       $sStatusOutput .= "\n - Arquivos modificados: ";
       $sStatusOutput .= "\n" . str_repeat('-', Shell::columns());
-      $sStatusOutput .= "\n " . Shell::colorString($sArquivosModificados, 'brown') . "\n";
+      $sStatusOutput .= "\n " . Shell::colorString($sArquivosModificados, 'red') . "\n";
     }
 
     /**
@@ -1056,26 +1056,41 @@ class CvsGit {
 
     if ( empty($sStatusOutput) ) {
 
-      self::output('Nenhuma modificacao encontrada');
+      self::output('Nenhuma modificação encontrada');
       return;
     }
 
     self::output($sStatusOutput);
   }
 
+  /**
+   * Baixa modificacoes
+   *
+   * @static
+   * @access public
+   * @return void
+   */
   public static function pull() {
+
+    echo Encode::toUTF8("Baixando atualizações...\r");
 
     exec('cvs update -dR 2> /tmp/cvspull', $aRetornoComandoUpdate, $iStatusComandoUpdate);
 
     if ( $iStatusComandoUpdate > 0 ) {
-
       self::output('Erro ao execurar cvs update -dR', 'erro');
-      return;
     }
 
     self::status();
   }
 
+  /**
+   * Adiciona arquivo para lista de commit
+   *
+   * @param array $aArgumentos
+   * @static
+   * @access public
+   * @return void
+   */
   public static function adicionar($aArgumentos) {
 
     $aArquivos = self::getArquivos();
@@ -1404,7 +1419,7 @@ class Shell {
     $aColors      = array_merge( array_values(self::$aColors), array("[0m", chr(27)) );
     $sStripColors = str_replace($aColors, '', $sValue);
 
-    return strlen($sStripColors);
+    return mb_strlen($sStripColors, 'utf8');
   }
 
   /**
@@ -1418,7 +1433,7 @@ class Shell {
    */
 	static public function str_pad($sString, $iLength) {
 
-		$iRealLength = strlen($sString);
+		$iRealLength = mb_strlen($sString, 'utf8');
 		$iShowLength = self::strlen($sString);
 		$iLength    += $iRealLength - $iShowLength;
 
