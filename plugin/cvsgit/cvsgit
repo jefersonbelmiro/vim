@@ -755,7 +755,6 @@ class CvsGit {
        * Linha não é um tipo de commit: U, ?, C... 
        */
       if ( !in_array($sTipo, array_keys(self::$aTiposCommit)) ) {
-        echo $sTipo . "\n";
         continue;
       }
 
@@ -894,9 +893,7 @@ class CvsGit {
 
     if ( !empty($sArquivosCriados) ) {
 
-      $sStatusOutput .= str_repeat('-', Shell::columns());
-      $sStatusOutput .= "\n - Arquivos criados: ";
-      $sStatusOutput .= "\n" . str_repeat('-', Shell::columns());
+      $sStatusOutput .= "\n- Arquivos criados: ";
       $sStatusOutput .= "\n " . Shell::colorString($sArquivosCriados, 'brown') . "\n";
     }
 
@@ -919,9 +916,7 @@ class CvsGit {
 
     if ( !empty($sArquivosModificados) ) {
 
-      $sStatusOutput .= "\n" . str_repeat('-', Shell::columns());
-      $sStatusOutput .= "\n - Arquivos modificados: ";
-      $sStatusOutput .= "\n" . str_repeat('-', Shell::columns());
+      $sStatusOutput .= "\n- Arquivos modificados: ";
       $sStatusOutput .= "\n " . Shell::colorString($sArquivosModificados, 'red') . "\n";
     }
 
@@ -944,9 +939,7 @@ class CvsGit {
 
     if ( !empty($sArquivosConflito) ) {
 
-      $sStatusOutput .= "\n" . str_repeat('-', Shell::columns());
-      $sStatusOutput .= "\n - Arquivos com conflito: ";
-      $sStatusOutput .= "\n" . str_repeat('-', Shell::columns());
+      $sStatusOutput .= "\n- Arquivos com conflito: ";
       $sStatusOutput .= "\n " . Shell::colorString($sArquivosConflito, 'red') . "\n";
     }
 
@@ -969,9 +962,7 @@ class CvsGit {
 
     if ( !empty($sArquivosAtualizados) ) {
 
-      $sStatusOutput .= "\n" . str_repeat('-', Shell::columns());
-      $sStatusOutput .= "\n - Arquivos Atualizados: ";
-      $sStatusOutput .= "\n" . str_repeat('-', Shell::columns());
+      $sStatusOutput .= "\n- Arquivos Atualizados: ";
       $sStatusOutput .= "\n " . Shell::colorString($sArquivosAtualizados, 'green') . "\n";
     }
 
@@ -994,9 +985,7 @@ class CvsGit {
 
     if ( !empty($sArquivosAdicionados) ) {
 
-      $sStatusOutput .= "\n" . str_repeat('-', Shell::columns());
-      $sStatusOutput .= "\n - Arquivos adicionados: ";
-      $sStatusOutput .= "\n" . str_repeat('-', Shell::columns());
+      $sStatusOutput .= "\n- Arquivos adicionados: ";
       $sStatusOutput .= "\n " . Shell::colorString($sArquivosAdicionados, 'green') . "\n";
     }
 
@@ -1019,9 +1008,7 @@ class CvsGit {
 
     if ( !empty($sArquivosRemovidos) ) {
 
-      $sStatusOutput .= "\n" . str_repeat('-', Shell::columns());
-      $sStatusOutput .= "\n - Arquivos removidos: ";
-      $sStatusOutput .= "\n" . str_repeat('-', Shell::columns());
+      $sStatusOutput .= "\n- Arquivos removidos: ";
       $sStatusOutput .= "\n " . Shell::colorString($sArquivosRemovidos, 'green') . "\n";
     }
 
@@ -1048,9 +1035,7 @@ class CvsGit {
 
     if ( !empty($sListaArquivos) ) {
 
-      $sStatusOutput .= "\n" . str_repeat('-', Shell::columns());
-      $sStatusOutput .= "\n - Arquivos prontos para commit: ";
-      $sStatusOutput .= "\n" . str_repeat('-', Shell::columns());
+      $sStatusOutput .= "\n- Arquivos prontos para commit: ";
       $sStatusOutput .= "\n " . Shell::colorString($sListaArquivos, 'green') . "\n";
     }
 
@@ -1059,6 +1044,8 @@ class CvsGit {
       self::output('Nenhuma modificação encontrada');
       return;
     }
+
+    $sStatusOutput = str_repeat(' ', Shell::columns()) . "\r" . ltrim($sStatusOutput, "\n");
 
     self::output($sStatusOutput);
   }
