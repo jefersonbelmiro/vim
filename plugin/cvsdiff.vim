@@ -42,6 +42,10 @@ function! s:CriarJanela() abort
   silent read /tmp/cvslogvim
   exe ':0d'
 
+  setlocal fenc=latin1
+  setlocal encoding=latin1
+  setlocal fileencoding=latin1
+  setlocal fileencodings=latin1
   setlocal filetype=cvsdiff
   setlocal buftype=nofile
   setlocal bufhidden=hide
@@ -66,9 +70,6 @@ function! s:CriarJanela() abort
     setlocal norelativenumber
   endif
 
-  setlocal encoding=latin1
-  setlocal fileencoding=latin1
-  setlocal fileencodings=latin1
   setlocal nofoldenable
   setlocal foldcolumn=0
   setlocal foldmethod&
@@ -115,6 +116,8 @@ function s:Bootstrap()
     let s:sEncoding      = &encoding
     let s:sFileEncoding  = &fileencoding
     let s:sFileEncodings = &fileencodings
+
+    setlocal termencoding=latin1
 
     call Executar($HOME . '/.vim/plugin/cvsgit/cvsgit logvim ' . s:sArquivo)
     call LimparVersoes()
