@@ -710,6 +710,92 @@ class CvsGit {
 
     echo Encode::toUTF8("Procurando modificações...\r");
 
+    $lTabela      = false;
+    $lCriados     = false;
+    $lModificados = false;
+    $lConflitos   = false;
+    $lAtulizados  = false;
+    $lAdicionados = false;
+    $lRemovidos   = false;
+    $lPush        = false;
+
+    /**
+     * Processa parametros 
+     */
+    foreach ( $aParametros as $sParametro ) {
+
+      switch ($sParametro) {
+
+        /**
+         * Exibe modificacoes em tabela
+         */
+        case '-table' :
+        case '-t' :
+          $lTabela = true;
+        break;
+
+        /**
+         * Criados
+         */
+        case '-n' :
+        case '-new' :
+        case '-?' :
+          $lCriados = true;
+        break;
+
+        /**
+         * Modificados 
+         */
+        case '-m' :
+        case '-modified' :
+          $lModificados = true;
+        break;
+
+        case '-c';
+        case '-conflict';
+          $lConflitos = true;
+        break;
+
+        case '-u';
+        case '-update';
+          $lAtulizados = true;
+        break;
+
+        case '-a';
+        case '-add';
+        case '-added';
+          $lAdicionados = true;
+        break;
+
+        case '-r';
+        case '-rm';
+        case '-removed';
+          $lRemovidos = true;
+        break;
+
+        case '-p';
+        case '-push';
+          $lPush = true;
+        break;
+
+      } 
+
+    } 
+
+    /**
+     * Nenhum parametro informado 
+     */
+    if ( empty($aParametros) ) {
+
+      $lCriados     = true;
+      $lModificados = true;
+      $lConflitos   = true;
+      $lAtulizados  = true;
+      $lAdicionados = true;
+      $lRemovidos   = true;
+      $lPush        = true;
+    }
+
     /**
      * lista dos arquivos adicionados para commit 
      */
@@ -723,7 +809,6 @@ class CvsGit {
       //return;
     }
 
-    $lTabela             = false;
     $aArquivosParaCommit = array();
 
     $aModificacoes = array();
@@ -806,21 +891,6 @@ class CvsGit {
     }
 
     /**
-     * Processa parametros 
-     */
-    foreach ( $aParametros as $sParametro ) {
-
-      switch ($sParametro) {
-
-        case '-table' :
-        case '-t' :
-          $lTabela = true;
-        break;
-      } 
-
-    } 
-
-    /**
      * -----------------------------------------------------------------------------
      * Tabela
      * - exibe modificacoes em tabela
@@ -878,165 +948,187 @@ class CvsGit {
      * Novos
      * - arquivos criados e nao adicionados para commit 
      */
-    $sArquivosCriados = '';
+    if ( $lCriados ) {
 
-    foreach ( $aCriados as $oArquivoCriado ) {
+      $sArquivosCriados = '';
 
-      if ( in_array($oArquivoCriado->sArquivo, $aArquivosParaCommit) ) {
+      foreach ( $aCriados as $oArquivoCriado ) {
 
-        $aTipoModificacao[ realpath($oArquivoCriado->sArquivo) ] = $oArquivoCriado->sTipo;
-        continue;
-      } 
+        if ( in_array($oArquivoCriado->sArquivo, $aArquivosParaCommit) ) {
 
-      $sArquivosCriados .= "\n " . $oArquivoCriado->sArquivo;
-    }
+          $aTipoModificacao[ realpath($oArquivoCriado->sArquivo) ] = $oArquivoCriado->sTipo;
+          continue;
+        } 
 
-    if ( !empty($sArquivosCriados) ) {
+        $sArquivosCriados .= "\n " . $oArquivoCriado->sArquivo;
+      }
 
-      $sStatusOutput .= "\n- Arquivos criados: ";
-      $sStatusOutput .= "\n " . Shell::colorString($sArquivosCriados, 'brown') . "\n";
+      if ( !empty($sArquivosCriados) ) {
+
+        $sStatusOutput .= "\n- Arquivos criados: ";
+        $sStatusOutput .= "\n " . Shell::colorString($sArquivosCriados, 'brown') . "\n";
+      }
     }
 
     /**
      * Modificados
      * - arquivos modificados e nao adicionados para commit 
      */
-    $sArquivosModificados = '';
+    if ( $lModificados ) {
 
-    foreach ( $aModificados as $oArquivoModificado ) {
+      $sArquivosModificados = '';
 
-      if ( in_array($oArquivoModificado->sArquivo, $aArquivosParaCommit) ) {
+      foreach ( $aModificados as $oArquivoModificado ) {
 
-        $aTipoModificacao[ realpath($oArquivoModificado->sArquivo) ] = $oArquivoModificado->sTipo;
-        continue;
-      } 
+        if ( in_array($oArquivoModificado->sArquivo, $aArquivosParaCommit) ) {
 
-      $sArquivosModificados .= "\n " . $oArquivoModificado->sArquivo;
-    }
+          $aTipoModificacao[ realpath($oArquivoModificado->sArquivo) ] = $oArquivoModificado->sTipo;
+          continue;
+        } 
 
-    if ( !empty($sArquivosModificados) ) {
+        $sArquivosModificados .= "\n " . $oArquivoModificado->sArquivo;
+      }
 
-      $sStatusOutput .= "\n- Arquivos modificados: ";
-      $sStatusOutput .= "\n " . Shell::colorString($sArquivosModificados, 'red') . "\n";
+      if ( !empty($sArquivosModificados) ) {
+
+        $sStatusOutput .= "\n- Arquivos modificados: ";
+        $sStatusOutput .= "\n " . Shell::colorString($sArquivosModificados, 'red') . "\n";
+      }
     }
 
     /**
      * Conflitos
      * - arquivos com conflito
      */
-    $sArquivosConflito = '';
+    if ( $lConflitos ) {
 
-    foreach ( $aConflitos as $oArquivoConflito ) {
+      $sArquivosConflito = '';
 
-      if ( in_array($oArquivoConflito->sArquivo, $aArquivosParaCommit) ) {
+      foreach ( $aConflitos as $oArquivoConflito ) {
 
-        $aTipoModificacao[ realpath($oArquivoConflito->sArquivo) ] = $oArquivoConflito->sTipo;
-        continue;
-      } 
+        if ( in_array($oArquivoConflito->sArquivo, $aArquivosParaCommit) ) {
 
-      $sArquivosConflito .= "\n " . $oArquivoConflito->sArquivo;
-    }
+          $aTipoModificacao[ realpath($oArquivoConflito->sArquivo) ] = $oArquivoConflito->sTipo;
+          continue;
+        } 
 
-    if ( !empty($sArquivosConflito) ) {
+        $sArquivosConflito .= "\n " . $oArquivoConflito->sArquivo;
+      }
 
-      $sStatusOutput .= "\n- Arquivos com conflito: ";
-      $sStatusOutput .= "\n " . Shell::colorString($sArquivosConflito, 'red') . "\n";
+      if ( !empty($sArquivosConflito) ) {
+
+        $sStatusOutput .= "\n- Arquivos com conflito: ";
+        $sStatusOutput .= "\n " . Shell::colorString($sArquivosConflito, 'red') . "\n";
+      }
     }
 
     /**
      * Atualizados
      * - arquivos atualizados no repository e nao local
      */
-    $sArquivosAtualizados = '';
+    if ( $lAtulizados ) {
 
-    foreach ( $aAtualizados as $oArquivoAtualizado ) {
+      $sArquivosAtualizados = '';
 
-      if ( in_array($oArquivoAtualizado->sArquivo, $aArquivosParaCommit) ) {
+      foreach ( $aAtualizados as $oArquivoAtualizado ) {
 
-        $aTipoModificacao[ realpath($oArquivoAtualizado->sArquivo) ] = $oArquivoAtualizado->sTipo;
-        continue;
-      } 
+        if ( in_array($oArquivoAtualizado->sArquivo, $aArquivosParaCommit) ) {
 
-      $sArquivosAtualizados .= "\n " . $oArquivoAtualizado->sArquivo;
-    }
+          $aTipoModificacao[ realpath($oArquivoAtualizado->sArquivo) ] = $oArquivoAtualizado->sTipo;
+          continue;
+        } 
 
-    if ( !empty($sArquivosAtualizados) ) {
+        $sArquivosAtualizados .= "\n " . $oArquivoAtualizado->sArquivo;
+      }
 
-      $sStatusOutput .= "\n- Arquivos Atualizados: ";
-      $sStatusOutput .= "\n " . Shell::colorString($sArquivosAtualizados, 'green') . "\n";
+      if ( !empty($sArquivosAtualizados) ) {
+
+        $sStatusOutput .= "\n- Arquivos Atualizados: ";
+        $sStatusOutput .= "\n " . Shell::colorString($sArquivosAtualizados, 'green') . "\n";
+      }
     }
 
     /**
      * Adicionados
      * - arquivos adicionados e ainda não commitados
      */
-    $sArquivosAdicionados = '';
+    if ( $lAdicionados ) {
 
-    foreach ( $aAdicionados as $oArquivoAdicionado ) {
+      $sArquivosAdicionados = '';
 
-      if ( in_array($oArquivoAdicionado->sArquivo, $aArquivosParaCommit) ) {
+      foreach ( $aAdicionados as $oArquivoAdicionado ) {
 
-        $aTipoModificacao[ realpath($oArquivoAdicionado->sArquivo) ] = $oArquivoAdicionado->sTipo;
-        continue;
-      } 
+        if ( in_array($oArquivoAdicionado->sArquivo, $aArquivosParaCommit) ) {
 
-      $sArquivosAdicionados .= "\n " . $oArquivoAdicionado->sArquivo;
-    }
+          $aTipoModificacao[ realpath($oArquivoAdicionado->sArquivo) ] = $oArquivoAdicionado->sTipo;
+          continue;
+        } 
 
-    if ( !empty($sArquivosAdicionados) ) {
+        $sArquivosAdicionados .= "\n " . $oArquivoAdicionado->sArquivo;
+      }
 
-      $sStatusOutput .= "\n- Arquivos adicionados: ";
-      $sStatusOutput .= "\n " . Shell::colorString($sArquivosAdicionados, 'green') . "\n";
+      if ( !empty($sArquivosAdicionados) ) {
+
+        $sStatusOutput .= "\n- Arquivos adicionados: ";
+        $sStatusOutput .= "\n " . Shell::colorString($sArquivosAdicionados, 'green') . "\n";
+      }
     }
 
     /**
      * Removidos
      * - arquivos removidos e ainda não commitados
      */
-    $sArquivosRemovidos = '';
+    if ( $lRemovidos ) {
 
-    foreach ( $aRemovidos as $oArquivoRemovido ) {
+      $sArquivosRemovidos = '';
 
-      if ( in_array($oArquivoRemovido->sArquivo, $aArquivosParaCommit) ) {
+      foreach ( $aRemovidos as $oArquivoRemovido ) {
 
-        $aTipoModificacao[ realpath($oArquivoRemovido->sArquivo) ] = $oArquivoRemovido->sTipo;
-        continue;
-      } 
+        if ( in_array($oArquivoRemovido->sArquivo, $aArquivosParaCommit) ) {
 
-      $sArquivosRemovidos .= "\n " . $oArquivoRemovido->sArquivo;
-    }
+          $aTipoModificacao[ realpath($oArquivoRemovido->sArquivo) ] = $oArquivoRemovido->sTipo;
+          continue;
+        } 
 
-    if ( !empty($sArquivosRemovidos) ) {
+        $sArquivosRemovidos .= "\n " . $oArquivoRemovido->sArquivo;
+      }
 
-      $sStatusOutput .= "\n- Arquivos removidos: ";
-      $sStatusOutput .= "\n " . Shell::colorString($sArquivosRemovidos, 'green') . "\n";
+      if ( !empty($sArquivosRemovidos) ) {
+
+        $sStatusOutput .= "\n- Arquivos removidos: ";
+        $sStatusOutput .= "\n " . Shell::colorString($sArquivosRemovidos, 'green') . "\n";
+      }
     }
 
     /**
-     * Arquivos para commit 
+     * Push
+     * - arquivos para commit 
      */
-    foreach ($aArquivos as $oCommit) {
+    if ( $lPush ) {
 
-      $sTipoMoficacao = '[*]Modificado';
+      foreach ($aArquivos as $oCommit) {
 
-      if ( !empty($aTipoModificacao[$oCommit->sArquivo]) ) {
-        $sTipoMoficacao = $aTipoModificacao[$oCommit->sArquivo];
-      } 
+        $sTipoMoficacao = '[*]Modificado';
 
-      $sListaArquivos .= "\n " . self::clearPath($oCommit->sArquivo) . " ";
+        if ( !empty($aTipoModificacao[$oCommit->sArquivo]) ) {
+          $sTipoMoficacao = $aTipoModificacao[$oCommit->sArquivo];
+        } 
 
-      if ( !empty($oCommit->iTag) ) {
-        $sListaArquivos .= "#$oCommit->iTag ";
+        $sListaArquivos .= "\n " . self::clearPath($oCommit->sArquivo) . " ";
+
+        if ( !empty($oCommit->iTag) ) {
+          $sListaArquivos .= "#$oCommit->iTag ";
+        }
+
+        $sListaArquivos .= $oCommit->sTipoAbreviado;
+        $sListaArquivos .= ' ' .$oCommit->sMensagem;
       }
 
-      $sListaArquivos .= $oCommit->sTipoAbreviado;
-      $sListaArquivos .= ' ' .$oCommit->sMensagem;
-    }
+      if ( !empty($sListaArquivos) ) {
 
-    if ( !empty($sListaArquivos) ) {
-
-      $sStatusOutput .= "\n- Arquivos prontos para commit: ";
-      $sStatusOutput .= "\n " . Shell::colorString($sListaArquivos, 'green') . "\n";
+        $sStatusOutput .= "\n- Arquivos prontos para commit: ";
+        $sStatusOutput .= "\n " . Shell::colorString($sListaArquivos, 'green') . "\n";
+      }
     }
 
     if ( empty($sStatusOutput) ) {
