@@ -20,8 +20,11 @@ set magic                                              " For regular expressions
 set showmatch                                          " Show matching brackets when text indicator is over them
 set matchtime          =2                              " How many tenths of a second to blink when matching brackets
 
-set directory=~/.vim/backup
-set backupdir=~/.vim/backup
+"set directory=~/.vim/backup
+"set backupdir=~/.vim/backup
+set nobackup   
+set nowritebackup 
+set noswapfile  
   
 set number
 set mouse=

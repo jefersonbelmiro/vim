@@ -15,6 +15,8 @@ let s:oVersoes.primeiraSelecao = ''
 let s:oVersoes.segundaVersao   = ''
 let s:oVersoes.segundaSelecao  = ''
 
+let s:lFecharJanela = 1
+
 "
 " Gera log da execucao do script
 "
@@ -36,11 +38,19 @@ endfunction
 
 function! s:CriarJanela() abort
 
+  exe 'silent keepalt botright split ' . expand('%:t') . '[cvsdiff]'
+
   setlocal modifiable
   setlocal noreadonly 
   exe ':%d'
   silent read /tmp/cvslogvim
   exe ':0d'
+
+  exe 'resize 10'
+
+  if line('$') < 10 
+    exe 'resize ' . line('$')
+  endif
 
   setlocal fenc=latin1
   setlocal encoding=latin1
@@ -59,17 +69,6 @@ function! s:CriarJanela() abort
   setlocal winfixwidth
   setlocal textwidth=0
   setlocal nospell
-
-  exe 'resize 10'
-
-  if line('$') < 10 
-    exe 'resize ' . line('$')
-  endif
-
-  if exists('+relativenumber')
-    setlocal norelativenumber
-  endif
-
   setlocal nofoldenable
   setlocal foldcolumn=0
   setlocal foldmethod&
@@ -77,9 +76,6 @@ function! s:CriarJanela() abort
 
   "setlocal statusline=%!GenerateStatusline()
   setlocal statusline=cvsdiff
-
-  let cpoptions_save = &cpoptions
-  set cpoptions&vim
   setlocal nomodifiable
 
 endfunction
@@ -93,9 +89,41 @@ function! s:MapKeys() abort
 
 endfunction
 
-function Cvsdiff() 
+function Cvsdiff(argumentos) 
+
+  call s:LimparVersoes()
+
+  if !empty( a:argumentos ) 
+
+    let l:aArgumentos = split(a:argumentos, ' ')
+
+    for sArgumento in l:aArgumentos 
+      
+      if empty(sArgumento)
+        continue
+      endif
+
+      if empty(s:oVersoes.primeiraVersao)
+        let s:oVersoes.primeiraVersao = sArgumento
+        continue
+      endif
+
+      if empty(s:oVersoes.segundaVersao)
+        let s:oVersoes.segundaVersao = sArgumento
+        continue
+      endif
+
+    endfor
+
+    let s:lFecharJanela = 0
+    call s:Bootstrap()
+    call Processar()
+    return
+
+  endif
 
   call s:Bootstrap()
+  call s:CriarJanela()
   call s:MapKeys()
 
 endfunction
@@ -108,10 +136,9 @@ function s:Bootstrap()
       throw 'Projeto CVS nao encontrado'
     endif
 
-    let s:sProjeto    = split(Executar('cat CVS/Repository'))[0] . '/'
-    let s:iJanelaMae  = winnr()
-    let s:sArquivo    = FileName()
-    let s:sFileType   = &filetype
+    let s:sProjeto  = split(Executar('cat CVS/Repository'))[0] . '/'
+    let s:sArquivo  = FileName()
+    let s:sFileType = &filetype
 
     let s:sEncoding      = &encoding
     let s:sFileEncoding  = &fileencoding
@@ -120,11 +147,6 @@ function s:Bootstrap()
     setlocal termencoding=latin1
 
     call Executar($HOME . '/.vim/plugin/cvsgit/cvsgit logvim ' . s:sArquivo)
-    call LimparVersoes()
-
-    exe 'silent keepalt botright split ' . expand('%:t') . '[cvsdiff]'
-
-    call s:CriarJanela()
 
   catch
     echohl WarningMsg | echon "Erro:\n" . v:exception 
@@ -132,7 +154,7 @@ function s:Bootstrap()
 
 endfunction
 
-function! LimparVersoes() 
+function! s:LimparVersoes() 
 
   let s:oVersoes.primeiraVersao  = ''
   let s:oVersoes.primeiraSelecao = ''
@@ -143,9 +165,10 @@ endfunction
 
 function! Sair() 
 
-  exit
-  "let numeroJanela = winnr()
-  "execute numeroJanela . ' wincmd q'
+  if ( s:lFecharJanela > 0 )  
+    exit
+  endif
+  setlocal termencoding=utf8
 
 endfunction
 
@@ -160,7 +183,7 @@ function! Processar()
     let l:nVersaoCursor = split(l:sLinhaCursor, ' ')[0]
 
     " fecha janela com as versoes
-    exit
+    call Sair()
 
     let l:sVersoes         = ''
     let l:sPathArquivos    = '/tmp/'
@@ -284,6 +307,6 @@ function! Executar(comando)
 
 endfunction
 
-" registra comando CvsGit que pode ter 1 ou nenhum argumento
-command! -nargs=? -complete=buffer Cvsdiff call Cvsdiff()
-command! -nargs=? -complete=buffer CD      call Cvsdiff()
+" registra comando Cvsdiff que pode ter 1 ou nenhum argumento
+command! -nargs=? -complete=buffer Cvsdiff call Cvsdiff("<args>")
+command! -nargs=? -complete=buffer CD      call Cvsdiff("<args>")

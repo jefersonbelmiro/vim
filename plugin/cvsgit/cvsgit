@@ -378,9 +378,9 @@ class CvsGit {
 
     $sLog = trim($oTabela->render( $mostra_com_espacos = true )) . "\n";
 
-    file_put_contents('/tmp/cvslogvim', Encode::toISO($sLog));
+    file_put_contents('/tmp/cvslogvim', Encode::toUTF8($sLog));
 
-    return $sLog;
+    echo $sLog;
   }
 
   /**
