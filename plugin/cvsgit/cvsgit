@@ -1178,6 +1178,11 @@ class CvsGit {
 
     echo str_repeat(' ', Shell::columns()) . "\r" . Encode::toUTF8("Atualizações baixados\n");
 
+    /**
+     * Corrige permissoes
+     */
+    system( 'bash ' . getenv('HOME') . '/.vim/plugin/cvsgit/cvsgit_push ' . getcwd() );
+
     //$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(getcwd()), RecursiveIteratorIterator::SELF_FIRST);
     //foreach($iterator as $item) {
     //  @chown($item, '0777');
