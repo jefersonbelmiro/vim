@@ -554,7 +554,7 @@ class CvsGit {
       }
     }
 
-    self::output($oTabela->render());
+    echo $oTabela->render() . "\n";
   }
 
   public static function push() {
