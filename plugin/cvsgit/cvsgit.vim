@@ -41,16 +41,17 @@ function! Cvsgit(sArgumentos)
 
   endif
 
-  exec '!clear & '.commitArquivo . ' ' . FileName() . ' | less'
-  return
-
   " executa cvsgit em php e guarda retorno na variavel respostaArquivo
-  let respostaArquivo = system(commitArquivo . ' ' . FileName())
+  let respostaArquivo = system(commitArquivo . ' ' . FileName() . ' 2> /tmp/cvsgit_output_vim')
 
   " cvsgit respondeu com erro, mostra na tela o erro
   if v:shell_error || respostaArquivo != ""
     echohl WarningMsg | echon "\r" . respostaArquivo 
     return
+  endif
+
+  if !empty(respostaArquivo)
+    exec '!clear & less /tmp/cvsgit_output_vim'
   endif
 
 endfunction;

@@ -40,9 +40,10 @@ switch ($sOpcao) {
 
   default : 
 
-    CvsGit::output("Nenhum comando informado", 'aviso');
-    CvsGit::output(" Usar: cvsgit [comando] [opcoes do comando]");
-    CvsGit::output(" Comandos: status, add, init, push, pull, rm e log\n");
+    echo "\n";
+    CvsGit::output("Nenhum comando informado\n", 'aviso');
+    CvsGit::output("  Usar: cvsgit [comando] [opcoes do comando]");
+    CvsGit::output("  Comandos: status, add, init, push, pull, rm e log\n");
 
   break;
 
@@ -132,11 +133,11 @@ class CvsGit {
     switch( $sPerfil ) {
 
       case 'erro' :
-        $sMensagem = "\n " . Shell::colorString($sMensagem, 'red') . "\n";
+        $sMensagem = Shell::colorString('- ' . $sMensagem, 'red');
       break;
 
       case 'aviso' : 
-        $sMensagem = "\n " . $sMensagem . "\n";
+        $sMensagem = '- ' .$sMensagem;
       break;
     }
 
@@ -147,7 +148,7 @@ class CvsGit {
 
     if ( !file_exists(self::$sDiretorioObjetos . 'Objects') ) {
 
-      self::output(getcwd() . " nÃ£o inicializado");
+      self::output(getcwd() . " não inicializado");
       exit(1);
     }
 
@@ -161,7 +162,7 @@ class CvsGit {
       }
     }
 
-    self::output(getcwd() . " nÃ£o inicializado");
+    self::output(getcwd() . " não inicializado");
     exit(1);
   }
 
@@ -623,12 +624,14 @@ class CvsGit {
 
       foreach($aCommits as $oCommit) {
 
-        $sComandoCommit = "cvs commit -m '$oCommit->sTipoAbreviado: $oCommit->sMensagem ($oCommit->sTipoCompleto #$oCommit->iTag)' " . self::clearPath($oCommit->sArquivo);
-        $sComandoTag    = "cvs tag -F T{$oCommit->iTag} " . self::clearPath($oCommit->sArquivo);
+        self::output("-- " . Shell::colorString(self::clearPath($sArquivo) . ": ", 'brown') );
 
-        self::output("-- " . self::clearPath($sArquivo) . ": ");
-        self::output("   " . Encode::UTF8ToISO($sComandoCommit));
-        self::output("   " . Encode::UTF8ToISO($sComandoTag));
+        if ( $oCommit->sTipoAbreviado == 'ADD' ) {
+          self::output("   " . "cvs add " . self::clearPath($oCommit->sArquivo));
+        }
+
+        self::output("   " . "cvs commit -m '$oCommit->sTipoAbreviado: $oCommit->sMensagem ($oCommit->sTipoCompleto #$oCommit->iTag)' " . self::clearPath($oCommit->sArquivo));
+        self::output("   " . "cvs tag -F T{$oCommit->iTag} " . self::clearPath($oCommit->sArquivo));
       }
 
       echo "\n";
@@ -646,25 +649,39 @@ class CvsGit {
 
       foreach($aCommits as $oCommit) {
 
-        $sComandoCommit = "cvs commit -m '$oCommit->sTipoAbreviado: $oCommit->sMensagem ($oCommit->sTipoCompleto #$oCommit->iTag)' " . self::clearPath($oCommit->sArquivo) . " 2> /tmp/cvscommit_" . basename($oCommit->sArquivo);
-        $sComandoTag    = "cvs tag -F T{$oCommit->iTag} " . self::clearPath($oCommit->sArquivo). " 2> /tmp/cvstag_" . basename($oCommit->sArquivo);
+        $sArquivoCommit = self::clearPath($oCommit->sArquivo);
+        $sComandoAdd    = "cvs add " . $sArquivoCommit . " 2> /tmp/cvsgit_push_add_" . basename($oCommit->sArquivo) ;
+        $sComandoCommit = "cvs commit -m '$oCommit->sTipoAbreviado: $oCommit->sMensagem ($oCommit->sTipoCompleto #$oCommit->iTag)' " . $sArquivoCommit . " 2> /tmp/cvsgit_push_commit_" . basename($oCommit->sArquivo);
+        $sComandoTag    = "cvs tag -F T{$oCommit->iTag} " . $sArquivoCommit . " 2> /tmp/cvsgit_push_tag_" . basename($oCommit->sArquivo);
 
-        exec( Encode::UTF8ToISO($sComandoCommit), $aRetornoComandoCommit, $iStatusComandoCommit );
-        exec( Encode::UTF8ToISO($sComandoTag), $aRetornoComandoTag, $iStatusComandoTag );
+        if ( $oCommit->sTipoAbreviado == 'ADD' ) {
+
+          exec( Encode::toISO($sComandoAdd), $aRetornoComandoAdd, $iStatusComandoAdd );
+
+          if ( $iStatusComandoAdd > 0 ) {
+
+            self::output('Erro ao adicionar arquivo: ' . $sArquivoCommit, 'erro');
+            continue;
+          }
+        }
+
+        exec( Encode::toISO($sComandoCommit), $aRetornoComandoCommit, $iStatusComandoCommit );
 
         if ( $iStatusComandoCommit > 0 ) {
 
-          self::output('Erro ao commitar arquivo: ' . self::clearPath($oCommit->sArquivo), 'erro');
+          self::output('Erro ao commitar arquivo: ' . $sArquivoCommit, 'erro');
           continue;
         }
+
+        exec( Encode::toISO($sComandoTag), $aRetornoComandoTag, $iStatusComandoTag );
 
         if ( $iStatusComandoTag > 0 ) {
 
-          self::output('Erro ao por tag no arquivo: ' . self::clearPath($oCommit->sArquivo), 'erro');
+          self::output('Erro ao por tag no arquivo: ' . $sArquivoCommit, 'erro');
           continue;
         }
         
-        self::output(Shell::colorString(self::clearPath($oCommit->sArquivo) . ' - commitado', 'green'));
+        self::output(Shell::colorString(' - Arquivo commitado: ' . $sArquivoCommit, 'green'));
         self::remover(array($oCommit->sArquivo));
       }
 
@@ -1159,7 +1176,13 @@ class CvsGit {
       self::output('Erro ao execurar cvs update -dR', 'erro');
     }
 
-    self::status();
+    echo str_repeat(' ', Shell::columns()) . "\r" . Encode::toUTF8("Atualizações baixados\n");
+
+    //$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(getcwd()), RecursiveIteratorIterator::SELF_FIRST);
+    //foreach($iterator as $item) {
+    //  @chown($item, '0777');
+    //  @chmod($item, '0777');
+    //} 
   }
 
   /**
@@ -1193,7 +1216,7 @@ class CvsGit {
     if ( empty($sArquivo) || is_dir($sArquivo) ) {
 
       self::output("Arquivo para commit nao informado ou invalido", 'aviso');
-      return false;
+      exit(1);
     } 
 
     /**
