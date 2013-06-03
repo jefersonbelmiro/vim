@@ -179,8 +179,11 @@ function! Processar()
 
   try 
 
-    let l:sLinhaCursor  = getline('.')
-    let l:nVersaoCursor = split(l:sLinhaCursor, ' ')[0]
+    let l:sLinhaCursor = getline('.')
+    
+    if !empty(l:sLinhaCursor)
+      let l:nVersaoCursor = split(l:sLinhaCursor, ' ')[0]
+    endif
 
     " fecha janela com as versoes
     call Sair()
@@ -196,7 +199,7 @@ function! Processar()
 
     " Nao selecionou versao para comparar
     " Abre nova aba com versao da linha do cursor
-    if empty(s:oVersoes.primeiraVersao)
+    if empty(s:oVersoes.primeiraVersao) && !empty(l:nVersaoCursor)
 
       call Executar(l:sComandoCheckout . '-r ' . l:nVersaoCursor . ' '.  s:sProjeto . s:sArquivo)
       call Executar(sComandoMover . l:nVersaoCursor)

@@ -79,6 +79,10 @@ switch ($sOpcao) {
   case 'pull' :
     CvsGit::pull();
   break;
+
+  case 'diff' :
+    CvsGit::diff($aArgumentos);
+  break;
 }
 
 class CvsGit {
@@ -363,7 +367,7 @@ class CvsGit {
         $aLinhaInformacoesCommit = explode(';', $sLinhaRetorno);
         $sLinhaData = array_shift($aLinhaInformacoesCommit);
         $aLinhaData = explode(' ', $sLinhaData);
-        $sData .= implode('/', array_reverse(explode('/', $aLinhaData[1])));
+        $sData .= implode('/', array_reverse(explode('-', $aLinhaData[1])));
 
         $sAutor = trim(array_shift($aLinhaInformacoesCommit));
         continue;
@@ -501,10 +505,6 @@ class CvsGit {
           $sTagsPorVersao = implode(', ', $aTagsPorVersao[$iVersao]);
         }
 
-        if ( $iVersao == $iVersaoAtual ) {
-          $iVersao .= '*';
-        } 
-
         $oTabela->addRow(array($sAutor, $sData, $iVersao, $sTagsPorVersao, $sMensagem));
         $iVersao   = '';
         $sAutor    = '';
@@ -541,7 +541,7 @@ class CvsGit {
         $aLinhaInformacoesCommit = explode(';', $sLinhaRetorno);
         $sLinhaData = array_shift($aLinhaInformacoesCommit);
         $aLinhaData = explode(' ', $sLinhaData);
-        $sData .= implode('/', array_reverse(explode('/', $aLinhaData[1])));
+        $sData .= implode('/', array_reverse(explode('-', $aLinhaData[1])));
 
         $sAutor = trim(array_shift($aLinhaInformacoesCommit));
         continue;
@@ -555,9 +555,48 @@ class CvsGit {
       }
     }
 
-    echo $oTabela->render() . "\n";
+    $sOutput = $oTabela->render();
+
+    $iColunas  = array_sum($oTabela->getWidths()); 
+    $iColunas += count($oTabela->getWidths()) * 2;
+    $iColunas += count($oTabela->getWidths()) - 1 ;
+
+    if ( $iColunas > Shell::columns() ) {
+
+      self::less($sOutput);
+      return;
+    }
+
+    echo $sOutput . "\n";
   }
 
+  /**
+   * Less
+   * - Exibe saida para terminal com comando "less"
+   *
+   * @param string $sOutput
+   * @static
+   * @access public
+   * @return void
+   */
+  public static function less($sOutput) {
+
+    file_put_contents('/tmp/cvsgit_less_output', $sOutput);
+    pcntl_exec('/bin/less', array('/tmp/cvsgit_less_output'));
+  }
+
+  /**
+   * Push
+   * - Envia atualizacoes para o servidor
+   * - cvs add, cvs commit, cvs tag
+   *
+   * @todo - parametro --amend do git: 
+   * http://durak.org/sean/pubs/software/cvsbook/Changing-A-Log-Message-After-Commit.html
+   *
+   * @static
+   * @access public
+   * @return void
+   */
   public static function push() {
 
     $aArquivos = self::getArquivos();
@@ -688,7 +727,6 @@ class CvsGit {
     }
 
     echo "\n";
-
   }
 
   /**
@@ -885,33 +923,45 @@ class CvsGit {
        */
       switch ( $sTipo ) { 
 
-        // Novo
+        /**
+         * Novo 
+         */
         case '?' : 
           $aCriados[] = $oLinha;
         break;
 
-        // Modificado
+        /**
+         * Modificado
+         */
         case 'M' :
           $aModificados[] = $oLinha;
         break;
 
-        // Conflito
+        /**
+         * Conflito
+         */
         case 'C' :
           $aConflitos[] = $oLinha;
         break;
 
-        // Atualizado
+        /**
+         * Atualizado 
+         */
         case 'U' :
         case 'P' :
           $aAtualizados[] = $oLinha;
         break;
 
-        // Adicionado e nao commitado
+        /**
+         * Adicionado e nao commitado
+         */
         case 'A' :
           $aAdicionados[] = $oLinha;
         break;
 
-        // Removido e nao commitado
+        /**
+         * Removido e nao commitado
+         */
         case 'R' :
           $aRemovidos[] = $oLinha;
         break;
@@ -1173,16 +1223,11 @@ class CvsGit {
 
     echo str_repeat(' ', Shell::columns()) . "\r" . Encode::toUTF8("Atualizações baixados\n");
 
-    /**
-     * Corrige permissoes
-     */
-    system( 'bash ' . getenv('HOME') . '/.vim/plugin/cvsgit/cvsgit_push ' . getcwd() );
+    exec('chmod 777 -R ' . getcwd() . ' 2> /tmp/cvsgit_pull', $aRetornoComandoPermissoes, $iStatusComandoPermissoes);
 
-    //$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(getcwd()), RecursiveIteratorIterator::SELF_FIRST);
-    //foreach($iterator as $item) {
-    //  @chown($item, '0777');
-    //  @chmod($item, '0777');
-    //} 
+    if ( $iStatusComandoPermissoes > 0 ) {
+      echo file_get_contents('/tmp/cvsgit_pull');
+    }
   }
 
   /**
@@ -1253,7 +1298,11 @@ class CvsGit {
         case '-mensagem' :
 
           $iProximoIndice = $iIndice + 1;
-          $oParametros->sMensagem = $aArgumentos[$iProximoIndice];
+
+          if ( !empty($aArgumentos[$iProximoIndice]) ) { 
+            $oParametros->sMensagem = $aArgumentos[$iProximoIndice];
+          }
+
           continue;
 
         break;
@@ -1265,10 +1314,11 @@ class CvsGit {
         case '-tag' :
 
           $iProximoIndice = $iIndice + 1;
-          if ( empty($aArgumentos[$iProximoIndice]) || strpos($aArgumentos[$iProximoIndice], '-') !== false ) {
-            continue;
+
+          if ( !empty($aArgumentos[$iProximoIndice]) || strpos($aArgumentos[$iProximoIndice], '-') !== false ) {
+            $oParametros->iTag = $aArgumentos[$iProximoIndice];
           }
-          $oParametros->iTag = $aArgumentos[$iProximoIndice];
+
           continue;
 
         break;
@@ -1336,12 +1386,77 @@ class CvsGit {
     return str_replace( getcwd() . '/', '', $sPath );
   }
 
+  /**
+   * Diff
+   *
+   * @param Array $aArgumentos
+   * @static
+   * @access public
+   * @return void
+   */
+  static function diff($aArgumentos) {
+
+    /**
+     * Procura arquivo 
+     */
+    foreach ( $aArgumentos as $iChave => $sArgumento ) {
+
+      if ( file_exists($sArgumento) ) {
+
+        $sArquivo = $sArgumento;
+        unset($aArgumentos[$iChave]);
+        break;
+      }
+    } 
+
+    /**
+     * Nao encontrou arquivo
+     */
+    if ( empty($sArquivo) ) {
+
+      self::output('Arquivo não informado ou inválido', 'erro');
+      exit(1);
+    }
+
+    /**
+     * Nenhuma versao informada para usar diff 
+     */
+    if ( empty($aArgumentos) ) {
+
+      /**
+       * Lista informacoes do commit, sem as tags
+       */
+      exec('cvs log -N ' . $sArquivo . ' 2> /tmp/cvslog-info-error', $aRetornoComandoInformacoes, $iStatusComandoInformacoes);
+
+      if ( $iStatusComandoInformacoes > 0 ) {
+
+        self::output('Erro ao execurar cvs log -N ' . $sArquivo, 'erro');
+        return;
+      }
+
+      $iVersaoAtual = null;
+
+      foreach ( $aRetornoComandoInformacoes as $iIndice => $sLinhaRetorno ) {
+
+        if ( strpos($sLinhaRetorno, 'head:') !== false ) {
+
+          $iVersaoAtual = trim(str_replace('head:', '', $sLinhaRetorno));
+          break;
+        }
+      }
+      
+      $aArgumentos[] = $iVersaoAtual;
+    }
+
+    pcntl_exec('/usr/bin/vim', array($sArquivo, '-c', 'CD ' . implode(' ', $aArgumentos)) );
+  }
+
 }
 
 class Table {
 
 	protected $aHeaders = array();
-	protected $aWidht   = array();
+	protected $aWidth   = array();
 	protected $aRows    = array();
 
 	public function __construct(array $headers = null, array $rows = null) {
@@ -1393,6 +1508,7 @@ class Table {
 			$sTabela .= "\n" . $this->renderRow($row, $lEspacos);
 		}
 
+    max($this->aWidth);
     return $sTabela . "\n";
 	}
 
@@ -1451,6 +1567,10 @@ class Table {
 	public function getRows() {
 		return $this->aRows;
 	}
+
+  public function getWidths() {
+    return $this->aWidth;
+  }
 
 }
 
