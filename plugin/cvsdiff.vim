@@ -40,8 +40,9 @@ function! s:CriarJanela() abort
 
   exe 'silent keepalt botright split ' . expand('%:t') . '[cvsdiff]'
 
-  setlocal modifiable
-  setlocal noreadonly 
+  "setlocal modifiable
+  "setlocal noreadonly 
+
   exe ':%d'
   silent read /tmp/cvslogvim
   exe ':0d'
@@ -76,7 +77,7 @@ function! s:CriarJanela() abort
 
   "setlocal statusline=%!GenerateStatusline()
   setlocal statusline=cvsdiff
-  setlocal nomodifiable
+  "setlocal nomodifiable
 
 endfunction
 
@@ -122,6 +123,7 @@ function Cvsdiff(argumentos)
 
   endif
 
+  let s:lFecharJanela = 1
   call s:Bootstrap()
   call s:CriarJanela()
   call s:MapKeys()
@@ -194,6 +196,7 @@ function! Processar()
     let s:sArquivo         = FileName()
     let l:sArquivo         = expand('%:t')
     let l:sSeparador       = '__'
+
     let l:sComandoMover    = 'mv ' . s:sProjeto . s:sArquivo . ' '. l:sPathArquivos . l:sArquivo . l:sSeparador
     let l:sComandoDiff     = 'vert diffsplit ' . l:sPathArquivos
 
@@ -214,7 +217,12 @@ function! Processar()
     if empty(s:oVersoes.segundaVersao)
 
       let l:sVersoes .= ' -r ' . s:oVersoes.primeiraVersao
-      call Executar(l:sComandoCheckout . '-r ' . s:oVersoes.primeiraVersao . ' '.  s:sProjeto . s:sArquivo)
+      let l:sOutputCheckout = Executar(l:sComandoCheckout . '-r ' . s:oVersoes.primeiraVersao . ' '.  s:sProjeto . s:sArquivo)
+
+      if !filereadable(s:sProjeto . s:sArquivo)
+        throw 'Erro - ' . l:sOutputCheckout
+      endif
+
       call Executar(sComandoMover . s:oVersoes.primeiraVersao)
 
       exe 'tabnew ' . s:sArquivo
@@ -224,9 +232,21 @@ function! Processar()
     else
 
       let l:sVersoes .= ' -r ' . s:oVersoes.primeiraVersao . ' -r ' . s:oVersoes.segundaVersao
-      call Executar(l:sComandoCheckout . '-r ' . s:oVersoes.primeiraVersao . ' '.  s:sProjeto . s:sArquivo)
+
+      let l:sOutputCheckoutPrimeiraVersao = Executar(l:sComandoCheckout . '-r ' . s:oVersoes.primeiraVersao . ' '.  s:sProjeto . s:sArquivo)
+
+      if !filereadable(s:sProjeto . s:sArquivo)
+        throw 'Erro - ' . l:sOutputCheckoutPrimeiraVersao
+      endif
+
       call Executar(sComandoMover . s:oVersoes.primeiraVersao)
-      call Executar(l:sComandoCheckout . '-r ' . s:oVersoes.segundaVersao . ' '.  s:sProjeto . s:sArquivo)
+
+      let l:sOutputCheckoutSegundaVersao = Executar(l:sComandoCheckout . '-r ' . s:oVersoes.segundaVersao . ' '.  s:sProjeto . s:sArquivo)
+
+      if !filereadable(s:sProjeto . s:sArquivo)
+        throw 'Erro - ' . l:sOutputCheckoutSegundaVersao
+      endif
+
       call Executar(sComandoMover . s:oVersoes.segundaVersao)
 
       exe 'tabnew ' . l:sPathArquivos . l:sArquivo . l:sSeparador . s:oVersoes.primeiraVersao
