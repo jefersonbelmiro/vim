@@ -6,8 +6,6 @@ filetype indent on                                     " Indentação por tipo d
 set history            =2000                           " Quantas linhas de histórico o vim deve lembra0
 set scrolloff          =1                              " Set 7 lines to the cursor - when moving vertically using j/k
 set scroll             =4                              " linhas do ctrl+u e ctrl+d
-set wildmenu                                           " Turn on the wild menu
-set wildignore         =*.o,*~,*.pyc,CVS,*~            " Ignora certos tipos de arquivo
 set ruler                                              " Sempre mostra posicao atual
 set hid                                                " A buffer becomes hidden when it is abandoned
 set backspace          =eol,start,indent               " Configure backspace so it acts as it should act
@@ -43,7 +41,9 @@ set diffexpr=""
 
 " Navegacao
 set wildmenu
-set wildmode           =list:longest,full              " Command <tab> completion, list matches, then longest common, then all.
+set wildignore =*.o,*~,*.pyc,CVS,*~            " Ignora certos tipos de arquivo
+"set wildmode   =list:longest,full              " Command <tab> completion, list matches, then longest common, then all.
+set wildmode   =list:longest              " Command <tab> completion, list matches, then longest common, then all.
 
 
 set encoding      =latin1 " Codificação padrão

@@ -18,7 +18,7 @@
 
 /**
  * Diretorio 
- * - Diretorio onde sera salvo arquivos do programa
+ * - Diretorio usado pelo programa, sera criado
  * - Objetos de commit, configuracoes e arquivos temporarios
  */
 CvsGit::$sDiretorioObjetos = getenv('HOME');
@@ -42,6 +42,12 @@ CvsGit::$sCodificacaoCVS = 'ISO-8859-1';
 CvsGit::$lRemoverAcentos = false;
 
 /**
+ * Programa usado para fazer diff
+ */
+CvsGit::$sDiffBinario   = '/usr/bin/vim';
+CvsGit::$sDiffParametro = '-d';
+
+/**
  *
  * Fim das configuracoes
  * -----------------------------------------------------------------------------
@@ -61,10 +67,12 @@ CvsGit::bootstrap();
  */
 class CvsGit {
   
-  public static $sCodificacaoTerminal = '';
-  public static $sCodificacaoCVS      = '';
-  public static $sDiretorioObjetos    = '.cvsgit/objects/';
-  public static $lRemoverAcentos      = false;
+  public static $sCodificacaoTerminal;
+  public static $sCodificacaoCVS;
+  public static $sDiretorioObjetos;
+  public static $lRemoverAcentos;
+  public static $sDiffBinario;
+  public static $sDiffParametro;
 
   /**
    * Tipos de commit  
@@ -109,6 +117,15 @@ class CvsGit {
     'R' => '-Removido'
   );
 
+  /**
+   * Output
+   *
+   * @param string $sMensagem
+   * @param string $sPerfil
+   * @static
+   * @access public
+   * @return void
+   */
   public static function output($sMensagem, $sPerfil = null) {
 
     switch( $sPerfil ) {
@@ -637,7 +654,7 @@ class CvsGit {
       }
     }
 
-    $sOutput = $oTabela->render();
+    $sOutput = self::encodeOutput($oTabela->render());
 
     $iColunas  = array_sum($oTabela->getWidths()); 
     $iColunas += count($oTabela->getWidths()) * 2;
@@ -649,7 +666,7 @@ class CvsGit {
       return;
     }
 
-    echo self::encodeOutput($sOutput) . "\n";
+    echo $sOutput. "\n";
   }
 
   /**
@@ -1500,6 +1517,9 @@ class CvsGit {
    */
   static function diff($aArgumentos) {
 
+    $nPrimeiraVersao = 0;
+    $nSegundaVersao  = 0;
+
     /**
      * Procura arquivo 
      */
@@ -1508,8 +1528,19 @@ class CvsGit {
       if ( file_exists($sArgumento) ) {
 
         $sArquivo = $sArgumento;
-        unset($aArgumentos[$iChave]);
-        break;
+        continue;
+      }
+
+      if ( empty($nPrimeiraVersao) ) {
+
+        $nPrimeiraVersao = $sArgumento;
+        continue;
+      }
+
+      if ( empty($nSegundaVersao) ) {
+
+        $nSegundaVersao = $sArgumento;
+        continue;
       }
     } 
 
@@ -1522,10 +1553,16 @@ class CvsGit {
       exit(1);
     }
 
+    if ( !file_exists('CVS/Repository') ) {
+
+      self::output('Arquivo com nome do projeto não encontrado', 'erro');
+      exit(1);
+    }
+
     /**
      * Nenhuma versao informada para usar diff 
      */
-    if ( empty($aArgumentos) ) {
+    if ( empty($nPrimeiraVersao) ) {
 
       /**
        * Lista informacoes do commit, sem as tags
@@ -1549,10 +1586,122 @@ class CvsGit {
         }
       }
       
-      $aArgumentos[] = $iVersaoAtual;
+      $nPrimeiraVersao = $iVersaoAtual;
     }
 
-    pcntl_exec('/usr/bin/vim', array($sArquivo, '-c', 'CD ' . implode(' ', $aArgumentos)) );
+    $sProjeto = trim(file_get_contents('CVS/Repository'));
+
+    $sDiretorioTemporario = '/tmp/cvs-diff/';
+    $sSeparador           = '__';
+    $sComandoCheckout     = "cvs checkout -r %s $sProjeto/$sArquivo 2> /tmp/cvsgit_diff_checkout";
+    $sComandoMover        = "mv $sProjeto/$sArquivo $sDiretorioTemporario" . $sArquivo . $sSeparador;
+    $sComandoMoverProjeto = "cp -rf $sProjeto/ $sDiretorioTemporario && rm -rf $sProjeto/";
+
+    /**
+     * Cria diretorio temporario
+     */
+    if ( !is_dir($sDiretorioTemporario) && !mkdir($sDiretorioTemporario, 0777, true) ) {
+
+      self::output('Não foi possivel criar diretório temporario: ' . $sDiretorioTemporario, 'erro');
+      exit(1);
+    }
+
+    /**
+     * Checkout - Primeira versao 
+     */
+    exec(sprintf($sComandoCheckout, $nPrimeiraVersao), $aRetornoCheckout, $iStatusCheckout);
+
+    /**
+     * Erro - Primeira versao 
+     */
+    if ( $iStatusCheckout > 0 || !file_exists("$sProjeto/$sArquivo") ) {
+
+      self::output('Erro ao executar checkout da versão "' . $nPrimeiraVersao . '"', 'erro');
+      exit(1);
+    }
+
+    /**
+     * Mover primeria versao
+     * - mover arquivo da primeira versao para diretorio temporario
+     */
+    exec($sComandoMover . $nPrimeiraVersao . ' 2> /tmp/cvsgit_diff_mv', $aRetornoMover, $iStatusMover);
+
+    if ( $iStatusMover > 0 ) {
+
+      self::output('Erro ao executar: ' . $sComandoMover . $nPrimeiraVersao, 'erro');
+      exit(1);
+    }
+
+    $sArquivoPrimeiraVersao = $sDiretorioTemporario . $sArquivo . $sSeparador . $nPrimeiraVersao;
+
+    /**
+     * Vim diff - segunda versao nao inforamada
+     */
+    if ( empty($nSegundaVersao) ) {
+
+      exec('diff ' . $sArquivo . ' ' . $sArquivoPrimeiraVersao . ' > /tmp/cvsgit_diff');
+      $sDiffPrimeiraVersao = trim(file_get_contents('/tmp/cvsgit_diff'));
+
+      if ( empty($sDiffPrimeiraVersao) ) {
+
+        self::output('Nenhuma diferença com a versão ' . $nPrimeiraVersao, 'aviso');
+        exit;
+      }
+
+      if ( !empty(self::$sDiffParametro) ) {
+
+        pcntl_exec( self::$sDiffBinario, array($sArquivo, self::$sDiffParametro, $sArquivoPrimeiraVersao) );
+        return;
+      }
+
+      pcntl_exec( self::$sDiffBinario, array($sArquivo, $sArquivoPrimeiraVersao) );
+      exec($sComandoMoverProjeto);
+      return;
+    }
+
+    /**
+     * Checkout - Segunda versao
+     */
+    exec(sprintf($sComandoCheckout, $nSegundaVersao), $aRetornoCheckout, $iStatusCheckout);
+
+    if ( $iStatusCheckout > 0 || !file_exists("$sProjeto/$sArquivo") ) {
+
+      self::output('Erro ao executar checkout da versão "' . $nSegundaVersao . '"', 'erro');
+      exit(1);
+    }
+
+    /**
+     * Mover segunda versao
+     * - mover arquivo da primeira versao para diretorio temporario
+     */
+    exec($sComandoMover . $nSegundaVersao . ' 2> /tmp/cvsgit_diff_mv', $aRetornoMover, $iStatusMover);
+
+    if ( $iStatusMover > 0 ) {
+
+      self::output('Erro ao executar: ' . $sComandoMover . $nSegundaVersao, 'erro');
+      exit(1);
+    }
+
+    $sArquivoSegundaVersao = $sDiretorioTemporario . $sArquivo . $sSeparador . $nSegundaVersao;
+
+    exec('diff ' . $sArquivoPrimeiraVersao . ' ' . $sArquivoSegundaVersao . ' > /tmp/cvsgit_diff');
+    $sDiffDuasVersoes = trim(file_get_contents('/tmp/cvsgit_diff'));
+
+    if ( empty($sDiffDuasVersoes) ) {
+
+      self::output('Nenhuma diferença entre as versões ' . $nPrimeiraVersao . ' e ' . $nSegundaVersao, 'aviso');
+      exit;
+    }
+
+    if ( !empty(self::$sDiffParametro) ) {
+
+      pcntl_exec( self::$sDiffBinario, array(self::$sDiffParametro, $sArquivoPrimeiraVersao, $sArquivoSegundaVersao) );
+      exec($sComandoMoverProjeto);
+      return;
+    }
+
+    pcntl_exec( self::$sDiffBinario, array($sArquivoPrimeiraVersao, $sArquivoSegundaVersao) );
+    exec($sComandoMoverProjeto);
   }
 
   public static function encodeOutput($sString) {
