@@ -13,7 +13,7 @@ let g:commitInputTipo = ''
 function! Cvsgit(sArgumentos) 
 
   " arquivo em php que adiciona arquivo a lista para commit 
-  let commitArquivo = '~/.vim/plugin/cvsgit/cvsgit '
+  let commitArquivo = 'cvsgit '
 
   " caso passar argumentos para a funcao, exemplo: :Cvsgit -m 'mensagem do  comit' -t 99999 -fix 
   if !empty(a:sArgumentos)
@@ -42,13 +42,15 @@ function! Cvsgit(sArgumentos)
   endif
 
   " executa cvsgit em php e guarda retorno na variavel respostaArquivo
-  let respostaArquivo = system(commitArquivo . ' ' . FileName() . ' 2> /tmp/cvsgit_output_vim')
+  let respostaArquivo = system(commitArquivo . ' ' . FileName() . ' > /tmp/cvsgit_output_vim')
 
   " cvsgit respondeu com erro, mostra na tela o erro
-  if v:shell_error || respostaArquivo != ""
+  if v:shell_error 
     echohl WarningMsg | echon "\r" . respostaArquivo 
     return
   endif
+
+  let respostaArquivo = system('cat /tmp/cvsgit_output_vim')
 
   if !empty(respostaArquivo)
     exec '!clear & less /tmp/cvsgit_output_vim'

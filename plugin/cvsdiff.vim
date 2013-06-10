@@ -92,67 +92,67 @@ endfunction
 
 function Cvsdiff(argumentos) 
 
-  call s:LimparVersoes()
+  try 
 
-  if !empty( a:argumentos ) 
+    call s:LimparVersoes()
 
-    let l:aArgumentos = split(a:argumentos, ' ')
+    if !empty( a:argumentos ) 
 
-    for sArgumento in l:aArgumentos 
-      
-      if empty(sArgumento)
-        continue
-      endif
+      let l:aArgumentos = split(a:argumentos, ' ')
 
-      if empty(s:oVersoes.primeiraVersao)
-        let s:oVersoes.primeiraVersao = sArgumento
-        continue
-      endif
+      for sArgumento in l:aArgumentos 
+        
+        if empty(sArgumento)
+          continue
+        endif
 
-      if empty(s:oVersoes.segundaVersao)
-        let s:oVersoes.segundaVersao = sArgumento
-        continue
-      endif
+        if empty(s:oVersoes.primeiraVersao)
+          let s:oVersoes.primeiraVersao = sArgumento
+          continue
+        endif
 
-    endfor
+        if empty(s:oVersoes.segundaVersao)
+          let s:oVersoes.segundaVersao = sArgumento
+          continue
+        endif
 
-    let s:lFecharJanela = 0
+      endfor
+
+      let s:lFecharJanela = 0
+      call s:Bootstrap()
+      call Processar()
+      return
+
+    endif
+
+    let s:lFecharJanela = 1
     call s:Bootstrap()
-    call Processar()
-    return
+    call s:CriarJanela()
+    call s:MapKeys()
 
-  endif
-
-  let s:lFecharJanela = 1
-  call s:Bootstrap()
-  call s:CriarJanela()
-  call s:MapKeys()
+  catch
+    echohl WarningMsg | echon "Erro:\n" . v:exception 
+  endtry
 
 endfunction
 
 function s:Bootstrap() 
 
-  try 
+  if !filereadable('CVS/Repository')
+    throw 'Projeto CVS nao encontrado'
+  endif
 
-    if !filereadable('CVS/Repository')
-      throw 'Projeto CVS nao encontrado'
-    endif
+  let s:sProjeto  = split(Executar('cat CVS/Repository'))[0] . '/'
+  let s:sArquivo  = FileName()
+  let s:sFileType = &filetype
 
-    let s:sProjeto  = split(Executar('cat CVS/Repository'))[0] . '/'
-    let s:sArquivo  = FileName()
-    let s:sFileType = &filetype
+  let s:sEncoding      = &encoding
+  let s:sFileEncoding  = &fileencoding
+  let s:sFileEncodings = &fileencodings
 
-    let s:sEncoding      = &encoding
-    let s:sFileEncoding  = &fileencoding
-    let s:sFileEncodings = &fileencodings
+  setlocal termencoding=latin1
 
-    setlocal termencoding=latin1
-
-    call Executar($HOME . '/.vim/plugin/cvsgit/cvsgit logvim ' . s:sArquivo)
-
-  catch
-    echohl WarningMsg | echon "Erro:\n" . v:exception 
-  endtry
+  call Executar($HOME . '/.vim/plugin/cvsgit/cvsgit logvim ' . s:sArquivo)
 
 endfunction
 
@@ -179,93 +179,87 @@ endfunction
 "
 function! Processar() 
 
-  try 
+  let l:sLinhaCursor = getline('.')
+  
+  if !empty(l:sLinhaCursor)
+    let l:nVersaoCursor = split(l:sLinhaCursor, ' ')[0]
+  endif
 
-    let l:sLinhaCursor = getline('.')
-    
-    if !empty(l:sLinhaCursor)
-      let l:nVersaoCursor = split(l:sLinhaCursor, ' ')[0]
+  " fecha janela com as versoes
+  call Sair()
+
+  let l:sVersoes         = ''
+  let l:sPathArquivos    = '/tmp/'
+  let l:sComandoCheckout = 'cvs checkout '
+  let s:sArquivo         = FileName()
+  let l:sArquivo         = expand('%:t')
+  let l:sSeparador       = '__'
+
+  let l:sComandoMover    = 'mv ' . s:sProjeto . s:sArquivo . ' '. l:sPathArquivos . l:sArquivo . l:sSeparador
+  let l:sComandoDiff     = 'vert diffsplit ' . l:sPathArquivos
+
+  " Nao selecionou versao para comparar
+  " Abre nova aba com versao da linha do cursor
+  if empty(s:oVersoes.primeiraVersao) && !empty(l:nVersaoCursor)
+
+    call Executar(l:sComandoCheckout . '-r ' . l:nVersaoCursor . ' '.  s:sProjeto . s:sArquivo)
+    call Executar(sComandoMover . l:nVersaoCursor)
+
+    exe 'tabnew ' . l:sPathArquivos . l:sArquivo . l:sSeparador . l:nVersaoCursor
+    exe 'setlocal filetype=' . s:sFileType
+    return
+
+  endif
+
+  " selecinou 1 versao apenas
+  if empty(s:oVersoes.segundaVersao)
+
+    let l:sVersoes .= ' -r ' . s:oVersoes.primeiraVersao
+    let l:sOutputCheckout = Executar(l:sComandoCheckout . '-r ' . s:oVersoes.primeiraVersao . ' '.  s:sProjeto . s:sArquivo)
+
+    if !filereadable(s:sProjeto . s:sArquivo)
+      throw 'Erro - ' . l:sOutputCheckout
     endif
 
-    " fecha janela com as versoes
-    call Sair()
+    call Executar(sComandoMover . s:oVersoes.primeiraVersao)
 
-    let l:sVersoes         = ''
-    let l:sPathArquivos    = '/tmp/'
-    let l:sComandoCheckout = 'cvs checkout '
-    let s:sArquivo         = FileName()
-    let l:sArquivo         = expand('%:t')
-    let l:sSeparador       = '__'
+    exe 'tabnew ' . s:sArquivo
+    exe l:sComandoDiff . l:sArquivo . l:sSeparador . s:oVersoes.primeiraVersao
+    exe 'setlocal filetype=' . s:sFileType
 
-    let l:sComandoMover    = 'mv ' . s:sProjeto . s:sArquivo . ' '. l:sPathArquivos . l:sArquivo . l:sSeparador
-    let l:sComandoDiff     = 'vert diffsplit ' . l:sPathArquivos
+  else
 
-    " Nao selecionou versao para comparar
-    " Abre nova aba com versao da linha do cursor
-    if empty(s:oVersoes.primeiraVersao) && !empty(l:nVersaoCursor)
+    let l:sVersoes .= ' -r ' . s:oVersoes.primeiraVersao . ' -r ' . s:oVersoes.segundaVersao
 
-      call Executar(l:sComandoCheckout . '-r ' . l:nVersaoCursor . ' '.  s:sProjeto . s:sArquivo)
-      call Executar(sComandoMover . l:nVersaoCursor)
+    let l:sOutputCheckoutPrimeiraVersao = Executar(l:sComandoCheckout . '-r ' . s:oVersoes.primeiraVersao . ' '.  s:sProjeto . s:sArquivo)
 
-      exe 'tabnew ' . l:sPathArquivos . l:sArquivo . l:sSeparador . l:nVersaoCursor
-      exe 'setlocal filetype=' . s:sFileType
-      return
-
+    if !filereadable(s:sProjeto . s:sArquivo)
+      throw 'Erro - ' . l:sOutputCheckoutPrimeiraVersao
     endif
 
-    " selecinou 1 versao apenas
-    if empty(s:oVersoes.segundaVersao)
+    call Executar(sComandoMover . s:oVersoes.primeiraVersao)
 
-      let l:sVersoes .= ' -r ' . s:oVersoes.primeiraVersao
-      let l:sOutputCheckout = Executar(l:sComandoCheckout . '-r ' . s:oVersoes.primeiraVersao . ' '.  s:sProjeto . s:sArquivo)
+    let l:sOutputCheckoutSegundaVersao = Executar(l:sComandoCheckout . '-r ' . s:oVersoes.segundaVersao . ' '.  s:sProjeto . s:sArquivo)
 
-      if !filereadable(s:sProjeto . s:sArquivo)
-        throw 'Erro - ' . l:sOutputCheckout
-      endif
-
-      call Executar(sComandoMover . s:oVersoes.primeiraVersao)
-
-      exe 'tabnew ' . s:sArquivo
-      exe l:sComandoDiff . l:sArquivo . l:sSeparador . s:oVersoes.primeiraVersao
-      exe 'setlocal filetype=' . s:sFileType
-
-    else
-
-      let l:sVersoes .= ' -r ' . s:oVersoes.primeiraVersao . ' -r ' . s:oVersoes.segundaVersao
-
-      let l:sOutputCheckoutPrimeiraVersao = Executar(l:sComandoCheckout . '-r ' . s:oVersoes.primeiraVersao . ' '.  s:sProjeto . s:sArquivo)
-
-      if !filereadable(s:sProjeto . s:sArquivo)
-        throw 'Erro - ' . l:sOutputCheckoutPrimeiraVersao
-      endif
-
-      call Executar(sComandoMover . s:oVersoes.primeiraVersao)
-
-      let l:sOutputCheckoutSegundaVersao = Executar(l:sComandoCheckout . '-r ' . s:oVersoes.segundaVersao . ' '.  s:sProjeto . s:sArquivo)
-
-      if !filereadable(s:sProjeto . s:sArquivo)
-        throw 'Erro - ' . l:sOutputCheckoutSegundaVersao
-      endif
-
-      call Executar(sComandoMover . s:oVersoes.segundaVersao)
-
-      exe 'tabnew ' . l:sPathArquivos . l:sArquivo . l:sSeparador . s:oVersoes.primeiraVersao
-      exe 'setlocal filetype=' . s:sFileType
-      exe l:sComandoDiff . l:sArquivo . l:sSeparador . s:oVersoes.segundaVersao
-      exe 'setlocal filetype=' . s:sFileType
-
+    if !filereadable(s:sProjeto . s:sArquivo)
+      throw 'Erro - ' . l:sOutputCheckoutSegundaVersao
     endif
 
-    " remove pasta do projeto criada pelo cvs checkout
-    call Executar('mv -f ' . s:sProjeto . ' ' . tempname())
+    call Executar(sComandoMover . s:oVersoes.segundaVersao)
 
-    " Troca lado dos splits do diff e retorna cursor pra primeiro split
-    exe "normal \<C-W>L"
-    exe "normal \<C-h>"
+    exe 'tabnew ' . l:sPathArquivos . l:sArquivo . l:sSeparador . s:oVersoes.primeiraVersao
+    exe 'setlocal filetype=' . s:sFileType
+    exe l:sComandoDiff . l:sArquivo . l:sSeparador . s:oVersoes.segundaVersao
+    exe 'setlocal filetype=' . s:sFileType
 
-  catch
-    echohl WarningMsg | echon "Erro:\n" . v:exception 
-  endtry
+  endif
+
+  " remove pasta do projeto criada pelo cvs checkout
+  call Executar('mv -f ' . s:sProjeto . ' ' . tempname())
+
+  " Troca lado dos splits do diff e retorna cursor pra primeiro split
+  exe "normal \<C-W>L"
+  exe "normal \<C-h>"
 
 endfunction
 
