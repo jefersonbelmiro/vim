@@ -152,7 +152,7 @@ function s:Bootstrap()
 
   setlocal termencoding=latin1
 
-  call Executar($HOME . '/.vim/plugin/cvsgit/cvsgit logvim ' . s:sArquivo)
+  call Executar('cvsgit logvim ' . s:sArquivo)
 
 endfunction
 
