@@ -33,15 +33,14 @@ function! s:LogDebugMessage(msg) abort
 endfunction
 
 function! GenerateStatusline() abort
-  return s:sArquivo
+  return 'CVS DIFF ' . s:sArquivo
 endfunction
 
 function! s:CriarJanela() abort
 
-  exe 'silent keepalt botright split ' . expand('%:t') . '[cvsdiff]'
+  let l:sNome = "CVS\ DIFF\ " . expand('%:t') . " "  
 
-  "setlocal modifiable
-  "setlocal noreadonly 
+  exe "silent keepalt botright split " . expand('%:t') . "[cvsdiff]"
 
   exe ':%d'
   silent read /tmp/cvslogvim
@@ -53,13 +52,9 @@ function! s:CriarJanela() abort
     exe 'resize ' . line('$')
   endif
 
-  setlocal fenc=latin1
-  setlocal encoding=latin1
-  setlocal fileencoding=latin1
-  setlocal fileencodings=latin1
   setlocal filetype=cvsdiff
   setlocal buftype=nofile
-  setlocal bufhidden=hide
+	setlocal bufhidden=delete
   setlocal nobackup
   setlocal noswapfile
   setlocal nobuflisted
@@ -75,18 +70,20 @@ function! s:CriarJanela() abort
   setlocal foldmethod&
   setlocal foldexpr&
 
-  "setlocal statusline=%!GenerateStatusline()
-  setlocal statusline=cvsdiff
-  "setlocal nomodifiable
+  setlocal statusline=%!GenerateStatusline()
+  call l:ChangeFileName(l:sNome)
 
+endfunction
+
+function l:ChangeFileName(sNome)
+	silent! file! `=a:sNome`
 endfunction
 
 function! s:MapKeys() abort
 
-  nnoremap <script> <silent> <buffer> <CR>  :call Processar()<CR>
-  nnoremap <script> <silent> <buffer> <ESC> :call Sair()<CR>
-  nnoremap <script> <silent> <buffer> m     :call Selecionar()<CR>
-  nnoremap <script> <silent> <buffer> q     :call Sair()<CR>
+  nnoremap <script> <silent> <buffer> <CR> :call Processar()<CR>
+  nnoremap <script> <silent> <buffer> m    :call Selecionar()<CR>
+  nnoremap <script> <silent> <buffer> q    :call Sair()<CR>
 
 endfunction
 
@@ -131,7 +128,7 @@ function Cvsdiff(argumentos)
     call s:MapKeys()
 
   catch
-    echohl WarningMsg | echon "Erro:\n" . v:exception 
+    echohl WarningMsg | echon v:exception 
   endtry
 
 endfunction
@@ -149,8 +146,6 @@ function s:Bootstrap()
   let s:sEncoding      = &encoding
   let s:sFileEncoding  = &fileencoding
   let s:sFileEncodings = &fileencodings
-
-  setlocal termencoding=latin1
 
   call Executar('cvsgit logvim ' . s:sArquivo)
 
@@ -170,7 +165,6 @@ function! Sair()
   if ( s:lFecharJanela > 0 )  
     exit
   endif
-  setlocal termencoding=utf8
 
 endfunction
 
@@ -206,6 +200,7 @@ function! Processar()
     call Executar(sComandoMover . l:nVersaoCursor)
 
     exe 'tabnew ' . l:sPathArquivos . l:sArquivo . l:sSeparador . l:nVersaoCursor
+    call l:ChangeFileName('[' . l:nVersaoCursor . '] ' . l:sArquivo)
     exe 'setlocal filetype=' . s:sFileType
     return
 
@@ -225,6 +220,7 @@ function! Processar()
 
     exe 'tabnew ' . s:sArquivo
     exe l:sComandoDiff . l:sArquivo . l:sSeparador . s:oVersoes.primeiraVersao
+    call l:ChangeFileName('[' . s:oVersoes.primeiraVersao . '] ' . l:sArquivo)
     exe 'setlocal filetype=' . s:sFileType
 
   else
@@ -248,8 +244,11 @@ function! Processar()
     call Executar(sComandoMover . s:oVersoes.segundaVersao)
 
     exe 'tabnew ' . l:sPathArquivos . l:sArquivo . l:sSeparador . s:oVersoes.primeiraVersao
+    call l:ChangeFileName('[' . s:oVersoes.primeiraVersao . '] ' . l:sArquivo)
     exe 'setlocal filetype=' . s:sFileType
+
     exe l:sComandoDiff . l:sArquivo . l:sSeparador . s:oVersoes.segundaVersao
+    call l:ChangeFileName('[' . s:oVersoes.segundaVersao . '] ' . l:sArquivo)
     exe 'setlocal filetype=' . s:sFileType
 
   endif
