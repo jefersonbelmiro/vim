@@ -61,6 +61,11 @@ vnoremap <A-DOWN> :m'>+<CR>gv=`<my`>mzgv`yo`z
 " tagbar
 nnoremap <silent> tg :TagbarToggle<CR>
 
+" neocomplcache
+let g:neocomplcache_enable_at_startup     = 1  
+let g:neocomplcache_disable_auto_complete = 0
+"let g:neocomplcache_enable_auto_select    = 1
+
 "                                                                                 
 " CTRL-P {{{
 let g:ctrlp_map = '<c-p>'
