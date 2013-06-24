@@ -1,22 +1,23 @@
-  """"""""""""""""""""""""""""""""""""""""""""           "
-" => Geral                                             "
-""""""""""""""""""""""""""""""""""""""""""""           "
-filetype plugin on                                     " Plugins por tipo de arquivo
-filetype indent on                                     " Indentação por tipo de arquivo
-set history            =2000                           " Quantas linhas de histórico o vim deve lembra0
-set scrolloff          =1                              " Set 7 lines to the cursor - when moving vertically using j/k
-set scroll             =4                              " linhas do ctrl+u e ctrl+d
-set ruler                                              " Sempre mostra posicao atual
-set hid                                                " A buffer becomes hidden when it is abandoned
-set backspace          =eol,start,indent               " Configure backspace so it acts as it should act
-set whichwrap         +=<,>,h,l                        " @todo -naum sei
-set ignorecase                                         " Ignora maiusculas/minusculas quando fizer pesquisa
-set smartcase                                          " When searching try to be smart about cases ??? @todo descobrir o que eh mesmo
-set hlsearch                                           " Destaca resultados da busca
-set incsearch                                          " Vai buscando enquando digita
-set magic                                              " For regular expressions turn magic on
-set showmatch                                          " Show matching brackets when text indicator is over them
-set matchtime          =2                              " How many tenths of a second to blink when matching brackets
+"""""""""""""""""""""""""""""""""""""""""""""
+" Geral                                  
+"""""""""""""""""""""""""""""""""""""""""""""
+filetype plugin on                " Plugins por tipo de arquivo
+filetype indent on                " Indentação por tipo de arquivo
+set history     =2000             " Quantas linhas de histórico o vim deve lembra0
+set scrolloff   =1                " Set 7 lines to the cursor - when moving vertically using j/k
+set scroll      =4                " linhas do ctrl+u e ctrl+d
+set ruler                         " Sempre mostra posicao atual
+set hid                           " A buffer becomes hidden when it is abandoned
+set backspace   =eol,start,indent " Configure backspace so it acts as it should act
+set whichwrap  +=<,>,h,l          " @todo -naum sei
+set ignorecase                    " Ignora maiusculas/minusculas quando fizer pesquisa
+set smartcase                     " When searching try to be smart about cases ??? @todo descobrir o que eh mesmo
+set hlsearch                      " Destaca resultados da busca
+set incsearch                     " Vai buscando enquando digita
+set magic                         " For regular expressions turn magic on
+set showmatch                     " Show matching brackets when text indicator is over them
+set matchtime   =2                " How many tenths of a second to blink when matching brackets
+set autoindent
 
 "set directory=~/.vim/backup
 "set backupdir=~/.vim/backup
