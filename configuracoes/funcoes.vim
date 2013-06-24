@@ -70,5 +70,3 @@ function PadraoUTF()
   execute 'set shiftwidth=2' 
 
 endfunction
-
-source ~/.vim/plugin/cvsgit/cvsgit.vim

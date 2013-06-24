@@ -143,7 +143,7 @@ endfunction
 function s:Bootstrap() 
 
   if !filereadable('CVS/Repository')
-    throw 'Projeto CVS nao encontrado'
+    throw 'Diretório atual não é um repositorio CVS'
   endif
 
   let s:sProjeto  = split(Executar('cat CVS/Repository'))[0] . '/'
