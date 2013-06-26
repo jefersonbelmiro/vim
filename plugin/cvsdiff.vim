@@ -2,6 +2,8 @@
 " description:
 "   vim plugin to use vim split diff on cvs
 
+scriptencoding iso-8859-1
+
 " ligar debug
 let s:lDebug = 0
 
@@ -14,10 +16,8 @@ let s:oVersoes.primeiraVersao  = ''
 let s:oVersoes.primeiraSelecao = ''
 let s:oVersoes.segundaVersao   = ''
 let s:oVersoes.segundaSelecao  = ''
-let s:CvsdiffInit = 0
 
 let s:sNome = "CVS\ DIFF\ "
-let s:lFecharJanela = 1
 
 "
 " Gera log da execucao do script
@@ -120,19 +120,15 @@ function Cvsdiff(argumentos)
 
       endfor
 
-      let s:lFecharJanela = 0
       call s:Bootstrap()
       call Processar()
-      let s:CvsdiffInit = 1
       return
 
     endif
 
-    let s:lFecharJanela = 1
     call s:Bootstrap()
     call s:CriarJanela()
     call s:MapKeys()
-    let s:CvsdiffInit = 1
 
   catch
     echohl WarningMsg | echon v:exception 

@@ -1,6 +1,11 @@
 """""""""""""""""""""""""""""""""""""""""""""
 " Geral                                  
 """""""""""""""""""""""""""""""""""""""""""""
+
+" encode
+"call PadraoISO()
+"call PadraoUTF()
+
 filetype plugin on                " Plugins por tipo de arquivo
 filetype indent on                " Indentação por tipo de arquivo
 set history     =2000             " Quantas linhas de histórico o vim deve lembra0
