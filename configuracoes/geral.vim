@@ -4,7 +4,7 @@
 
 " encode
 "call PadraoISO()
-"call PadraoUTF()
+call PadraoUTF()
 
 filetype plugin on                " Plugins por tipo de arquivo
 filetype indent on                " Indentação por tipo de arquivo
@@ -52,9 +52,9 @@ set wildignore =*.o,*~,*.pyc,CVS,*~            " Ignora certos tipos de arquivo
 set wildmode   =list:longest              " Command <tab> completion, list matches, then longest common, then all.
 
 
-set encoding      =latin1 " Codificação padrão
-set fileencoding  =latin1 " Codificação do arquivo
-set fileencodings =latin1 " Codificação do arquivo
+"set encoding      =latin1 " Codificação padrão
+"set fileencoding  =latin1 " Codificação do arquivo
+"set fileencodings =latin1 " Codificação do arquivo
 set termencoding  =utf-8  " Codificação do terminal
 
 set fileformats =unix,dos,mac                   " Use unix as the standard file type

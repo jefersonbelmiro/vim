@@ -27,7 +27,19 @@ function! Cvsgit(sArgumentos)
     let l:commitTag      = inputdialog('tag: ', g:commitInputTag)
     let l:commitTipo     = inputdialog('tipo: ', g:commitInputTipo)
 
-    let commitArquivo .= 'add -m "' . l:commitMensagem . '" -t '. l:commitTag.' -'. l:commitTipo
+    let commitArquivo .= 'add '
+
+    if !empty(l:commitMensagem)
+      let commitArquivo .= ' --message="' . l:commitMensagem . '"'
+    endif
+
+    if !empty(l:commitTag)
+      let commitArquivo .= ' --tag=' . l:commitTag
+    endif
+
+    if !empty(l:commitTipo)
+      let commitArquivo .= ' -' . l:commitTipo
+    endif
 
     " guarga ultima tag digitada para mostrar no proximo commit
     if !empty(l:commitTag) 
@@ -46,14 +58,18 @@ function! Cvsgit(sArgumentos)
 
   " cvsgit respondeu com erro, mostra na tela o erro
   if v:shell_error 
-    echohl WarningMsg | echon "\r" . respostaArquivo 
+    echohl WarningMsg | echon "\r eta" . respostaArquivo 
     return
   endif
 
-  let respostaArquivo = system('cat /tmp/cvsgit_output_vim')
+  if !empty(a:sArgumentos)
 
-  if !empty(respostaArquivo)
-    exec '!clear & less /tmp/cvsgit_output_vim'
+    let respostaArquivo = system('cat /tmp/cvsgit_output_vim')
+
+    if !empty(respostaArquivo)
+      exec '!clear & less /tmp/cvsgit_output_vim'
+    endif
+
   endif
 
 endfunction;

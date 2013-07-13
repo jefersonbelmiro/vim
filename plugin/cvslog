@@ -160,7 +160,7 @@ class CvsLog {
           $sTagsPorVersao = implode(', ', $aTagsPorVersao[$iVersao]);
         }
 
-        $oTabela->addRow(array($iVersao, $sTagsPorVersao, $sAutor, $sData, $sMensagem));
+        $oTabela->addRow(array($iVersao, $sTagsPorVersao, $sAutor, $sData, Encode::toISO($sMensagem)));
         $iVersao   = '';
         $sAutor    = '';
         $sData     = '';

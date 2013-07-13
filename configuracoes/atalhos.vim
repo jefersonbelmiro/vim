@@ -19,9 +19,9 @@ imap <silent><F5><ESC> :let &mouse=(&mouse == "a"?"":"a")<CR>:call ShowMouseMode
 
 map K k
 
-" Salvar com F
-map  <F2> <ESC>:w<CR>
-imap <F2> <ESC>:w<CR>
+" Salvar 
+map  <silent><F2> <ESC>:call Save()<CR>
+imap <silent><F2> <ESC>:call Save()<CR>
 
 " Alterna entre Janelas Abertas
 noremap <C-j> <C-W>j
