@@ -58,7 +58,6 @@ class CvsLog {
       exit(1);
     }
 
-    // @todo aceitar varios arquivos
     foreach ($aParametros as $iIndice => $sParametro) {
 
       if ( file_exists($sParametro) ) {
@@ -81,9 +80,9 @@ class CvsLog {
      */
     exec('cvs log -h ' . $sArquivo, $aRetornoComandoTags, $iStatusComandoTags);
 
-    if ( $iStatusComandoTags > 0 ) {
+    if ( $iStatusComandoTags > 1 ) {
 
-      //self::output("Erro ao execurar cvs log -h $sArquivo\n");
+      self::output("Erro ao execurar cvs log -h $sArquivo\n");
       exit(1);
     }
 
@@ -130,7 +129,7 @@ class CvsLog {
 
     if ( $iStatusComandoInformacoes > 1 ) {
 
-      //self::output('Erro ao execurar cvs log -N ' . $sArquivo . "\n");
+      self::output('Erro ao execurar cvs log -N ' . $sArquivo . "\n");
       exit(1);
     }
 
@@ -213,8 +212,6 @@ class CvsLog {
     $sLog = trim($oTabela->render( $mostra_com_espacos = true )) . "\n";
 
     file_put_contents('/tmp/cvslogvim', $sLog);
-
-    echo $sLog;
   }
 
 }

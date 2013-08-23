@@ -52,7 +52,7 @@ function PadraoISO()
 
   execute 'set encoding=ISO-8859-1'
   execute 'set fileencoding=ISO-8859-1'
-  execute 'set fileencodings=ISO-8859-1'
+  "execute 'set fileencodings=ISO-8859-1'
   execute 'set ts=2'
   execute 'set softtabstop=2' 
   execute 'set shiftwidth=2' 
@@ -63,7 +63,7 @@ function PadraoUTF()
 
   execute 'set encoding=UTF-8'
   execute 'set fileencoding=UTF-8'
-  execute 'set fileencodings=UTF-8'
+  "execute 'set fileencodings=UTF-8'
   execute 'set ts=2'
   execute 'set softtabstop=2' 
   execute 'set shiftwidth=2' 

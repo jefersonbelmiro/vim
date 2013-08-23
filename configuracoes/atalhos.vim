@@ -20,8 +20,8 @@ imap <silent><F5><ESC> :let &mouse=(&mouse == "a"?"":"a")<CR>:call ShowMouseMode
 map K k
 
 " Salvar 
-map  <silent><F2> <ESC>:call Save()<CR>
-imap <silent><F2> <ESC>:call Save()<CR>
+map <F2> <ESC>:call Save()<CR>
+imap <F2> <ESC>:call Save()<CR>
 
 " Alterna entre Janelas Abertas
 noremap <C-j> <C-W>j
@@ -73,7 +73,14 @@ map <F8> :ToogleCvsdiff<cr>
 " CTRL-P {{{
 let g:ctrlp_map = '<c-p>'
 let g:ctrlp_cmd = 'CtrlP'
+"let g:ctrlp_working_path_mode = 'c'
 let g:ctrlp_user_command = 'find %s -type f'
+
+let g:ctrlp_prompt_mappings = {
+      \ 'AcceptSelection("e")' :  [],
+      \ 'AcceptSelection("t")' :  ['<cr>', '<c-m>'],
+      \ }
+
 let g:ctrlp_custom_ignore = {
       \ 'dir':  '\v[\/]\.(CVS|git|hg|svn)$',
       \ 'file': '\v\.(jpg|png|gif)$'
