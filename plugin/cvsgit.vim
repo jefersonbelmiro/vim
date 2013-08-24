@@ -58,7 +58,7 @@ function! Cvsgit(sArgumentos)
 
   " cvsgit respondeu com erro, mostra na tela o erro
   if v:shell_error 
-    echohl WarningMsg | echon "\r eta" . respostaArquivo 
+    echohl WarningMsg | echon "\r " . respostaArquivo 
     return
   endif
 
