@@ -15,3 +15,7 @@ sudo apt-get install python-software-properties
 sudo apt-add-repository ppa:mizuno-as/silversearcher-ag
 sudo apt-get update
 sudo apt-get install silversearcher-ag
+
+# git diff com vim
+git config diff.external git_diff_wrapper
+sudo ln -s ~/.vim/bin/git_diff_wrapper /usr/bin/
