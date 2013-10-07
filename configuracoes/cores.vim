@@ -2,6 +2,7 @@
 set background =dark
 "colorscheme Tomorrow-Night-Bright 
 "colorscheme Tomorrow
+colorscheme womprat
 "hi clear CursorColumn
 "hi clear CursorLine  
 "hi clear TabLineFill
@@ -11,6 +12,5 @@ set background =dark
 "hi  TabLineSel   ctermbg=1 guibg=DarkRed term=reverse 
 "hi  TabLine      ctermbg=8 guibg=White   term=reverse 
 
-
-hi StatusLine   ctermfg=0   ctermbg=254 cterm=none
-hi StatusLineNC ctermfg=244 ctermbg=254 cterm=none
+"hi StatusLine   ctermfg=0   ctermbg=254 cterm=none
+"hi StatusLineNC ctermfg=244 ctermbg=254 cterm=none

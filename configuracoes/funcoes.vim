@@ -4,13 +4,13 @@
 let g:diretorioArquivoTags = $VIMROOT . "/runtime/tags/"
 function UtilizarTags()
 
-  let iOpcao              = confirm("Utilizar Tags???? Qual projeto?", "&zDBPortal_prj\n&xFuncoes8\n&cDBPref", 2) 
+  let iOpcao              = confirm("Utilizar Tags???? Qual projeto?", "DBPortal_prj\nFuncoes8\nDBPref", 1) 
   let aEscolhas           = { 1 : "dbportal_prj",
                             \ 2 : "funcoes8",
                             \ 3 : "dbpref"}
   let sProjeto            = aEscolhas[iOpcao]
 
-  echo "Definindo configuracoes VIM"
+  echo "Definindo configuracoes VIM: " . g:diretorioArquivoTags ."".sProjeto."_tags" 
   let sCaminhoArquivoTags = g:diretorioArquivoTags ."".sProjeto."_tags"
 
   execute "set tags=". sCaminhoArquivoTags
@@ -31,31 +31,27 @@ function AtualizaTags()
   execute "!ctags -f " . sCaminhoArquivoTags . " -R /var/www/" . sProjeto . "/ "
 endfunction
 
-" toggle mouse no vim
-function ShowMouseMode()
-	if (&mouse == 'a')
-		echo "mouse-vim"
-	else
-		echo "mouse-xterm"
-	endif
-endfunction
-
 function! FileName()
-  return expand('%')
+  return expand('%:t')
 endfunction
 
 function! PathName()
   return expand('%:p:h')
 endfunction
 
+if !exists('g:default_tab_width')
+  let g:default_tab_width = 2
+endif
+
 function PadraoISO() 
 
   execute 'set encoding=ISO-8859-1'
   execute 'set fileencoding=ISO-8859-1'
+  " ao abrir aquivo ja formata
   "execute 'set fileencodings=ISO-8859-1'
-  execute 'set ts=2'
-  execute 'set softtabstop=2' 
-  execute 'set shiftwidth=2' 
+  execute 'set ts=' . g:default_tab_width
+  execute 'set softtabstop=' . g:default_tab_width
+  execute 'set shiftwidth=' . g:default_tab_width
 
 endfunction
 
@@ -63,10 +59,11 @@ function PadraoUTF()
 
   execute 'set encoding=UTF-8'
   execute 'set fileencoding=UTF-8'
+  " ao abrir aquivo ja formata
   "execute 'set fileencodings=UTF-8'
-  execute 'set ts=2'
-  execute 'set softtabstop=2' 
-  execute 'set shiftwidth=2' 
+  execute 'set ts=' . g:default_tab_width
+  execute 'set softtabstop=' . g:default_tab_width
+  execute 'set shiftwidth=' . g:default_tab_width
 
 endfunction
 
@@ -113,3 +110,19 @@ function! s:Executar(comando)
   return l:retornoComando
 
 endfunction
+
+function! ToggleMouse()
+  if !exists("s:old_mouse")
+    let s:old_mouse = "a"
+  endif
+
+  if &mouse == ""
+    let &mouse = s:old_mouse
+    echo "Mouse is for Vim (" . &mouse . ")"
+  else
+    let s:old_mouse = &mouse
+    let &mouse=""
+    echo "Mouse is for terminal"
+  endif
+endfunction
+

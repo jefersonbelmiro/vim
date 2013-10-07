@@ -14,8 +14,6 @@ set statusline =%<%f\ \ %h%m%r%Y%=\ \ linha:\ %l,total\ :%L,%c%V\ %P
 "set cursorline                                         " destaca linha  atual
 "set cursorcolumn                                       " destaca coluna atual
 set number
-source ~/.vim/configuracoes/cores.vim
-
 
 let g:tagbar_width = 25
 let g:tagbar_autofocus = 1
