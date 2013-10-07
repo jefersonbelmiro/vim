@@ -9,8 +9,6 @@ call PadraoUTF()
 filetype plugin on                " Plugins por tipo de arquivo
 filetype indent on                " Indentação por tipo de arquivo
 set history     =2000             " Quantas linhas de histórico o vim deve lembra0
-set scrolloff   =1                " Set 7 lines to the cursor - when moving vertically using j/k
-set scroll      =4                " linhas do ctrl+u e ctrl+d
 set ruler                         " Sempre mostra posicao atual
 set hid                           " A buffer becomes hidden when it is abandoned
 set backspace   =eol,start,indent " Configure backspace so it acts as it should act
@@ -23,6 +21,12 @@ set magic                         " For regular expressions turn magic on
 set showmatch                     " Show matching brackets when text indicator is over them
 set matchtime   =2                " How many tenths of a second to blink when matching brackets
 set autoindent
+
+" scroll
+set scroll=4        " linhas do ctrl+u e ctrl+d
+set sidescroll=1    " ao chegar cursor final da pagina e tiver mais conteudo, move 1 caracter, default 0, meia pagina
+set scrolloff=1     " quando cursor tiver 1 linha do final da pagina, move verticalmente
+set sidescrolloff=2 " igual scrolloff so que horizontal, quando cursor ficar 2 caracteres final da pagina, move 1 caracter, o que esta configurado no sidescroll
 
 "set directory=~/.vim/backup
 "set backupdir=~/.vim/backup
