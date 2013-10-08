@@ -2,7 +2,7 @@
 "       FUN??ES PERSONALIZADAS
 """""""""""""""""""""""""""""""""""
 let g:diretorioArquivoTags = $VIMROOT . "/runtime/tags/"
-function UtilizarTags()
+function! UtilizarTags()
 
   let iOpcao              = confirm("Utilizar Tags???? Qual projeto?", "DBPortal_prj\nFuncoes8\nDBPref", 1) 
   let aEscolhas           = { 1 : "dbportal_prj",
@@ -18,7 +18,7 @@ function UtilizarTags()
 endfunction
 
 
-function AtualizaTags()
+function! AtualizaTags()
 
   let iOpcao              = confirm("Atualizar Tags??? Qual projeto?", "&zDBPortal_prj\n&xFuncoes8\n&cDBPref", 2)
 
@@ -43,7 +43,7 @@ if !exists('g:default_tab_width')
   let g:default_tab_width = 2
 endif
 
-function PadraoISO() 
+function! PadraoISO() 
 
   execute 'set encoding=ISO-8859-1'
   execute 'set fileencoding=ISO-8859-1'
@@ -55,7 +55,7 @@ function PadraoISO()
 
 endfunction
 
-function PadraoUTF() 
+function! PadraoUTF() 
 
   execute 'set encoding=UTF-8'
   execute 'set fileencoding=UTF-8'
@@ -76,7 +76,7 @@ function! Save()
     silent execute ':set ft=' . &filetype
 
     if &filetype == 'php'
-      call s:Executar('php -l ' . PathName() . '/' .  FileName() . ' 2> /tmp/vim_save')
+      call s:Executar('php -l ' . expand('%') . ' 2> /tmp/vim_save')
     endif
 
     echo 'Arquivo salvo'

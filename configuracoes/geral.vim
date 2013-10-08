@@ -3,8 +3,8 @@
 """""""""""""""""""""""""""""""""""""""""""""
 
 " encode
-"call PadraoISO()
-call PadraoUTF()
+call PadraoISO()
+"call PadraoUTF()
 
 filetype plugin on                " Plugins por tipo de arquivo
 filetype indent on                " Indentação por tipo de arquivo

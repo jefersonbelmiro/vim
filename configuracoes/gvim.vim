@@ -5,8 +5,10 @@
 " T - icones de opcoes(copiar, colar, voltar, bla bla)
 set guioptions-=aegimrLtT
 
-color jellybeans
+color Tomorrow-Night
                          
 " destaca linha atual do cursor
 hi clear CursorLineNr
 set cursorline
+
+let g:nerdtree_tabs_open_on_gui_startup = 0

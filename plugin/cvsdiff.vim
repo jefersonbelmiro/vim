@@ -78,7 +78,7 @@ function! s:CriarJanela() abort
 
 endfunction
 
-function l:ChangeFileName(sNome)
+function! l:ChangeFileName(sNome)
 	silent! file! `=a:sNome`
 endfunction
 
@@ -90,7 +90,7 @@ function! s:MapKeys() abort
 
 endfunction
 
-function Cvsdiff(argumentos) 
+function! Cvsdiff(argumentos) 
 
   call CloseWindow()
 
@@ -136,14 +136,14 @@ function Cvsdiff(argumentos)
 
 endfunction
 
-function s:Bootstrap() 
+function! s:Bootstrap() 
 
   if !filereadable('CVS/Repository')
     throw 'Diretório atual não é um repositorio CVS'
   endif
 
   let s:sProjeto  = split(Executar('cat CVS/Repository'))[0] . '/'
-  let s:sArquivo  = FileName()
+  let s:sArquivo  = expand('%') 
   let s:sFileType = &filetype
 
   let s:sEncoding      = &encoding
@@ -196,9 +196,7 @@ function! Processar()
     "endfor
 
     if bufwinnr(s:sNome) == -1
-      exit
       throw 'Erro ao processar diff, tente novamente'
-      return
     endif
 
     let l:sLinhaCursor = getline('.')
@@ -213,7 +211,6 @@ function! Processar()
     let l:sVersoes         = ''
     let l:sPathArquivos    = '/tmp/'
     let l:sComandoCheckout = 'cvs checkout '
-    let s:sArquivo         = FileName()
     let l:sArquivo         = expand('%:t')
     let l:sSeparador       = '__'
 
@@ -355,7 +352,7 @@ function! Executar(comando)
 
 endfunction
 
-function ToogleCvsdiff()
+function! ToogleCvsdiff()
 
   let cvsdiffWindowNumber = bufwinnr(s:sNome)
 

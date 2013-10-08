@@ -17,5 +17,6 @@ sudo apt-get update
 sudo apt-get install silversearcher-ag
 
 # git diff com vim
-git config diff.external git_diff_wrapper
+git config --global difftool.prompt false
+git config --global diff.external git_diff_wrapper
 sudo ln -s ~/.vim/bin/git_diff_wrapper /usr/bin/
