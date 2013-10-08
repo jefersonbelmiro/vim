@@ -23,6 +23,10 @@ map K k
 map <F2> <ESC>:call Save()<CR>
 imap <F2> <ESC>:call Save()<CR>
 
+" copiar e colar da ara de transferencia(clipboard)
+imap <C-v> <ESC> h"+p <ESC> hi
+vmap <C-c> "+y <ESC>
+
 " Redimensiona Janela com ALT + Direcional 
 nnoremap <C-Up>    <C-w>+
 nnoremap <C-Down>  <C-w>-

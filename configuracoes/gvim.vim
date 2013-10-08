@@ -6,7 +6,7 @@
 set guioptions-=aegimrLtT
 
 color jellybeans
-
+                         
 " destaca linha atual do cursor
 hi clear CursorLineNr
 set cursorline

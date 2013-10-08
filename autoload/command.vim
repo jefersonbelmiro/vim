@@ -11,6 +11,19 @@
 " hacks
 "   http://blog.netguru.co/post/61101011518/win-vim-hacks
 "
+" criando menu e icones para gvim
+"    exemplo:
+"      :tmenu ToolBar.taglist Toggle display of the Taglist
+"      :amenu ToolBar.taglist :TlistToggle<CR>
+"   http://superuser.com/questions/11289/how-do-i-customize-the-gvim-toolbar  
+"   
+" Again, you need to specify the name of the menu ("ToolBar") and the name of your new menu entry ("taglist").
+" The name of the new entry will also be used to search for an icon. 
+" You can place the icon in your ~/.vim/bitmaps/ directory (simply create it if it doesn't exist yet). 
+" Supposedly,tmenu tmenuyou need a .bmp on Windows and a .xpm everywhere else. The icon's size needs to be 18 x 18 pixels.
+" tmenu  
+" tmenu is responsible for the tooltip displayed when hovering the icon. Use amenu to decide what should happen when the icon is clicked.
+"
 
 if !has('python')
   echo "Error: Required vim compiled with +python"

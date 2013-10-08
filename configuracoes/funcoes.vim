@@ -76,7 +76,7 @@ function! Save()
     silent execute ':set ft=' . &filetype
 
     if &filetype == 'php'
-      call s:Executar('php -l ' . FileName() . ' 2> /tmp/vim_save')
+      call s:Executar('php -l ' . PathName() . '/' .  FileName() . ' 2> /tmp/vim_save')
     endif
 
     echo 'Arquivo salvo'
