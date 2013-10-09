@@ -11,4 +11,5 @@ color Tomorrow-Night
 hi clear CursorLineNr
 set cursorline
 
+" desabilita nerdtree ao abrir gvim
 let g:nerdtree_tabs_open_on_gui_startup = 0

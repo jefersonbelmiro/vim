@@ -91,6 +91,19 @@ let g:ctrlp_custom_ignore = {
 
 " easy motion
 let g:EasyMotion_leader_key = '<space>'
+
+" <leader>
+let mapleader = ","
+
+" volta pro normal mode
+inoremap jj <ESC>
+
+" funciona somente no gvim
+" usar para salvar tudo, regerar tag
+"au FocusLost * :echo 'perdeu focu?'
+" ao abrir vim, nao cada arquivo, e sim o vim
+"au VimEnter * :echo 'abriu arquivo: ' . expand('%:t')
+"au WinLeave * :echo 'saiu da janela'
  
 au FileType php inoremap <F7> <ESC>:call PhpDocSingle()<CR>
 au FileType php nnoremap <F7>      :call PhpDocSingle()<CR>

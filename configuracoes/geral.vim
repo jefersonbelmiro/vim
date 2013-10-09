@@ -3,15 +3,17 @@
 """""""""""""""""""""""""""""""""""""""""""""
 
 " encode
-call PadraoISO()
+"call PadraoISO()
 "call PadraoUTF()
 
 filetype plugin on                " Plugins por tipo de arquivo
 filetype indent on                " Indentação por tipo de arquivo
+set nocompatible                  " desabilita compatiblidade com vi
 set history     =2000             " Quantas linhas de histórico o vim deve lembra0
 set ruler                         " Sempre mostra posicao atual
 set hid                           " A buffer becomes hidden when it is abandoned
-set backspace   =eol,start,indent " Configure backspace so it acts as it should act
+"set backspace   =eol,start,indent " Configure backspace so it acts as it should act
+set backspace=indent,eol,start
 set whichwrap  +=<,>,h,l          " @todo -naum sei
 set ignorecase                    " Ignora maiusculas/minusculas quando fizer pesquisa
 set smartcase                     " When searching try to be smart about cases ??? @todo descobrir o que eh mesmo
@@ -52,7 +54,6 @@ set diffexpr=""
 " Navegacao
 set wildmenu
 set wildignore =*.o,*~,*.pyc,CVS,*~            " Ignora certos tipos de arquivo
-"set wildmode   =list:longest,full              " Command <tab> completion, list matches, then longest common, then all.
 set wildmode   =list:longest              " Command <tab> completion, list matches, then longest common, then all.
 
 
@@ -65,6 +66,8 @@ set fileformats =unix,dos,mac                   " Use unix as the standard file 
 
 set switchbuf =useopen,usetab,newtab          " Specify the behavior when switching between buffers 
 
+" abriu arquivo somente leitura, editou e agora nao consegue salvar?
+"cmap w!! w !sudo tee % >/dev/null
 
 "Recolher Pela Syntax
 "
