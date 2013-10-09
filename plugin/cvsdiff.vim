@@ -87,6 +87,7 @@ function! s:MapKeys() abort
   nnoremap <script> <silent> <buffer> <CR> :call Processar()<CR>
   nnoremap <script> <silent> <buffer> m    :call Selecionar()<CR>
   nnoremap <script> <silent> <buffer> q    :call CloseWindow()<CR>
+  au WinLeave <buffer> :call CloseWindow()
 
 endfunction
 

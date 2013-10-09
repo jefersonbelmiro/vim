@@ -95,6 +95,8 @@ let g:EasyMotion_leader_key = '<space>'
 " <leader>
 let mapleader = ","
 
+map <leader>m :CtrlPBufTag<CR>
+
 " volta pro normal mode
 inoremap jj <ESC>
 
