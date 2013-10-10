@@ -79,6 +79,7 @@ function! s:CriarJanela() abort
 endfunction
 
 function! l:ChangeFileName(sNome)
+  silent! bd! a:sNome
 	silent! file! `=a:sNome`
 endfunction
 

@@ -98,7 +98,7 @@ let mapleader = ","
 map <leader>m :CtrlPBufTag<CR>
 
 " volta pro normal mode
-inoremap jj <ESC>
+inoremap jj <ESC>l
 
 " funciona somente no gvim
 " usar para salvar tudo, regerar tag
@@ -106,6 +106,13 @@ inoremap jj <ESC>
 " ao abrir vim, nao cada arquivo, e sim o vim
 "au VimEnter * :echo 'abriu arquivo: ' . expand('%:t')
 "au WinLeave * :echo 'saiu da janela'
+
+" conqueTerm {
+
+  " ao entrar na janela entra em modo insert, para poder usar comandos
+  let g:ConqueTerm_InsertOnEnter = 0
+
+" }
  
 au FileType php inoremap <F7> <ESC>:call PhpDocSingle()<CR>
 au FileType php nnoremap <F7>      :call PhpDocSingle()<CR>
