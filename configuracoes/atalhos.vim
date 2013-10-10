@@ -1,4 +1,7 @@
 
+" <leader>
+let mapleader = ","
+
 " abre arquivo
 map <F9> <ESC><C-w>gf<CR>
 
@@ -64,48 +67,49 @@ let g:neocomplcache_enable_at_startup     = 1
 let g:neocomplcache_disable_auto_complete = 0
 "let g:neocomplcache_enable_auto_select    = 1
 
-" Cvsdiff
-map <F8> :ToogleCvsdiff<cr>
+" Cvsdiff {
+  map <F8> :ToogleCvsdiff<cr>
+" }
 
-"                                                                                 
-" CTRL-P {{{
-let g:ctrlp_map = '<c-p>'
-let g:ctrlp_cmd = 'CtrlP' "let g:ctrlp_working_path_mode = 'c'
-"let g:ctrlp_user_command = 'find %s -type f'
-let g:ctrlp_user_command = 'ag %s -l --nocolor --hidden -g ""'
-let g:ctrlp_max_height = 99999999
+" Tabularize {
 
-"------------------------------------------------------------------------------
-"- abrir programas em aba, ctrl+t
-"------------------------------------------------------------------------------
-"let g:ctrlp_prompt_mappings = {
-"      \ 'AcceptSelection("e")' :  [],
-"      \ 'AcceptSelection("t")' :  ['<cr>', '<c-m>'],
-"      \ }
+  " Alinha busca a esquerda
+  vmap <leader>al <ESC> :call TabularIndent(0)<CR>
+  " Alinha a esquerda proxima palavra da busca
+  vmap <leader>ar <ESC> :call TabularIndent(1)<CR>
 
-let g:ctrlp_custom_ignore = {
-      \ 'dir':  '\v[\/]\.(CVS|git|hg|svn)$',
-      \ 'file': '\v\.(jpg|png|gif)$'
-      \ }
-"}}}
+" }
+
+" CTRL-P {
+
+  let g:ctrlp_map = '<c-p>'
+  let g:ctrlp_cmd = 'CtrlP' "let g:ctrlp_working_path_mode = 'c'
+  "let g:ctrlp_user_command = 'find %s -type f'
+  let g:ctrlp_user_command = 'ag %s -l --nocolor --hidden -g ""'
+  let g:ctrlp_max_height = 99999999
+  let g:ctrlp_extensions = ['funky']
+  
+  "------------------------------------------------------------------------------
+  "- abrir programas em aba, ctrl+t
+  "------------------------------------------------------------------------------
+  "let g:ctrlp_prompt_mappings = {
+  "      \ 'AcceptSelection("e")' :  [],
+  "      \ 'AcceptSelection("t")' :  ['<cr>', '<c-m>'],
+  "      \ }
+  
+  let g:ctrlp_custom_ignore = {
+        \ 'dir':  '\v[\/]\.(CVS|git|hg|svn)$',
+        \ 'file': '\v\.(jpg|png|gif)$'
+        \ }
+" }
 
 " easy motion
 let g:EasyMotion_leader_key = '<space>'
-
-" <leader>
-let mapleader = ","
 
 map <leader>m :CtrlPBufTag<CR>
 
 " volta pro normal mode
 inoremap jj <ESC>l
-
-" funciona somente no gvim
-" usar para salvar tudo, regerar tag
-"au FocusLost * :echo 'perdeu focu?'
-" ao abrir vim, nao cada arquivo, e sim o vim
-"au VimEnter * :echo 'abriu arquivo: ' . expand('%:t')
-"au WinLeave * :echo 'saiu da janela'
 
 " conqueTerm {
 

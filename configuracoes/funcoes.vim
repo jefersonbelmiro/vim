@@ -126,3 +126,15 @@ function! ToggleMouse()
   endif
 endfunction
 
+" identacao tabular
+function TabularIndent(alignRight) 
+  normal! gv
+  if !empty(a:alignRight) 
+    let l:busca = input("Tabularize right: ")
+    exec ":'<,'>Tab /" . l:busca . "\zs"
+  else
+    let l:busca = input("Tabularize: ")
+    exec ":'<,'>Tab /" . l:busca
+  endif
+  execute "normal! \<Esc>"
+endfunction

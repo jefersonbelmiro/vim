@@ -37,7 +37,7 @@ set nowritebackup
 set noswapfile  
   
 set number
-set mouse=
+set mouse=a
 set ve=all
 set showcmd
 set showmode

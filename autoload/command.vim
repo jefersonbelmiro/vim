@@ -24,6 +24,17 @@
 " tmenu  
 " tmenu is responsible for the tooltip displayed when hovering the icon. Use amenu to decide what should happen when the icon is clicked.
 "
+"
+
+" au FocusLost * :echo 'perdeu focu?'
+"
+" ao abrir vim, nao cada arquivo, e sim o vim
+"   au VimEnter * :echo 'abriu arquivo: ' . expand('%:t')
+" 
+" ao sair da janela
+"   au WinLeave * :echo 'saiu da janela'
+"
+"
 
 if !has('python')
   echo "Error: Required vim compiled with +python"
