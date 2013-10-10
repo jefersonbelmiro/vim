@@ -62,10 +62,32 @@ endif
 " tagbar
 nnoremap <silent> tg :TagbarToggle<CR>
 
-" neocomplcache
-let g:neocomplcache_enable_at_startup     = 1  
-let g:neocomplcache_disable_auto_complete = 0
-"let g:neocomplcache_enable_auto_select    = 1
+" neocomplcache {
+  " habilita neocomplcache
+  let g:neocomplcache_enable_at_startup     = 1  
+  let g:neocomplcache_disable_auto_complete = 0
+  
+  " For cursor moving in insert mode
+  " habilita pop-up somente quando inserir algum caracter
+  let g:neocomplcache_enable_insert_char_pre = 1
+  
+  " AutoComplPop like behavior.
+  let g:neocomplcache_enable_auto_select = 1
+  
+  " NAO TESTADOS {{{
+  " Enable heavy omni completion.
+  if !exists('g:neocomplcache_omni_patterns')
+    let g:neocomplcache_omni_patterns = {}
+  endif
+  let g:neocomplcache_omni_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
+  let g:neocomplcache_omni_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
+  let g:neocomplcache_omni_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
+
+  " For perlomni.vim setting.
+  " https://github.com/c9s/perlomni.vim
+  let g:neocomplcache_omni_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
+
+" }
 
 " Cvsdiff {
   map <F8> :ToogleCvsdiff<cr>
@@ -74,9 +96,9 @@ let g:neocomplcache_disable_auto_complete = 0
 " Tabularize {
 
   " Alinha busca a esquerda
-  vmap <leader>al <ESC> :call TabularIndent(0)<CR>
+  "vmap <leader>al <ESC> :call TabularIndent(0)<CR>
   " Alinha a esquerda proxima palavra da busca
-  vmap <leader>ar <ESC> :call TabularIndent(1)<CR>
+  "vmap <leader>ar <ESC> :call TabularIndent(1)<CR>
 
 " }
 
@@ -118,14 +140,20 @@ inoremap jj <ESC>l
 
 " }
  
+" Enable omni completion.
+autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+autocmd FileType php setlocal omnifunc=phpcomplete#CompletePHP
+
 au FileType php inoremap <F7> <ESC>:call PhpDocSingle()<CR>
 au FileType php nnoremap <F7>      :call PhpDocSingle()<CR>
 au FileType php vnoremap <F7>      :call PhpDocRange()<CR>
-au FileType php set      omnifunc=phpcomplete#CompletePHP
  
 au FileType javascript inoremap <F7> <ESC>:call WriteJSDocComment()<CR>
 au FileType javascript nnoremap <F7>      :call WriteJSDocComment()<CR>
 au FileType javascript vnoremap <F7>      :call WriteJSDocComment()<CR>
-au FileType javascript set      omnifunc=javascriptcomplete#CompleteJS
 
 au Filetype sql setfiletype pgsql
