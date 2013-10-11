@@ -36,8 +36,9 @@ set nobackup
 set nowritebackup 
 set noswapfile  
   
-set number
+set mousem=popup_setpos
 set mouse=a
+set number
 set ve=all
 set showcmd
 set showmode
