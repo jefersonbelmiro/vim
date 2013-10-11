@@ -132,13 +132,6 @@ map <leader>m :CtrlPBufTag<CR>
 
 " volta pro normal mode
 inoremap jj <ESC>l
-
-" conqueTerm {
-
-  " ao entrar na janela entra em modo insert, para poder usar comandos
-  let g:ConqueTerm_InsertOnEnter = 0
-
-" }
  
 " Enable omni completion.
 autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
