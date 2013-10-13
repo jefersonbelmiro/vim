@@ -354,7 +354,7 @@ function! Executar(comando)
 
 endfunction
 
-function! ToogleCvsdiff()
+function! CvsDiffToggle()
 
   let cvsdiffWindowNumber = bufwinnr(s:sNome)
 
@@ -367,7 +367,7 @@ function! ToogleCvsdiff()
 
 endfunction
 
-command! ToogleCvsdiff call ToogleCvsdiff()
+command! CvsDiffToggle call CvsDiffToggle()
 
 " registra comando Cvsdiff que pode ter 1 ou nenhum argumento
 command! -nargs=? -complete=buffer Cvsdiff call Cvsdiff("<args>")

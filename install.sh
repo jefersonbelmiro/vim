@@ -20,3 +20,12 @@ sudo apt-get install silversearcher-ag
 git config --global difftool.prompt false
 git config --global diff.external git_diff_wrapper
 sudo ln -s ~/.vim/bin/git_diff_wrapper /usr/bin/
+
+
+# alterar cor do gtk usando gvim
+# pro no arquivo ~/.gtkrc-2.0 
+# style "vimfix" {
+#   bg[NORMAL] = "#141414" # this matches my gvim theme 'Normal' bg color.
+# }
+# widget "vim-main-window.*GtkForm" style "vimfix"
+

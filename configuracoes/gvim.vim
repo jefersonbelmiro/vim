@@ -4,8 +4,10 @@
 " r - scroll da direita
 " T - icones de opcoes(copiar, colar, voltar, bla bla)
 set guioptions-=aegimrLtT
+set guioptions+=ram
 
-color Tomorrow-Night
+unlet g:airline_theme
+color jellybeans
                          
 " destaca linha atual do cursor
 hi clear CursorLineNr

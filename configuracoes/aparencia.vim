@@ -1,11 +1,16 @@
 
-syntax enable                   "Habilita coloração por syntax
-set t_Co               =256
-set textwidth          =110
+"Habilita coloração por syntax 
+syntax enable 
 
-set showtabline        =2
+set t_Co=256
+set textwidth=110
+
+" 1 - mostra abas somente se tiver 2 arquivos 
+" 2 - sempre mostra abas 
+set showtabline=2
+
 " Sempre mostra barra de Mensagens 
-set laststatus         =2
+set laststatus=2
 
 " Formata Barra de Status
 "set statusline         =%<%f\ \ %h%m%r%Y%=\www.dbseller.com.br\ linha:\ %l,total\ :%L,%c%V\ %P 

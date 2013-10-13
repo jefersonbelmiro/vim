@@ -26,6 +26,10 @@ map K k
 map <F2> <ESC>:call Save()<CR>
 imap <F2> <ESC>:call Save()<CR>
 
+au VimEnter * :call UpdateScroll()
+au VimResized * :call UpdateScroll()
+au BufEnter * :call UpdateScroll()
+
 " copiar e colar da ara de transferencia(clipboard)
 imap <C-v> <ESC> h"+p <ESC> hi
 vmap <C-c> "+y <ESC>
@@ -90,31 +94,21 @@ nnoremap <silent> tg :TagbarToggle<CR>
 " }
 
 " Cvsdiff {
-  map <F8> :ToogleCvsdiff<cr>
-" }
-
-" Tabularize {
-
-  " Alinha busca a esquerda
-  "vmap <leader>al <ESC> :call TabularIndent(0)<CR>
-  " Alinha a esquerda proxima palavra da busca
-  "vmap <leader>ar <ESC> :call TabularIndent(1)<CR>
-
+  map <F8> :CvsDiffToggle<cr>
 " }
 
 " CTRL-P {
 
   let g:ctrlp_map = '<c-p>'
-  let g:ctrlp_cmd = 'CtrlP' "let g:ctrlp_working_path_mode = 'c'
+  let g:ctrlp_cmd = 'CtrlPCurWD' 
+  "let g:ctrlp_working_path_mode = 'c'
   "let g:ctrlp_user_command = 'find %s -type f'
   let g:ctrlp_user_command = 'ag %s -l --nocolor --hidden -g ""'
-  let g:ctrlp_max_height = 99999999
-  let g:ctrlp_extensions = ['funky']
+  "let g:ctrlp_max_height = 99999999
+  "let g:ctrlp_extensions = ['funky']
   
-  "------------------------------------------------------------------------------
-  "- abrir programas em aba, ctrl+t
-  "------------------------------------------------------------------------------
-  "let g:ctrlp_prompt_mappings = {
+  " abrir programas em aba, ctrl+t
+  " let g:ctrlp_prompt_mappings = {
   "      \ 'AcceptSelection("e")' :  [],
   "      \ 'AcceptSelection("t")' :  ['<cr>', '<c-m>'],
   "      \ }
@@ -129,9 +123,62 @@ nnoremap <silent> tg :TagbarToggle<CR>
 let g:EasyMotion_leader_key = '<space>'
 
 map <leader>m :CtrlPBufTag<CR>
+map <leader>p :CtrlPCmdPalette<CR>
+map <leader>b :CtrlPBuffer<CR>
 
 " volta pro normal mode
 inoremap jj <ESC>l
+inoremap JJ <ESC>l
+
+" ------------------------------------------------------------------------------
+" airline {
+" ------------------------------------------------------------------------------
+"
+
+  function! AirlineInit()
+    let g:airline_section_a = airline#section#create(['mode'])
+    let g:airline_section_b = airline#section#create_left(['%f'])
+    let g:airline_section_c = airline#section#create(['filetype', '  ', 'ffenc', '  ', '%v'])
+    let g:airline_section_x = airline#section#create([])
+    let g:airline_section_y = airline#section#create([])
+    let g:airline_section_z = airline#section#create_right(['%L'])
+    let g:airline_section_warning = airline#section#create_right([])
+  endfunction
+
+  autocmd VimEnter * call AirlineInit()
+
+  let g:airline_mode_map = {
+        \ '__' : '-',
+        \ 'n'  : 'N',
+        \ 'i'  : 'I',
+        \ 'R'  : 'R',
+        \ 'c'  : 'C',
+        \ 'v'  : 'V',
+        \ 'V'  : 'V',
+        \ '' : 'V',
+        \ 's'  : 'S',
+        \ 'S'  : 'S',
+        \ '' : 'S',
+        \ }
+
+
+  let g:airline_theme = 'ubaryd'
+  let g:airline#extensions#tabline#enabled = 1
+  let g:airline#extensions#tabline#show_buffers = 0
+  let g:airline#extensions#tabline#fnamemod = ':t'
+  let g:airline#extensions#tabline#tab_min_count = 2
+
+  if !exists('g:airline_symbols')
+    let g:airline_symbols = {}
+  endif
+
+  let g:airline_left_sep = ''
+  let g:airline_right_sep = ''
+
+" ------------------------------------------------------------------------------
+" }
+" ------------------------------------------------------------------------------
+
  
 " Enable omni completion.
 autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS

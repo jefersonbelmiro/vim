@@ -80,6 +80,7 @@ function! Save()
     endif
 
     echo 'Arquivo salvo'
+    call UpdateScroll()
 
   catch
 
@@ -94,6 +95,17 @@ function! Save()
     echohl WarningMsg | echo s:erro 
   endtry
 
+endfunction
+
+" Exibe/oculta scrollbar
+function! UpdateScroll()
+  let fileLines = line('$')
+  let winHeight = winheight(winnr())
+  if fileLines > winHeight 
+    set go+=r 
+  else 
+    set go-=r 
+  endif
 endfunction
 
 "
@@ -126,15 +138,15 @@ function! ToggleMouse()
   endif
 endfunction
 
-" identacao tabular
-function TabularIndent(alignRight) 
-  normal! gv
-  if !empty(a:alignRight) 
-    let l:busca = input("Tabularize right: ")
-    exec ":'<,'>Tab /" . l:busca . "\zs"
-  else
-    let l:busca = input("Tabularize: ")
-    exec ":'<,'>Tab /" . l:busca
-  endif
-  execute "normal! \<Esc>"
+function! Strip(input_string)
+  return substitute(a:input_string, '^\s*\(.\{-}\)\s*$', '\1', '')
+endfunction
+
+" command! -nargs=1 Silent
+" \ | execute ':silent !'.<q-args>
+" \ | execute ':redraw!'
+function! ExecuteBackground(command, title)
+  execute "silent !" . a:command. " > /dev/null 2>&1 && " .
+        \ "/usr/bin/notify-send \"" . a:title . "\" complete &"
+  execute ':redraw!'
 endfunction

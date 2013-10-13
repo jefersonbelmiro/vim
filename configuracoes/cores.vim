@@ -1,7 +1,5 @@
 
-set background =dark
-"colorscheme Tomorrow-Night-Bright 
-"colorscheme Tomorrow
+set background=dark
 colorscheme womprat
 "hi clear CursorColumn
 "hi clear CursorLine  
