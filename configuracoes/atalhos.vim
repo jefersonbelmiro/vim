@@ -74,18 +74,19 @@ nnoremap <silent> tg :TagbarToggle<CR>
   " AutoComplPop like behavior.
   let g:neocomplcache_enable_auto_select = 1
   
-  " NAO TESTADOS {{{
-  " Enable heavy omni completion.
-  if !exists('g:neocomplcache_omni_patterns')
-    let g:neocomplcache_omni_patterns = {}
-  endif
-  let g:neocomplcache_omni_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
-  let g:neocomplcache_omni_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
-  let g:neocomplcache_omni_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
+  " NAO TESTADOS {
+    " Enable heavy omni completion.
+    "if !exists('g:neocomplcache_omni_patterns')
+    "  let g:neocomplcache_omni_patterns = {}
+    "endif
+    "let g:neocomplcache_omni_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
+    "let g:neocomplcache_omni_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
+    "let g:neocomplcache_omni_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
 
-  " For perlomni.vim setting.
-  " https://github.com/c9s/perlomni.vim
-  let g:neocomplcache_omni_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
+    " For perlomni.vim setting.
+    " https://github.com/c9s/perlomni.vim
+    "let g:neocomplcache_omni_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
+  " }
 
 " }
 
