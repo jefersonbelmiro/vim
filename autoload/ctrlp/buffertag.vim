@@ -64,7 +64,7 @@ let s:types = {
 	\ 'make'   : '%smake%smake%sm',
 	\ 'pascal' : '%spascal%spascal%sfp',
 	\ 'perl'   : '%sperl%sperl%sclps',
-	\ 'php'    : '%sphp%sphp%scdvf',
+	\ 'php'    : '%sphp%sphp%scdf',
 	\ 'python' : '%spython%spython%scmf',
 	\ 'rexx'   : '%srexx%srexx%ss',
 	\ 'ruby'   : '%sruby%sruby%scfFm',
@@ -78,7 +78,7 @@ let s:types = {
 	\ 'tcl'    : '%stcl%stcl%scfmp',
 	\ 'vera'   : '%svera%svera%scdefgmpPtTvx',
 	\ 'verilog': '%sverilog%sverilog%smcPertwpvf',
-	\ 'vim'    : '%svim%svim%savf',
+	\ 'vim'    : '%svim%svim%saf',
 	\ 'yacc'   : '%syacc%syacc%sl',
 	\ }
 
@@ -173,6 +173,9 @@ fu! s:process(fname, ftype)
 	el
 		let data = s:exectagsonfile(a:fname, a:ftype)
 		let [raw, lines] = [split(data, '\n\+'), []]
+
+    let g:linesWidth = s:getLinesWidth(raw)
+
 		for line in raw
 			if line !~# '^!_TAG_' && len(split(line, ';"')) == 2
 				let parsed_line = s:parseline(line)
@@ -187,12 +190,48 @@ fu! s:process(fname, ftype)
 	retu lines
 endf
 
+function! s:getLinesWidth(raw)
+
+  let l:linesWidth = {'left' : 1, 'right' : 1}
+
+  for line in a:raw
+
+    if line !~# '^!_TAG_' && len(split(line, ';"')) == 2
+
+      let vals = matchlist(line,
+            \ '\v^([^\t]+)\t(.+)\t[?/]\^?(.{-1,})\$?[?/]\;\"\t(.+)\tline(no)?\:(\d+)')
+
+      if vals == [] 
+        continue
+      endif
+
+      let [bufnr, bufname] = [bufnr('^'.vals[2].'$'), fnamemodify(vals[2], ':p:t')]
+
+      if len(vals[1]) > l:linesWidth.left
+        let l:linesWidth.left = len(vals[1])
+      endif
+
+      if len(vals[4]) > l:linesWidth.right
+        let l:linesWidth.right = len(vals[4])
+      endif
+
+    endif
+  endfo
+
+  return l:linesWidth
+
+endfunction
+
 fu! s:parseline(line)
 	let vals = matchlist(a:line,
 		\ '\v^([^\t]+)\t(.+)\t[?/]\^?(.{-1,})\$?[?/]\;\"\t(.+)\tline(no)?\:(\d+)')
 	if vals == [] | retu '' | en
 	let [bufnr, bufname] = [bufnr('^'.vals[2].'$'), fnamemodify(vals[2], ':p:t')]
-	retu vals[1].'	'.vals[4].'|'.bufnr.':'.bufname.'|'.vals[6].'| '.vals[3]
+
+  " just for hidden right text
+  let l:separator = printf("%" . winwidth(winnr()) .  "s", " ")
+  let l:tag = printf("%-".g:linesWidth.left."s \t%-".g:linesWidth.left."s", vals[1], vals[4])
+	retu l:tag .  l:separator .vals[4].'|'.bufnr.':'.bufname.'|'.vals[6].'| '.vals[3]
 endf
 
 fu! s:syntax()
@@ -255,6 +294,7 @@ endf
 
 fu! ctrlp#buffertag#exit()
 	unl! s:btmode s:bufname
+  unlet! g:linesWidth
 endf
 "}}}
 

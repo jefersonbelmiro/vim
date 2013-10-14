@@ -80,7 +80,6 @@ function! Save()
     endif
 
     echo 'Arquivo salvo'
-    call UpdateScroll()
 
   catch
 

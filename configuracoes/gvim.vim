@@ -4,7 +4,7 @@
 " r - scroll da direita
 " T - icones de opcoes(copiar, colar, voltar, bla bla)
 set guioptions-=aegimrLtT
-set guioptions+=ram
+set guioptions=amr
 
 unlet g:airline_theme
 color jellybeans
@@ -15,3 +15,7 @@ set cursorline
 
 " desabilita nerdtree ao abrir gvim
 let g:nerdtree_tabs_open_on_gui_startup = 0
+
+au VimEnter * :call UpdateScroll()
+au VimResized * :call UpdateScroll()
+au BufEnter * :call UpdateScroll()

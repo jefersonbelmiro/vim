@@ -26,10 +26,6 @@ map K k
 map <F2> <ESC>:call Save()<CR>
 imap <F2> <ESC>:call Save()<CR>
 
-au VimEnter * :call UpdateScroll()
-au VimResized * :call UpdateScroll()
-au BufEnter * :call UpdateScroll()
-
 " copiar e colar da ara de transferencia(clipboard)
 imap <C-v> <ESC> h"+p <ESC> hi
 vmap <C-c> "+y <ESC>
@@ -104,7 +100,7 @@ nnoremap <silent> tg :TagbarToggle<CR>
   "let g:ctrlp_working_path_mode = 'c'
   "let g:ctrlp_user_command = 'find %s -type f'
   let g:ctrlp_user_command = 'ag %s -l --nocolor --hidden -g ""'
-  "let g:ctrlp_max_height = 99999999
+  let g:ctrlp_max_height = 99999999
   "let g:ctrlp_extensions = ['funky']
   
   " abrir programas em aba, ctrl+t
