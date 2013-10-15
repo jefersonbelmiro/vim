@@ -26,9 +26,22 @@ map K k
 map <F2> <ESC>:call Save()<CR>
 imap <F2> <ESC>:call Save()<CR>
 
-" copiar e colar da ara de transferencia(clipboard)
-imap <C-v> <ESC> h"+p <ESC> hi
-vmap <C-c> "+y <ESC>
+" CTRL-V and SHIFT-Insert are Paste
+"map <C-V>		"+gP
+"map <S-Insert>		"+gP
+exe 'inoremap <script> <C-V>' paste#paste_cmd['i']
+exe 'vnoremap <script> <C-V>' paste#paste_cmd['v']
+
+" CTRL-X and SHIFT-Del are Cut
+vnoremap <C-X> "+x
+vnoremap <S-Del> "+x
+
+" CTRL-C and CTRL-Insert are Copy
+vnoremap <C-C> "+y
+vnoremap <C-Insert> "+y
+
+" backspace in Visual mode deletes selection
+vnoremap <BS> d
 
 " Redimensiona Janela com ALT + Direcional 
 nnoremap <C-Up>    <C-w>+
@@ -176,6 +189,11 @@ inoremap JJ <ESC>l
 " }
 " ------------------------------------------------------------------------------
 
+" TComment {
+" - https://github.com/tomtom/tcomment_vim
+  map <leader>c :TComment<CR>
+  vmap <leader>c :TComment<CR>
+" }
  
 " Enable omni completion.
 autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
