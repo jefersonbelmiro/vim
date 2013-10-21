@@ -7,15 +7,17 @@ set guioptions-=aegimrLtT
 set guioptions=amr
 
 unlet g:airline_theme
-color jellybeans
+color Tomorrow-Night
                          
 " destaca linha atual do cursor
 hi clear CursorLineNr
+hi CursorLineNr guifg=#999999
 set cursorline
 
 " desabilita nerdtree ao abrir gvim
 let g:nerdtree_tabs_open_on_gui_startup = 0
 
-au VimEnter * :call UpdateScroll()
-au VimResized * :call UpdateScroll()
-au BufEnter * :call UpdateScroll()
+" + - ctrl+c clipboard
+" * - select clipboard
+cmap <C-V>      	<C-R>+
+map! <S-Insert>		<C-R>*

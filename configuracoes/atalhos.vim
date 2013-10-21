@@ -43,7 +43,7 @@ vnoremap <C-Insert> "+y
 " backspace in Visual mode deletes selection
 vnoremap <BS> d
 
-" Redimensiona Janela com ALT + Direcional 
+" Redimensiona Janela com Ctrl + Direcional 
 nnoremap <C-Up>    <C-w>+
 nnoremap <C-Down>  <C-w>-
 nnoremap <C-Left>  <C-w><
@@ -76,9 +76,9 @@ endif
 nnoremap <silent> tg :TagbarToggle<CR>
 
 " neocomplcache {
-  " habilita neocomplcache
-  let g:neocomplcache_enable_at_startup     = 1  
-  let g:neocomplcache_disable_auto_complete = 0
+  " deshabilita neocomplcache
+  let g:neocomplcache_enable_at_startup     = 0  
+  let g:neocomplcache_disable_auto_complete = 1
   
   " For cursor moving in insert mode
   " habilita pop-up somente quando inserir algum caracter

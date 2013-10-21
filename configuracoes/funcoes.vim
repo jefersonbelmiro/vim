@@ -149,3 +149,15 @@ function! ExecuteBackground(command, title)
         \ "/usr/bin/notify-send \"" . a:title . "\" complete &"
   execute ':redraw!'
 endfunction
+
+function! AutocompleteToggle() 
+  if  g:neocomplcache_enable_at_startup == 0
+    let g:neocomplcache_enable_at_startup     = 1  
+    let g:neocomplcache_disable_auto_complete = 0
+  else
+    let g:neocomplcache_enable_at_startup     = 0  
+    let g:neocomplcache_disable_auto_complete = 1
+  endif
+endfunction
+
+command AutocompleteToggle :call AutocompleteToggle()
