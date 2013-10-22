@@ -76,30 +76,43 @@ endif
 nnoremap <silent> tg :TagbarToggle<CR>
 
 " neocomplcache {
-  " deshabilita neocomplcache
-  let g:neocomplcache_enable_at_startup     = 0  
-  let g:neocomplcache_disable_auto_complete = 1
+"
+  " Disable AutoComplPop.
+  let g:acp_enableAtStartup = 0
+  " Use neocomplcache.
+  let g:neocomplcache_enable_at_startup = 1
+  " Use smartcase.
+  let g:neocomplcache_enable_smart_case = 1
+  " Set minimum syntax keyword length.
+  let g:neocomplcache_min_syntax_length = 3
+  let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
+  let g:neocomplcache_enable_at_startup     = 1
   
   " For cursor moving in insert mode
+  " let g:neocomplcache_enable_cursor_hold_i = 1
   " habilita pop-up somente quando inserir algum caracter
   let g:neocomplcache_enable_insert_char_pre = 1
-  
+
   " AutoComplPop like behavior.
   let g:neocomplcache_enable_auto_select = 1
-  
+
   " NAO TESTADOS {
     " Enable heavy omni completion.
-    "if !exists('g:neocomplcache_omni_patterns')
-    "  let g:neocomplcache_omni_patterns = {}
-    "endif
-    "let g:neocomplcache_omni_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
-    "let g:neocomplcache_omni_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
-    "let g:neocomplcache_omni_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
+    if !exists('g:neocomplcache_omni_patterns')
+     let g:neocomplcache_omni_patterns = {}
+    endif
+    let g:neocomplcache_omni_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
+    " let g:neocomplcache_omni_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
+    " let g:neocomplcache_omni_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
 
     " For perlomni.vim setting.
     " https://github.com/c9s/perlomni.vim
     "let g:neocomplcache_omni_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
   " }
+
+  " desabilita autocomplete
+  "let g:neocomplcache_enable_at_startup     = 0  
+  let g:neocomplcache_disable_auto_complete = 1
 
 " }
 

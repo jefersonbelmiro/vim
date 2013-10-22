@@ -151,13 +151,15 @@ function! ExecuteBackground(command, title)
 endfunction
 
 function! AutocompleteToggle() 
-  if  g:neocomplcache_enable_at_startup == 0
+  if exists('g:neocomplcache_disable_auto_complete') && g:neocomplcache_disable_auto_complete == 1
     let g:neocomplcache_enable_at_startup     = 1  
     let g:neocomplcache_disable_auto_complete = 0
+    echo "Autocomplete [ON]"
   else
     let g:neocomplcache_enable_at_startup     = 0  
     let g:neocomplcache_disable_auto_complete = 1
+    echo "Autocomplete [OFF]"
   endif
 endfunction
 
-command AutocompleteToggle :call AutocompleteToggle()
+command! AutocompleteToggle :call AutocompleteToggle()
