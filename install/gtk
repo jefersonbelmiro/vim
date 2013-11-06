@@ -1,0 +1,33 @@
+~/.config/gtk-3.0/gtk.css {{{{{
+
+  @define-color bg-grey #222;
+  @define-color active-grey #333;
+  @define-color border-grey #555;
+
+  TerminalWindow .notebook {
+    border: 0;
+    padding: 2px 0;
+    color: #eee;
+    background-color: shade(@active-grey, 1);
+  }
+
+  TerminalWindow .notebook tab:active {
+    border: 1px solid @border-grey;
+    background-color: shade(@active-grey, 1);
+  }
+
+  TerminalWindow .notebook tab {
+    background-color: shade(@bg-grey, 1);
+  }
+
+}}}}}
+
+
+~/.gtkrc-2.0 {{{{{
+
+  style "vimfix" {
+    bg[NORMAL] = "#1d1f21" # this matches my gvim theme 'Normal' bg color.
+  }
+  widget "vim-main-window.*GtkForm" style "vimfix"
+
+}}}}}
