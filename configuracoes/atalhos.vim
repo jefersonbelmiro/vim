@@ -6,8 +6,17 @@ let mapleader = ","
 map <F9> <ESC><C-w>gf<CR>
 
 " troca de abas
-map tk :tabnext<CR>
-map tj :tabprev<CR>
+map <silent> tk :tabnext<CR>
+map <silent> tj :tabprev<CR>
+map <silent> <A-1> :tabnext 1 <CR>
+map <silent> <A-2> :tabnext 2 <CR>
+map <silent> <A-3> :tabnext 3 <CR>
+map <silent> <A-4> :tabnext 4 <CR>
+map <silent> <A-5> :tabnext 5 <CR>
+map <silent> <A-6> :tabnext 6 <CR>
+map <silent> <A-7> :tabnext 7 <CR>
+map <silent> <A-8> :tabnext 8 <CR>
+map <silent> <A-9> :tabnext 9 <CR>
 
 " fecha arquivo
 map <F4> :q<CR>

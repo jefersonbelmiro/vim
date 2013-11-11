@@ -12,6 +12,7 @@ color Tomorrow-Night
 " destaca linha atual do cursor
 hi clear CursorLineNr
 hi CursorLineNr guifg=#999999
+hi Search guibg=#666 guifg=#222
 set cursorline
 
 " desabilita nerdtree ao abrir gvim
@@ -19,5 +20,5 @@ let g:nerdtree_tabs_open_on_gui_startup = 0
 
 " + - ctrl+c clipboard
 " * - select clipboard
-cmap <C-V>      	<C-R>+
-map! <S-Insert>		<C-R>*
+cnoremap <C-V>      	<C-R>+
+cnoremap <S-Insert>		<C-R>*
