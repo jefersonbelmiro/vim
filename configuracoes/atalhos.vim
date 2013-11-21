@@ -8,17 +8,17 @@ set iskeyword+=$
 map <F9> <ESC><C-w>gf<CR>
 
 " troca de abas
-noremap <silent> tk :tabnext<CR>
-noremap <silent> tj :tabprev<CR>
-noremap <silent> <A-1> 1gt
-noremap <silent> <A-2> 2gt
-noremap <silent> <A-3> 3gt
-noremap <silent> <A-4> 4gt
-noremap <silent> <A-5> 5gt
-noremap <silent> <A-6> 6gt
-noremap <silent> <A-7> 7gt
-noremap <silent> <A-8> 8gt
-noremap <silent> <A-9> 9gt
+nnoremap <silent> tk :tabnext<CR>
+nnoremap <silent> tj :tabprev<CR>
+nnoremap <silent> <A-1> 1gt
+nnoremap <silent> <A-2> 2gt
+nnoremap <silent> <A-3> 3gt
+nnoremap <silent> <A-4> 4gt
+nnoremap <silent> <A-5> 5gt
+nnoremap <silent> <A-6> 6gt
+nnoremap <silent> <A-7> 7gt
+nnoremap <silent> <A-8> 8gt
+nnoremap <silent> <A-9> 9gt
 
 " fecha arquivo
 map <F4> :q<CR>
