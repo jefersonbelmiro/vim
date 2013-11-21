@@ -14,9 +14,9 @@ function! Cvsgit(sArgumentos)
 
   " arquivo em php que adiciona arquivo a lista para commit 
   let commitArquivo = 'cvsgit '
-  let s:arquivo = ''
+  let s:arquivo = PathName() . '/' . FileName()
 
-  " caso passar argumentos para a funcao, exemplo: :Cvsgit -m 'mensagem do  comit' -t 99999 -fix 
+  " caso passar argumentos para a funcao, exemplo: :Cvsgit add -m 'mensagem do  comit' -t 99999 -fix 
   if !empty(a:sArgumentos)
 
     let commitArquivo .= a:sArgumentos
@@ -51,8 +51,6 @@ function! Cvsgit(sArgumentos)
     if !empty(l:commitTipo) 
       let g:commitInputTipo = l:commitTipo
     endif
-
-    let s:arquivo = PathName() . '/' . FileName()
 
   endif
 

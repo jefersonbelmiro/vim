@@ -2,21 +2,23 @@
 " <leader>
 let mapleader = ","
 
+set iskeyword+=$
+
 " abre arquivo
 map <F9> <ESC><C-w>gf<CR>
 
 " troca de abas
-map <silent> tk :tabnext<CR>
-map <silent> tj :tabprev<CR>
-map <silent> <A-1> :tabnext 1 <CR>
-map <silent> <A-2> :tabnext 2 <CR>
-map <silent> <A-3> :tabnext 3 <CR>
-map <silent> <A-4> :tabnext 4 <CR>
-map <silent> <A-5> :tabnext 5 <CR>
-map <silent> <A-6> :tabnext 6 <CR>
-map <silent> <A-7> :tabnext 7 <CR>
-map <silent> <A-8> :tabnext 8 <CR>
-map <silent> <A-9> :tabnext 9 <CR>
+noremap <silent> tk :tabnext<CR>
+noremap <silent> tj :tabprev<CR>
+noremap <silent> <A-1> 1gt
+noremap <silent> <A-2> 2gt
+noremap <silent> <A-3> 3gt
+noremap <silent> <A-4> 4gt
+noremap <silent> <A-5> 5gt
+noremap <silent> <A-6> 6gt
+noremap <silent> <A-7> 7gt
+noremap <silent> <A-8> 8gt
+noremap <silent> <A-9> 9gt
 
 " fecha arquivo
 map <F4> :q<CR>

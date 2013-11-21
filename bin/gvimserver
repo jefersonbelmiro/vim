@@ -1,17 +1,3 @@
 #!/bin/bash
-#
-# -----------------------------------------------------------------------------
-# Abrir sempre na mesma janela
-# -----------------------------------------------------------------------------
 # alias gvim='gvim -geometry 120x40 --remote-tab-silent'
-
-ANS=`pgrep -fx "gvim --servername GVIM"`
-
-if [[ ! $ANS ]]; then
-  gvim --servername GVIM
-fi
-
-# if [ -f $1 ]; then # verifica se primeiro parametro é um arquivo
-if [[ $1 ]]; then
-  gvim --servername GVIM --remote-tab "${@}"
-fi
+/usr/bin/gvim  --remote-tab-silent "${@}"
