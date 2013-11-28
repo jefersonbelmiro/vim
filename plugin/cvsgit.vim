@@ -68,7 +68,9 @@ function! Cvsgit(sArgumentos)
     let respostaArquivo = system('cat /tmp/cvsgit_output_vim')
 
     if !empty(respostaArquivo)
-      exec '!clear & less /tmp/cvsgit_output_vim'
+      echohl WarningMsg | echon "\n\r " . respostaArquivo 
+      return
+      " exec '!clear & less /tmp/cvsgit_output_vim'
     endif
 
   endif

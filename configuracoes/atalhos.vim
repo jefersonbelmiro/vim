@@ -5,7 +5,8 @@ let mapleader = ","
 set iskeyword+=$
 
 " abre arquivo
-map <F9> <ESC><C-w>gf<CR>
+" map <F9> <ESC><C-w>gf<CR>
+map <F9> <ESC> :call OpenFile() <CR>
 
 " troca de abas
 nnoremap <silent> tk :tabnext<CR>
