@@ -20,6 +20,11 @@ function! Cvsgit(sArgumentos)
   if !empty(a:sArgumentos)
 
     let commitArquivo .= a:sArgumentos
+    let commando = split(a:sArgumentos, ' ')[0]
+
+    if commando == 'add'
+      let commitArquivo .= ' ' . s:arquivo 
+    endif
 
   " Funcao chamada sem parametro, pergunta mensagem, tag e tipo de commit
   else
@@ -52,10 +57,12 @@ function! Cvsgit(sArgumentos)
       let g:commitInputTipo = l:commitTipo
     endif
 
+    let commitArquivo .= ' ' . s:arquivo 
+
   endif
 
   " executa cvsgit em php e guarda retorno na variavel respostaArquivo
-  let respostaArquivo = system(commitArquivo . ' ' . s:arquivo . ' > /tmp/cvsgit_output_vim')
+  let respostaArquivo = system(commitArquivo . ' > /tmp/cvsgit_output_vim')
 
   " cvsgit respondeu com erro, mostra na tela o erro
   if v:shell_error 
