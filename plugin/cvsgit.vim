@@ -7,58 +7,31 @@
 let g:commitInputTag = ''
 let g:commitInputTipo = ''
 
+let s:sNomeJanelaCVSGIT = "CVSGIT"
+
 "
 " adiciona aruqivo a lista para commit
 "
 function! Cvsgit(sArgumentos) 
 
+  call l:CloseWindow()
   " arquivo em php que adiciona arquivo a lista para commit 
   let commitArquivo = 'cvsgit '
   let s:arquivo = PathName() . '/' . FileName()
 
-  " caso passar argumentos para a funcao, exemplo: :Cvsgit add -m 'mensagem do  comit' -t 99999 -fix 
-  if !empty(a:sArgumentos)
+  if empty(a:sArgumentos)
+    return
+  endif
 
-    let commitArquivo .= a:sArgumentos
-    let commando = split(a:sArgumentos, ' ')[0]
+  let commitArquivo .= a:sArgumentos
+  let commando = split(a:sArgumentos, ' ')[0]
 
-    if commando == 'add'
-      let commitArquivo .= ' ' . s:arquivo 
-    endif
-
-  " Funcao chamada sem parametro, pergunta mensagem, tag e tipo de commit
-  else
-
-    let l:commitMensagem = inputdialog('mensagem: ') 
-    let l:commitTag      = inputdialog('tag: ', g:commitInputTag)
-    let l:commitTipo     = inputdialog('tipo: ', g:commitInputTipo)
-
-    let commitArquivo .= 'add '
-
-    if !empty(l:commitMensagem)
-      let commitArquivo .= ' --message="' . l:commitMensagem . '"'
-    endif
-
-    if !empty(l:commitTag)
-      let commitArquivo .= ' --tag=' . l:commitTag
-    endif
-
-    if !empty(l:commitTipo)
-      let commitArquivo .= ' -' . l:commitTipo
-    endif
-
-    " guarga ultima tag digitada para mostrar no proximo commit
-    if !empty(l:commitTag) 
-      let g:commitInputTag = l:commitTag
-    endif
-
-    " guarga ultimo tipo de commit digitado para mostrar no proximo commit
-    if !empty(l:commitTipo) 
-      let g:commitInputTipo = l:commitTipo
-    endif
-
+  if commando == 'add'
     let commitArquivo .= ' ' . s:arquivo 
+  endif
 
+  if commando == 'log'
+    let commitArquivo .= ' ' . s:arquivo 
   endif
 
   " executa cvsgit em php e guarda retorno na variavel respostaArquivo
@@ -70,19 +43,67 @@ function! Cvsgit(sArgumentos)
     return
   endif
 
-  if !empty(a:sArgumentos)
-
+  if commando == 'add'
     let respostaArquivo = system('cat /tmp/cvsgit_output_vim')
 
     if !empty(respostaArquivo)
       echohl WarningMsg | echon "\n\r " . respostaArquivo 
-      return
-      " exec '!clear & less /tmp/cvsgit_output_vim'
     endif
 
+    return
   endif
 
+  return l:CriarJanela()
+
 endfunction;
+
+function! l:CloseWindow() 
+
+  if bufwinnr(s:sNomeJanelaCVSGIT) == -1
+    return
+  endif
+
+  execute bufwinnr(s:sNomeJanelaCVSGIT) . 'wincmd w'
+  execute bufwinnr(s:sNomeJanelaCVSGIT) . 'wincmd q'
+
+endfunction
+
+function! l:CriarJanela() abort
+
+  exe "silent keepalt botright split [cvsgit]"
+
+  exe ':%d'
+  silent read /tmp/cvsgit_output_vim
+  exe ':0d'
+
+  " exe 'resize 10'
+
+  " if line('$') < 10 
+    exe 'resize ' . line('$')
+  " endif
+
+  setlocal filetype=cvsgit
+  setlocal buftype=nofile
+	setlocal bufhidden=delete
+  setlocal nobackup
+  setlocal noswapfile
+  setlocal nobuflisted
+  setlocal nolist
+  setlocal cursorline
+  setlocal nonumber
+  setlocal nowrap
+  setlocal winfixwidth
+  setlocal textwidth=0
+  setlocal nospell
+  setlocal nofoldenable
+  setlocal foldcolumn=0
+  setlocal foldmethod&
+  setlocal foldexpr&
+
+  silent! bd! s:sNomeJanelaCVSGIT
+	silent! file! `=s:sNomeJanelaCVSGIT`
+
+endfunction
 
 " registra comando Cvsgit que pode ter 1 ou nenhum argumento
 " Tab completa com nome dos arquivos abertos

@@ -190,6 +190,12 @@ function! OpenFile()
   endfo
 
   if empty(s:command)
+
+    if !filereadable(s:file) 
+      echo "Arquivo nao encontrado: " . s:file
+      return
+    endif
+
     let s:command = 'tabnew ' . s:file
   endif
   

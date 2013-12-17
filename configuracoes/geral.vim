@@ -52,6 +52,13 @@ set ttyfast
 set diffopt+=iwhite
 set diffexpr=""
 
+au FilterWritePre * if &diff | colorscheme jellybeans | endif
+au QuitPre * if &diff | exe 'colorscheme ' . g:defaultColor | endif
+
+if &diff
+  colorscheme jellybeans
+endif
+
 " Navegacao
 set wildmenu
 set wildignore =*.o,*~,*.pyc,CVS,*~            " Ignora certos tipos de arquivo
@@ -60,7 +67,7 @@ set wildmode   =list:longest              " Command <tab> completion, list match
 
 "set encoding      =latin1 " Codificação padrão
 "set fileencoding  =latin1 " Codificação do arquivo
-"set fileencodings =latin1 " Codificação do arquivo
+" set fileencodings=default,utf-8,latin1
 set termencoding  =utf-8  " Codificação do terminal
 
 set fileformats =unix,dos,mac                   " Use unix as the standard file type
