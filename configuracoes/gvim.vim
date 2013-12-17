@@ -7,7 +7,7 @@ set guioptions-=aegimrLtT
 set guioptions=amr
 
 unlet g:airline_theme
-color Tomorrow-Night
+exe 'colorscheme ' . g:defaultColor
                          
 " destaca linha atual do cursor
 hi clear CursorLineNr
@@ -23,3 +23,4 @@ let g:nerdtree_tabs_open_on_gui_startup = 0
 " * - select clipboard
 cnoremap <C-V>      	<C-R>+
 cnoremap <S-Insert>		<C-R>*
+inoremap <S-Insert>		<C-R>*

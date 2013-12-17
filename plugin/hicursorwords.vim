@@ -34,7 +34,7 @@
 "
 
 if !exists('g:HiCursorWords_delay')
-    let g:HiCursorWords_delay = 200
+    let g:HiCursorWords_delay = 500
 endif
 
 if !exists('g:HiCursorWords_hiGroupRegexp')
@@ -48,11 +48,10 @@ endif
 
 highlight! link WordUnderTheCursor Underlined
 
-augroup HiCursorWords
-    autocmd!
-    autocmd  CursorMoved,CursorMovedI  *  call s:HiCursorWords__startHilighting()
-augroup END
-
+" augroup HiCursorWords
+"     autocmd!
+"     autocmd  CursorMoved,CursorMovedI  *  call s:HiCursorWords__startHilighting()
+" augroup END
 
 function! s:HiCursorWords__getHiName(linenum, colnum)
     let hiname = synIDattr(synID(a:linenum, a:colnum, 0), "name")
@@ -73,7 +72,6 @@ function! s:HiCursorWords__resolveHiName(hiname)
 endfunction
 
 function! s:HiCursorWords__getWordUnderTheCursor(linestr, linenum, colnum)
-    "let word = substitute(a:linestr, '.*\(\<\k\{-}\%' . a:colnum . 'c\k\{-}\>\).*', '\1', '') "expand('<word>')
     let word = matchstr(a:linestr, '\k*\%' . a:colnum . 'c\k\+')
     if word == ''
         return ''
@@ -82,6 +80,7 @@ function! s:HiCursorWords__getWordUnderTheCursor(linestr, linenum, colnum)
 endfunction
 
 function! s:HiCursorWords__execute()
+
     if exists("w:HiCursorWords__matchId")
         call matchdelete(w:HiCursorWords__matchId)
         unlet w:HiCursorWords__matchId
@@ -101,19 +100,48 @@ function! s:HiCursorWords__execute()
                     \ && match(s:HiCursorWords__getHiName(linenum, colnum), g:HiCursorWords_hiGroupRegexp) == -1
                 return
         endif
-        let w:HiCursorWords__matchId = matchadd('WordUnderTheCursor', word, 0)
+
+        try 
+            let w:hiName = s:HiCursorWords__getHiName(linenum, colnum)
+
+            exec 'silent! highlight! link WordUnderTheCursor ' . w:hiName
+            highlight WordUnderTheCursor gui=underline cterm=underline term=underline
+
+            let w:HiCursorWords__matchId = matchadd('WordUnderTheCursor', word, 0)
+        catch
+        endtry
     endif
 endfunction
 
 function! s:HiCursorWords__startHilighting()
+
     let b:HiCursorWords__oldUpdatetime = &updatetime
     let &updatetime = g:HiCursorWords_delay
+
     augroup HiCursorWordsUpdate
         autocmd!
-        autocmd CursorHold,CursorHoldI  *
-                    \ if exists('b:HiCursorWords__oldUpdatetime') | let &updatetime = b:HiCursorWords__oldUpdatetime | endif
-                    \ | call s:HiCursorWords__execute()
+        autocmd CursorHold * call s:HiCursorWords__execute()
+        autocmd InsertEnter * call s:HiCursorWordsClear()
     augroup END
 endfunction
 
+function! s:HiCursorWordsClear() 
+
+    if exists("w:HiCursorWords__matchId")
+        call matchdelete(w:HiCursorWords__matchId)
+        unlet w:HiCursorWords__matchId
+    endif
+
+endfunction
+
+" call s:HiCursorWords__startHilighting()
+
+function! HiCursorWordsOnClick() 
+    autocmd InsertEnter * call s:HiCursorWordsClear()
+    return s:HiCursorWords__execute()
+endfunction
+
+nnoremap <silent> <2-LeftMouse> :call HiCursorWordsOnClick()<CR> viw
+
 " vim: set et ft=vim sts=4 sw=4 ts=4 tw=78 : 
+

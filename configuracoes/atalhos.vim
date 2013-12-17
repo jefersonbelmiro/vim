@@ -21,6 +21,9 @@ nnoremap <silent> <A-7> 7gt
 nnoremap <silent> <A-8> 8gt
 nnoremap <silent> <A-9> 9gt
 
+" Remap vim 0 to first non-blank character
+map 0 ^
+
 " fecha arquivo
 map <F4> :q<CR>
 
