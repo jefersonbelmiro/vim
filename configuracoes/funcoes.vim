@@ -214,3 +214,23 @@ endfunction
 
 command! OpenFile :call OpenFile()
 
+" @todo - auto-complete plugin
+"
+" Tab completion of tags/keywords if not at the beginning of the line.
+" function! InsertTabWrapper()
+"   let col = col('.') - 1
+"    if !col || getline('.')[col - 1] !~ '\k'
+"       return "\<tab>"
+"    else
+"       return "\<c-p>"
+"    endif
+" endfunction
+" 
+" inoremap <tab> <c-r>=InsertTabWrapper()<cr>
+
+function LoadingProblematicConfigurations() 
+
+  set ve=all 
+  set scr=4
+
+endfunction

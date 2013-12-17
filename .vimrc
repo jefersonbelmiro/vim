@@ -14,4 +14,4 @@ else
   source $__VIMCONF/cores.vim
 endif 
 
-set ve=all 
+au BufEnter * call LoadingProblematicConfigurations()
