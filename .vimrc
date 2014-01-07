@@ -1,23 +1,32 @@
-"  diretorio raiz
-let $VIMROOT   = expand("$HOME") . "/vimfiles"
-let $__VIMCONF = expand("$HOME") . "/.vim/configuracoes" 
+let g:configPath = expand("$HOME") . "/.vim/configuracoes/" 
 
-if has("gui_running")
+execute 'source ' . g:configPath . 'funcoes.vim'
+execute 'source ' . g:configPath . 'geral.vim'
+execute 'source ' . g:configPath . 'aparencia.vim'
+execute 'source ' . g:configPath . 'indentacao.vim'
+execute 'source ' . g:configPath . 'atalhos.vim'
+
+if has("gui_running")                       
   let g:defaultColor = 'Tomorrow-Night'
+  execute 'source ' . g:configPath . 'gvim.vim'
 else 
   let g:defaultColor = 'womprat'
-endif
-
-source $__VIMCONF/funcoes.vim
-source $__VIMCONF/geral.vim
-source $__VIMCONF/aparencia.vim
-source $__VIMCONF/indentacao.vim
-source $__VIMCONF/atalhos.vim
-
-if has("gui_running")
-  source $__VIMCONF/gvim.vim
-else 
-  source $__VIMCONF/cores.vim
+  execute 'source ' . g:configPath . 'cores.vim'
 endif 
 
-au BufEnter * call LoadingProblematicConfigurations()
+au BufEnter <buffer> call LoadingProblematicConfigurations()
+
+execute pathogen#infect()
+syntax on
+filetype plugin indent on
+
+set nocompatible  
+filetype off
+
+set rtp+=~/.vim/bundle/vundle/
+call vundle#rc()
+
+Bundle 'gmarik/vundle'
+Bundle 'shawncplus/phpcomplete.vim'
+
+filetype plugin indent on   

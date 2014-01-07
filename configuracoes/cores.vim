@@ -1,6 +1,6 @@
 
 set background=dark
-exe 'colorscheme ' . g:defaultColor 
+colorscheme womprat
 "hi clear CursorColumn
 "hi clear CursorLine  
 "hi clear TabLineFill

@@ -28,6 +28,8 @@ function! AtualizaTags()
   let sProjeto            = aEscolhas[iOpcao]
   let sCaminhoArquivoTags = g:diretorioArquivoTags . sProjeto ."_tags"
 
+  " ctags -R --fields=+aimS --languages=php
+  " execute "!ctags -f " . sCaminhoArquivoTags . " -R --fields=+aimS --languages=php /var/www/" . sProjeto . "/ "
   execute "!ctags -f " . sCaminhoArquivoTags . " -R /var/www/" . sProjeto . "/ "
 endfunction
 
@@ -234,9 +236,34 @@ command! OpenFile :call OpenFile()
 " 
 " inoremap <tab> <c-r>=InsertTabWrapper()<cr>
 
-function LoadingProblematicConfigurations() 
+function! LoadingProblematicConfigurations() 
 
-  set ve=all 
-  set scr=4
+  setlocal ve=all 
+  setlocal scr=4
+
+  if &filetype == 'php' || if &filetype == 'php.html' 
+    setlocal iskeyword+=$
+  endif
 
 endfunction
+
+function! DiffToggle(close) 
+
+  if !&diff
+    return
+  endif
+
+  if a:close == 0 
+    colorscheme jellybeans
+    return 
+  endif
+
+  if has("gui_running")                       
+    execute 'source ' . g:configPath . 'gvim.vim'
+  else 
+    execute 'source ' . g:configPath . 'cores.vim'
+  endif 
+
+endfunction
+
+
