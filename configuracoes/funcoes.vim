@@ -241,7 +241,7 @@ function! LoadingProblematicConfigurations()
   setlocal ve=all 
   setlocal scr=4
 
-  if &filetype == 'php' || if &filetype == 'php.html' 
+  if &filetype == 'php' 
     setlocal iskeyword+=$
   endif
 
