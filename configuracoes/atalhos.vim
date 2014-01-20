@@ -20,7 +20,7 @@ nnoremap <silent> <A-8> 8gt
 nnoremap <silent> <A-9> 9gt
 
 " Remap vim 0 to first non-blank character
-map 0 ^
+" map 0 ^
 
 " fecha arquivo
 map <F4> :q<CR>
@@ -198,7 +198,7 @@ inoremap JJ <ESC>l
         \ }
 
 
-  let g:airline_theme = 'ubaryd'
+  " let g:airline_theme = 'ubaryd'
   let g:airline#extensions#tabline#enabled = 1
   let g:airline#extensions#tabline#show_buffers = 0
   let g:airline#extensions#tabline#fnamemod = ':t'
@@ -237,4 +237,5 @@ au FileType javascript inoremap <F7> <ESC>:call WriteJSDocComment()<CR>
 au FileType javascript nnoremap <F7>      :call WriteJSDocComment()<CR>
 au FileType javascript vnoremap <F7>      :call WriteJSDocComment()<CR>
 
-au Filetype sql setfiletype pgsql
+au Filetype sql set filetype=pgsql
+au filetype smarty setlocal filetype=php.html
