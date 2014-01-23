@@ -6,7 +6,7 @@
 set guioptions-=aegimrLtT
 set guioptions=amr
 
-unlet g:airline_theme
+" unlet g:airline_theme
 colorscheme Tomorrow-Night
                          
 " destaca linha atual do cursor

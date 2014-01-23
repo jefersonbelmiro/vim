@@ -11,6 +11,7 @@ if has("gui_running")
   execute 'source ' . g:configPath . 'gvim.vim'
 else 
   let g:defaultColor = 'womprat'
+  let g:airline_theme = 'ubaryd'
   execute 'source ' . g:configPath . 'cores.vim'
 endif 
 
