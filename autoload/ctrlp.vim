@@ -550,7 +550,7 @@ fu! s:ForceUpdate()
 endf
 
 fu! s:BuildPrompt(upd)
-	let base = ( s:regexp ? 'r' : '' ).( s:byfname ? 'd' : '' ).':'
+	let base = ( s:regexp ? 'r' : '' ).( s:byfname ? 'f' : 'd' ).':'
 	let str = escape(s:getinput(), '\')
 	let lazy = str == '' || exists('s:force') || !has('autocmd') ? 0 : s:lazy
 	if a:upd && !lazy && ( s:matches || s:regexp || exists('s:did_exp')

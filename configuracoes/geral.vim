@@ -23,6 +23,7 @@ set magic                         " For regular expressions turn magic on
 set showmatch                     " Show matching brackets when text indicator is over them
 set matchtime   =2                " How many tenths of a second to blink when matching brackets
 set autoindent
+set iskeyword+=$
 
 " scroll
 set scroll=4        " linhas do ctrl+u e ctrl+d

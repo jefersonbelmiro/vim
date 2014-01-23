@@ -30,3 +30,12 @@ sudo ln -s ~/.vim/bin/gvimserver /usr/local/bin/gvimserver
 #   bg[NORMAL] = "#141414" # this matches my gvim theme 'Normal' bg color.
 # }
 # widget "vim-main-window.*GtkForm" style "vimfix"
+
+# pathogen
+sudo apt-get install curl
+mkdir -p ~/.vim/autoload ~/.vim/bundle; \
+  curl -Sso ~/.vim/autoload/pathogen.vim \
+      https://raw.github.com/tpope/vim-pathogen/master/autoload/pathogen.vim
+
+# vundle
+git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle

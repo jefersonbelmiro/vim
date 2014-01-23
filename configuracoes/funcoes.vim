@@ -1,7 +1,7 @@
 """""""""""""""""""""""""""""""""""
 "       FUN??ES PERSONALIZADAS
 """""""""""""""""""""""""""""""""""
-let g:diretorioArquivoTags = $VIMROOT . "/runtime/tags/"
+let g:diretorioArquivoTags = "~/.vim/tags/"
 function! UtilizarTags()
 
   let iOpcao              = confirm("Utilizar Tags???? Qual projeto?", "DBPortal_prj\nFuncoes8\nDBPref", 1) 
@@ -20,17 +20,17 @@ endfunction
 
 function! AtualizaTags()
 
-  let iOpcao              = confirm("Atualizar Tags??? Qual projeto?", "&zDBPortal_prj\n&xFuncoes8\n&cDBPref", 2)
+  let iOpcao = confirm("Atualizar Tags??? Qual projeto?", "&zDBPortal_prj\n&xFuncoes8\n&cDBPref", 2)
 
-  let aEscolhas           = { 1 : "dbportal_prj",
-                            \ 2 : "funcoes8",
-                            \ 3 : "dbpref"}
-  let sProjeto            = aEscolhas[iOpcao]
+  let aEscolhas = { 1 : "dbportal_prj",
+                  \ 2 : "funcoes8",
+                  \ 3 : "dbpref"}
+  let sProjeto = aEscolhas[iOpcao]
   let sCaminhoArquivoTags = g:diretorioArquivoTags . sProjeto ."_tags"
 
   " ctags -R --fields=+aimS --languages=php
-  " execute "!ctags -f " . sCaminhoArquivoTags . " -R --fields=+aimS --languages=php /var/www/" . sProjeto . "/ "
-  execute "!ctags -f " . sCaminhoArquivoTags . " -R /var/www/" . sProjeto . "/ "
+  execute "!ctags -f " . sCaminhoArquivoTags . " -R --fields=+aimS --languages=php /var/www/" . sProjeto . "/ &"
+  " execute "!ctags -f " . sCaminhoArquivoTags . " -R /var/www/" . sProjeto . "/ "
 endfunction
 
 function! FileName()
@@ -150,6 +150,16 @@ function! ExecuteBackground(command, title)
   execute "silent !" . a:command. " > /dev/null 2>&1 && " .
         \ "/usr/bin/notify-send \"" . a:title . "\" complete &"
   execute ':redraw!'
+endfunction
+
+function! AtualizaTagsBG() 
+
+  let sProjeto = 'dbportal_prj'
+  let sCaminhoArquivoTags = g:diretorioArquivoTags . sProjeto ."_tags"
+  let l:command  = "ctags -f " . sCaminhoArquivoTags . " -R --fields=+aimS --languages=php /var/www/" . sProjeto . "/ "
+  call ExecuteBackground(l:command, 'Atualizar arquivo tags')
+  echo 'Atualizando tags do dbportal_prj'
+
 endfunction
 
 function! AutocompleteToggle() 
