@@ -1,0 +1,18 @@
+#!/bin/sh
+#
+# -----------------------------------------------------------------------------
+# Diff usando git
+# -----------------------------------------------------------------------------
+#
+# INSTALACAO:
+#
+# - alterar .gitconfig
+#   [diff]
+#     external = git_diff_wrapper
+#   [pager]
+#     diff =
+#
+# - criar copia ou atalho deste executaval
+#   ln -s ~/.vim/bin/git_diff_wrapper /usr/bin/
+#
+vim -d "$1" "$2" -c 'color jellybeans | map <F4> :qa<CR>'

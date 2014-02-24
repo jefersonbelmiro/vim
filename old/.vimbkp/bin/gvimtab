@@ -1,0 +1,3 @@
+#!/bin/bash
+# alias gvim='gvim -geometry 120x40 --remote-tab-silent'
+gvim --remote-tab-silent "${@}"

@@ -33,7 +33,7 @@ vmap <S-TAB> <gv
 map <silent><F5> <ESC> :call ToggleMouse() <CR> hh
 imap <silent><F5> <ESC> :call ToggleMouse() <CR> hi
 
-map K k
+" map K k
 
 " Salvar 
 map <F2> <ESC>:call Save()<CR>
@@ -239,3 +239,8 @@ au FileType javascript vnoremap <F7>      :call WriteJSDocComment()<CR>
 
 au Filetype sql set filetype=pgsql
 au filetype smarty setlocal filetype=php.html
+
+" au filetype php set keywordprg=pman
+
+
+au filetype php set keywordprg=phpmanual

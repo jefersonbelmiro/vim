@@ -1,33 +1,7 @@
-let g:configPath = expand("$HOME") . "/.vim/configuracoes/" 
+let g:configPath = expand("$HOME") . "/.vim/config/" 
 
-execute 'source ' . g:configPath . 'funcoes.vim'
-execute 'source ' . g:configPath . 'geral.vim'
-execute 'source ' . g:configPath . 'aparencia.vim'
-execute 'source ' . g:configPath . 'indentacao.vim'
-execute 'source ' . g:configPath . 'atalhos.vim'
-
-if has("gui_running")                       
-  let g:defaultColor = 'Tomorrow-Night'
-  execute 'source ' . g:configPath . 'gvim.vim'
-else 
-  let g:defaultColor = 'womprat'
-  let g:airline_theme = 'ubaryd'
-  execute 'source ' . g:configPath . 'cores.vim'
-endif 
-
-au BufEnter <buffer> call LoadingProblematicConfigurations()
-
-execute pathogen#infect()
-syntax on
-filetype plugin indent on
-
-set nocompatible  
-filetype off
-
-set rtp+=~/.vim/bundle/vundle/
-call vundle#rc()
-
-Bundle 'gmarik/vundle'
-Bundle 'shawncplus/phpcomplete.vim'
-
-filetype plugin indent on   
+execute 'source ' . g:configPath . 'functions.vim'
+execute 'source ' . g:configPath . 'config.vim'
+execute 'source ' . g:configPath . 'appearance.vim'
+execute 'source ' . g:configPath . 'mapkeys.vim'
+execute 'source ' . g:configPath . 'bundle.vim'
