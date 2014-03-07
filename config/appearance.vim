@@ -7,7 +7,7 @@ set textwidth=110
 
 " 1 - mostra abas somente se tiver 2 arquivos 
 " 2 - sempre mostra abas 
-set showtabline=2
+set showtabline=1
 
 " Sempre mostra barra de Mensagens 
 set laststatus=2

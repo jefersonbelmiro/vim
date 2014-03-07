@@ -5,3 +5,6 @@ execute 'source ' . g:configPath . 'config.vim'
 execute 'source ' . g:configPath . 'appearance.vim'
 execute 'source ' . g:configPath . 'mapkeys.vim'
 execute 'source ' . g:configPath . 'bundle.vim'
+
+" call SetEncoding('UTF-8')
+" call SetTabWidth('4') 

@@ -26,8 +26,9 @@ set sidescrolloff=2 " igual scrolloff so que horizontal, quando cursor ficar 2 c
 set expandtab " Use spaces instead of tabs
 set smarttab  " Be smart when using tabs ;)
 
-set shiftwidth=2   " 1 tab == 2 spaços
-set tabstop=2   " 1 tab == 2 spaços
+set shiftwidth=4 
+set tabstop=4   
+set softtabstop=4
 "set linebreak          
 "set textwidth  =150 " Linebreak on 150 characters
 

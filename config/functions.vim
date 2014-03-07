@@ -32,27 +32,20 @@ function! PathName()
   return expand('%:p:h')
 endfunction
 
-function! PadraoISO(default_tab_width) 
+" ao abrir aquivo ja formata: set fileencodings=UTF-8
+" latin1 = ISO-8859-1
+function! SetEncoding(encoding)
 
-  execute 'set encoding=ISO-8859-1'
-  execute 'set fileencoding=ISO-8859-1'
-  " ao abrir aquivo ja formata
-  "execute 'set fileencodings=ISO-8859-1'
-  execute 'set ts=' . a:default_tab_width
-  execute 'set softtabstop=' . a:default_tab_width
-  execute 'set shiftwidth=' . a:default_tab_width
+  execute 'set encoding=' . a:encoding
+  execute 'set fileencoding=' . a:encoding
 
 endfunction
 
-function! PadraoUTF(default_tab_width) 
+function! SetTabWidth(tabWidth)
 
-  execute 'set encoding=UTF-8'
-  execute 'set fileencoding=UTF-8'
-  " ao abrir aquivo ja formata
-  "execute 'set fileencodings=UTF-8'
-  execute 'set ts=' . a:default_tab_width
-  execute 'set softtabstop=' . a:default_tab_width
-  execute 'set shiftwidth=' . a:default_tab_width
+  execute 'set ts=' . a:tabWidth
+  execute 'set softtabstop=' . a:tabWidth
+  execute 'set shiftwidth=' . a:tabWidth
 
 endfunction
 
