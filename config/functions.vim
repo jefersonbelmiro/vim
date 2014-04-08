@@ -1,4 +1,6 @@
 
+let g:diretorioArquivoTags = '~/tags/'
+
 function! UtilizarTags()
 
   let iOpcao              = confirm("Utilizar Tags???? Qual projeto?", "DBPortal_prj\nFuncoes8\nDBPref", 1) 
