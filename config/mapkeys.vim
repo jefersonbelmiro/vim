@@ -32,7 +32,12 @@ vmap <S-TAB> <gv
 map <silent><F5> <ESC> :call ToggleMouse() <CR> hh
 imap <silent><F5> <ESC> :call ToggleMouse() <CR> hi
 
-" map K k
+" K abre 'man' do que esta sob o cursor 
+map K k
+
+" apos buscar, nao pula cursor
+map * *N
+map # #N
 
 " Salvar 
 map <F2> <ESC>:call Save()<CR>

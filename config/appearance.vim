@@ -47,13 +47,14 @@ else
   " ---------------------------------------------------------------
 
   colorscheme Tomorrow-Night
-
+  " colorscheme molokai
+  
   " remove todas as parafernalias visuais do gvim
   " L - scroll da esquerda
   " r - scroll da direita
   " T - icones de opcoes(copiar, colar, voltar, bla bla)
   set guioptions-=aegimrLtT
-  "set guioptions=amr
+  set guioptions=amr
 
   " destaca linha atual do cursor
   hi clear CursorLineNr

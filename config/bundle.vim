@@ -17,5 +17,6 @@ Bundle 'tsaleh/vim-matchit'
 Bundle 'godlygeek/tabular'
 Bundle 'Raimondi/delimitMate'
 Bundle 'scrooloose/nerdtree'
+Bundle 'MattesGroeger/vim-bookmarks'
 
 filetype plugin indent on   
