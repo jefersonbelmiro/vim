@@ -55,15 +55,24 @@ function! Save()
 
   try 
 
+    let output = 'Arquivo salvo'
+    let fileName = expand('%')
     silent execute ':w'
     silent execute ':set scr=4'
     silent execute ':set ft=' . &filetype
 
     if &filetype == 'php'
-      call s:Executar('php -l ' . expand('%') . ' 2> /tmp/vim_save')
+      call s:Executar('php -l ' . fileName . ' 2> /tmp/vim_save')
     endif
 
-    echo 'Arquivo salvo'
+    let bid = '/var/www/DBPlugins/Financeiro/BID/fontes/' . fileName
+    if filewritable(bid)
+
+      silent execute ':w! ' . bid
+      let output = output . ' | copia salva em /var/www/DBPlugins/Financeiro/BID/fontes/'
+    endif
+
+    echo output
 
   catch
 
@@ -168,3 +177,4 @@ function! DiffToggle(close)
   endif
 
 endfunction
+

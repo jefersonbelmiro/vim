@@ -12,6 +12,8 @@ set showtabline=1
 " Sempre mostra barra de Mensagens 
 set laststatus=2
 
+set colorcolumn=120
+
 " Formata Barra de Status
 "set statusline =%<%f\ \ %h%m%r%Y%=\ \ linha:\ %l,total\ :%L,%c%V\ %P 
 
@@ -40,6 +42,9 @@ if !has("gui_running")
   " busca 
   hi Search ctermbg=238 ctermfg=250 cterm=none
 
+  " linha limite em 120
+  hi ColorColumn ctermbg=235
+
 else 
 
   " ---------------------------------------------------------------
@@ -48,13 +53,13 @@ else
 
   colorscheme Tomorrow-Night
   " colorscheme molokai
-  
+
   " remove todas as parafernalias visuais do gvim
   " L - scroll da esquerda
   " r - scroll da direita
   " T - icones de opcoes(copiar, colar, voltar, bla bla)
   set guioptions-=aegimrLtT
-  set guioptions=amr
+  set guioptions=ar
 
   " destaca linha atual do cursor
   hi clear CursorLineNr
@@ -69,3 +74,7 @@ else
   inoremap <S-Insert>		<C-R>*
 
 endif
+
+" NERDTree {
+  let g:NERDTreeDirArrows=0
+" }

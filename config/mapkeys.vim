@@ -21,6 +21,9 @@ nnoremap <silent> <A-9> 9gt
 " Remap vim 0 to first non-blank character
 " map 0 ^
 
+" fecha arquivo e remove do buffer
+" map <F4> :execute 'bd "' . PathName() . '/' . FileName() . '"' <CR>
+
 " fecha arquivo
 map <F4> :q<CR>
 
@@ -250,3 +253,9 @@ inoremap JK <ESC>l
 
 " }
 
+"  DBGPavim xdebug {
+" - https://github.com/brookhong/DBGPavim
+
+  map <leader>d :ToggleDebug<CR>
+
+" }

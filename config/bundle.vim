@@ -18,5 +18,7 @@ Bundle 'godlygeek/tabular'
 Bundle 'Raimondi/delimitMate'
 Bundle 'scrooloose/nerdtree'
 Bundle 'MattesGroeger/vim-bookmarks'
+Bundle 'digitaltoad/vim-jade'
+Bundle 'brookhong/DBGPavim'
 
 filetype plugin indent on   
