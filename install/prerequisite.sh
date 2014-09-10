@@ -22,14 +22,7 @@ git config --global diff.external git_diff_wrapper
 sudo ln -s ~/.vim/bin/git_diff_wrapper /usr/local/bin/
 
 # forcar gvim abrir arquivos na mesma janela 
-sudo ln -s ~/.vim/bin/gvimserver /usr/local/bin/gvimserver
-
-# alterar cor do gtk usando gvim
-# pro no arquivo ~/.gtkrc-2.0 
-# style "vimfix" {
-#   bg[NORMAL] = "#141414" # this matches my gvim theme 'Normal' bg color.
-# }
-# widget "vim-main-window.*GtkForm" style "vimfix"
+sudo ln -s ~/.vim/bin/gvimtab /usr/local/bin/gvimtab
 
 # pathogen
 sudo apt-get install curl
@@ -39,3 +32,14 @@ mkdir -p ~/.vim/autoload ~/.vim/bundle; \
 
 # vundle
 git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
+
+# commant-t
+cd ~/.vim/bundle/command-t/ruby/command-t
+ruby extconf.rb
+make
+
+# YouCompleteMe
+sudo apt-get install build-essential cmake
+sudo apt-get install python-dev
+cd ~/.vim/bundle/YouCompleteMe
+./install.sh --clang-completer
