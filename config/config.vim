@@ -106,21 +106,24 @@ set virtualedit=all                             " permite o cursor mover onde na
 " }
 
 " Enable omni completion.
-autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-autocmd FileType php setlocal omnifunc=phpcomplete#CompletePHP
+filetype plugin on
+set omnifunc=syntaxcomplete#Complete
 
-autocmd FileType php inoremap <F7> <ESC>:call PhpDocSingle()<CR>
-autocmd FileType php nnoremap <F7>      :call PhpDocSingle()<CR>
-autocmd FileType php vnoremap <F7>      :call PhpDocRange()<CR>
- 
-autocmd FileType javascript inoremap <F7> <ESC>:call WriteJSDocComment()<CR>
-autocmd FileType javascript nnoremap <F7>      :call WriteJSDocComment()<CR>
-autocmd FileType javascript vnoremap <F7>      :call WriteJSDocComment()<CR>
-
+" autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+" autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+" autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+" autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+" autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+" autocmd FileType php setlocal omnifunc=phpcomplete#CompletePHP
+"
+" autocmd FileType php inoremap <F7> <ESC>:call PhpDocSingle()<CR>
+" autocmd FileType php nnoremap <F7>      :call PhpDocSingle()<CR>
+" autocmd FileType php vnoremap <F7>      :call PhpDocRange()<CR>
+"  
+" autocmd FileType javascript inoremap <F7> <ESC>:call WriteJSDocComment()<CR>
+" autocmd FileType javascript nnoremap <F7>      :call WriteJSDocComment()<CR>
+" autocmd FileType javascript vnoremap <F7>      :call WriteJSDocComment()<CR>
+"
 autocmd Filetype sql set filetype=pgsql
 autocmd filetype smarty setlocal filetype=php.html
 

@@ -72,12 +72,18 @@ noremap <C-k> <C-W>k
 noremap <C-l> <C-W>l
 noremap <C-h> <C-W>h
 
-" Move linhas ou blocos usando ALT+SETA nnoremap <A-DOWN> mz:m+<CR>`z==
-nnoremap <A-UP> mz:m-2<CR>`z==
-inoremap <A-DOWN> <Esc>:m+<CR>==gi
-inoremap <A-UP> <Esc>:m-2<CR>==gi
-vnoremap <A-UP> :m'<-2<CR>gv=`>my`<mzgv`yo`z
-vnoremap <A-DOWN> :m'>+<CR>gv=`<my`>mzgv`yo`z
+" Move linhas ou blocos { 
+"  usando ALT+SETA nnoremap <A-DOWN> mz:m+<CR>`z==
+    " normal
+    nnoremap <A-UP> mz:m-2<CR>`z==
+    nnoremap <A-DOWN> mz:m+<CR>`z==
+    " insert
+    inoremap <A-UP> <Esc>:m-2<CR>==gi
+    inoremap <A-DOWN> <Esc>:m+<CR>==gi
+    " visual
+    vnoremap <A-UP> :m'<-2<CR>gv=`>my`<mzgv`yo`z
+    vnoremap <A-DOWN> :m'>+<CR>gv=`<my`>mzgv`yo`z
+" }
 
 " Ctrl-Space para AutoComplete Like Eclipse
 if has("gui_running")
@@ -132,6 +138,37 @@ nnoremap <silent> tg :TagbarToggle<CR>
 
 " }
 
+" syntastic {
+    " This does what it says on the tin. It will check your file on open too, not just on save.
+    " " You might not want this, so just leave it out if you don't.
+    let g:syntastic_check_on_open=1
+" }
+
+" YCM - YouCompleteMe {
+"
+    let g:ycm_add_preview_to_completeopt=0
+    let g:ycm_confirm_extra_conf=0
+    set completeopt-=preview
+    " set completeopt=menu,preview 
+
+    let g:ycm_semantic_triggers =  {
+      \   'c' : ['->', '.'],
+      \   'objc' : ['->', '.'],
+      \   'ocaml' : ['.', '#'],
+      \   'cpp,objcpp' : ['->', '.', '::'],
+      \   'perl' : ['->'],
+      \   'php' : ['->', '::'],
+      \   'cs,java,javascript,d,python,perl6,scala,vb,elixir,go' : ['.'],
+      \   'vim' : ['re![_a-zA-Z]+[_\w]*\.'],
+      \   'ruby' : ['.', '::'],
+      \   'lua' : ['.', ':'],
+      \   'erlang' : [':'],
+      \ }
+
+    set pumheight=5
+
+" }
+
 " Cvsdiff {
   map <F8> :CvsDiffToggle<cr>
 " }
@@ -167,6 +204,18 @@ nnoremap <silent> tg :TagbarToggle<CR>
 inoremap jk <ESC>l
 inoremap JK <ESC>l
 
+
+" apos abrir algo como {}, identa: {
+"   _  <--- cursor
+" }
+imap <C-c> <CR><Esc>O
+
+" navegacao em insert mode
+inoremap <C-k> <c-o>k
+inoremap <C-j> <c-o>j
+inoremap <C-h> <c-o>h
+inoremap <C-l> <c-o>l
+
 " ------------------------------------------------------------------------------
 " airline {
 " ------------------------------------------------------------------------------
@@ -180,8 +229,18 @@ inoremap JK <ESC>l
     let g:airline_section_z = airline#section#create_right(['%L'])
     let g:airline_section_warning = airline#section#create_right([])
   endfunction
+
+  function! AirlineInit2()
+    let g:airline_section_a = airline#section#create(['mode'])
+    let g:airline_section_b = airline#section#create_left(['%f'])
+    let g:airline_section_c = airline#section#create(['filetype', '  ', 'ffenc', '  ', '%v'])
+    let g:airline_section_x = airline#section#create(["%{tagbar#currenttag('%s ','')}"])
+    let g:airline_section_y = airline#section#create([])
+    let g:airline_section_z = airline#section#create_right(['%L'])
+    let g:airline_section_warning = airline#section#create_right([])
+  endfunction
  
-  autocmd VimEnter * call AirlineInit()
+  autocmd VimEnter * call AirlineInit2()
  
   let g:airline_mode_map = {
         \ '__' : '-',
@@ -197,6 +256,8 @@ inoremap JK <ESC>l
         \ '' : 'S',
         \ }
  
+  " tagbar
+  let g:airline#extensions#tagbar#enabled = 1
  
   " let g:airline_theme = 'ubaryd'
   let g:airline#extensions#tabline#enabled = 1

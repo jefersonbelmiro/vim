@@ -1,3 +1,5 @@
 #!/bin/bash
 # alias gvim='gvim -geometry 120x40 --remote-tab-silent'
+# http://vimdoc.sourceforge.net/htmldoc/remote.html
+# http://vim.wikia.com/wiki/Close_vim_you_left_open_remotely
 gvim --remote-tab-silent "${@}"
