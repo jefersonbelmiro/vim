@@ -20,5 +20,18 @@ Bundle 'scrooloose/nerdtree'
 Bundle 'MattesGroeger/vim-bookmarks'
 Bundle 'digitaltoad/vim-jade'
 Bundle 'brookhong/DBGPavim'
+Bundle 'wincent/command-t'
+
+" javascript {
+"   http://oli.me.uk/2013/06/29/equipping-vim-for-javascript/ 
+
+    Bundle 'jelera/vim-javascript-syntax'
+    Bundle 'pangloss/vim-javascript'
+    Bundle 'nathanaelkane/vim-indent-guides'
+    Bundle 'scrooloose/syntastic'
+    Bundle 'Valloric/YouCompleteMe'
+    Bundle 'marijnh/tern_for_vim'
+
+" } 
 
 filetype plugin indent on   

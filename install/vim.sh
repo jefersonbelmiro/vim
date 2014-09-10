@@ -19,7 +19,7 @@ cd vim
             --with-python-config-dir=/usr/lib/python2.7-config \
             --enable-perlinterp \
             --enable-luainterp \
-            --enable-gui=gtk2 --enable-cscope --prefix=/usr 
+            --enable-gui=gtk3 --enable-cscope --prefix=/usr 
 make VIMRUNTIMEDIR=/usr/share/vim/vim74 
 sudo make install 
 

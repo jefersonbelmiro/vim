@@ -61,9 +61,10 @@ function! Save()
     silent execute ':set scr=4'
     silent execute ':set ft=' . &filetype
 
-    if &filetype == 'php'
-      call s:Executar('php -l ' . fileName . ' 2> /tmp/vim_save')
-    endif
+    " php lint
+    " if &filetype == 'php'
+      " call s:Executar('php -l ' . expand('%') . ' 2> /tmp/vim_save')
+    " endif
 
     let bid = '/var/www/DBPlugins/Financeiro/BID/fontes/' . fileName
     if filewritable(bid)
