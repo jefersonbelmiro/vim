@@ -15,6 +15,9 @@ Bundle 'Raimondi/delimitMate'
 Bundle 'MattesGroeger/vim-bookmarks'
 Bundle 'digitaltoad/vim-jade'
 
+" solarized
+Bundle 'altercation/vim-colors-solarized'
+
 " javascript {
 "   http://oli.me.uk/2013/06/29/equipping-vim-for-javascript/ 
 
