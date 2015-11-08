@@ -63,6 +63,8 @@ set diffexpr=""
 set wildmenu
 set wildignore=*.o,*~,*.pyc,CVS,*~            " Ignora certos tipos de arquivo
 set wildmode=list:longest                     " Command <tab> completion, list matches, then longest common, then all.
+set wildignore+=node_modules/**
+set wildignore+=**/node_modules/* 
 
 set termencoding=utf-8                       " Codificação do terminal
 set fileformats=unix,dos,mac                 " Use unix as the standard file type

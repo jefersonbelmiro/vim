@@ -17,9 +17,13 @@ sudo apt-get update
 sudo apt-get install silversearcher-ag
 
 # git diff com vim
+git config --global pager.diff false
 git config --global difftool.prompt false
 git config --global diff.external git_diff_wrapper
 sudo ln -s ~/.vim/bin/git_diff_wrapper /usr/local/bin/
+
+# git auth cache
+git config --global credential.helper "cache --timeout=10800"
 
 # forcar gvim abrir arquivos na mesma janela 
 sudo ln -s ~/.vim/bin/gvimtab /usr/local/bin/gvimtab
