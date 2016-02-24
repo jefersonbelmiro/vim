@@ -14,7 +14,7 @@ let s:sNomeJanelaCVSGIT = "CVSGIT"
 "
 function! Cvsgit(sArgumentos) 
 
-  call l:CloseWindow()
+  call s:CloseWindow()
   " arquivo em php que adiciona arquivo a lista para commit 
   let commitArquivo = 'cvsgit '
   let s:arquivo = PathName() . '/' . FileName()
@@ -53,11 +53,11 @@ function! Cvsgit(sArgumentos)
     return
   endif
 
-  return l:CriarJanela()
+  return s:CriarJanela()
 
 endfunction;
 
-function! l:CloseWindow() 
+function! s:CloseWindow() 
 
   if bufwinnr(s:sNomeJanelaCVSGIT) == -1
     return
@@ -68,7 +68,7 @@ function! l:CloseWindow()
 
 endfunction
 
-function! l:CriarJanela() abort
+function! s:CriarJanela() abort
 
   exe "silent keepalt botright split [cvsgit]"
 

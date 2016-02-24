@@ -140,8 +140,8 @@ Bundle 'altercation/vim-colors-solarized'
 "  DBGPavim xdebug {
 " - https://github.com/brookhong/DBGPavim
 
-  Bundle 'brookhong/DBGPavim'
-  map <leader>d :ToggleDebug<CR>
+  " Bundle 'brookhong/DBGPavim'
+  " map <leader>d :ToggleDebug<CR>
 
 " }
 
@@ -154,7 +154,9 @@ Bundle 'altercation/vim-colors-solarized'
 " airline {
 " ------------------------------------------------------------------------------
 
-  Bundle 'bling/vim-airline'
+  " Bundle 'bling/vim-airline'
+  Bundle 'vim-airline/vim-airline'
+  Bundle 'vim-airline/vim-airline-themes'
 
   function! AirlineInit()
     let g:airline_section_a = airline#section#create(['mode'])
@@ -169,7 +171,7 @@ Bundle 'altercation/vim-colors-solarized'
   function! AirlineInit2()
     let g:airline_section_a = airline#section#create(['mode'])
     let g:airline_section_b = airline#section#create_left(['%f'])
-    let g:airline_section_c = airline#section#create(['filetype', '  ', 'ffenc', '  ', '%v'])
+    let g:airline_section_d = airline#section#create(['filetype', '  ', 'ffenc', '  ', '%v'])
     let g:airline_section_x = airline#section#create(["%{tagbar#currenttag('%s ','')}"])
     let g:airline_section_y = airline#section#create([])
     let g:airline_section_z = airline#section#create_right(['%L'])

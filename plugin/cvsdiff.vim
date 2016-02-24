@@ -74,11 +74,11 @@ function! s:CriarJanela() abort
   setlocal foldexpr&
 
   setlocal statusline=%!GenerateStatusline()
-  call l:ChangeFileName(s:sNome)
+  call s:ChangeFileName(s:sNome)
 
 endfunction
 
-function! l:ChangeFileName(sNome)
+function! s:ChangeFileName(sNome)
   silent! bd! a:sNome
 	silent! file! `=a:sNome`
 endfunction
@@ -102,9 +102,9 @@ function! Cvsdiff(argumentos)
 
     if !empty( a:argumentos ) 
 
-      let l:aArgumentos = split(a:argumentos, ' ')
+      let s:aArgumentos = split(a:argumentos, ' ')
 
-      for sArgumento in l:aArgumentos 
+      for sArgumento in s:aArgumentos 
         
         if empty(sArgumento)
           continue
@@ -227,7 +227,7 @@ function! Processar()
       call Executar(sComandoMover . '[' . l:nVersaoCursor . ']\ ' . l:sArquivo)
 
       exe 'tabnew ' . l:sPathArquivos . '[' . l:nVersaoCursor . '] ' . l:sArquivo 
-      call l:ChangeFileName('[' . l:nVersaoCursor . '] ' . l:sArquivo)
+      call s:ChangeFileName('[' . l:nVersaoCursor . '] ' . l:sArquivo)
       exe 'setlocal filetype=' . s:sFileType
       return
 
@@ -247,7 +247,7 @@ function! Processar()
 
       exe 'tabnew ' . s:sArquivo
       exe l:sComandoDiff . '[' . s:oVersoes.primeiraVersao . '] ' . l:sArquivo 
-      call l:ChangeFileName('[' . s:oVersoes.primeiraVersao . '] ' . l:sArquivo)
+      call s:ChangeFileName('[' . s:oVersoes.primeiraVersao . '] ' . l:sArquivo)
       exe 'setlocal filetype=' . s:sFileType
 
     else
@@ -271,11 +271,11 @@ function! Processar()
       call Executar(sComandoMover . '[' . s:oVersoes.segundaVersao . ']\ ' . l:sArquivo)
 
       exe 'tabnew ' . l:sPathArquivos . '[' . s:oVersoes.primeiraVersao . '] ' . l:sArquivo  
-      call l:ChangeFileName('[' . s:oVersoes.primeiraVersao . '] ' . l:sArquivo)
+      call s:ChangeFileName('[' . s:oVersoes.primeiraVersao . '] ' . l:sArquivo)
       exe 'setlocal filetype=' . s:sFileType
 
       exe l:sComandoDiff . '[' . s:oVersoes.segundaVersao . '] ' . l:sArquivo
-      call l:ChangeFileName('[' . s:oVersoes.segundaVersao . '] ' . l:sArquivo)
+      call s:ChangeFileName('[' . s:oVersoes.segundaVersao . '] ' . l:sArquivo)
       exe 'setlocal filetype=' . s:sFileType
 
     endif
