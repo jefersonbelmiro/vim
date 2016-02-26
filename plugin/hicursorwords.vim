@@ -79,7 +79,7 @@ function! s:HiCursorWords__getWordUnderTheCursor(linestr, linenum, colnum)
     return '\V\<' . word . '\>'
 endfunction
 
-function! s:HiCursorWords__execute()
+function! HiCursorWords__execute()
 
     if exists("w:HiCursorWords__matchId")
         call matchdelete(w:HiCursorWords__matchId)
@@ -120,7 +120,7 @@ function! s:HiCursorWords__startHilighting()
 
     augroup HiCursorWordsUpdate
         autocmd!
-        autocmd CursorHold * call s:HiCursorWords__execute()
+        autocmd CursorHold * call HiCursorWords__execute()
         autocmd InsertEnter * call s:HiCursorWordsClear()
     augroup END
 endfunction
@@ -138,10 +138,11 @@ endfunction
 
 function! HiCursorWordsOnClick() 
     autocmd InsertEnter * call s:HiCursorWordsClear()
-    return s:HiCursorWords__execute()
+    return HiCursorWords__execute()
 endfunction
 
 nnoremap <silent> <2-LeftMouse> :call HiCursorWordsOnClick()<CR> viw
+map <silent> <leader>w : call HiCursorWords__execute()<cr>
 
 " vim: set et ft=vim sts=4 sw=4 ts=4 tw=78 : 
 

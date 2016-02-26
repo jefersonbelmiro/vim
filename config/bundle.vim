@@ -12,7 +12,7 @@ Bundle 'tsaleh/vim-matchit'
 Bundle 'godlygeek/tabular'
 Bundle 'Raimondi/delimitMate'
 " Bundle 'scrooloose/nerdtree'
-Bundle 'MattesGroeger/vim-bookmarks'
+" Bundle 'MattesGroeger/vim-bookmarks'
 Bundle 'digitaltoad/vim-jade'
 
 " solarized
@@ -170,10 +170,9 @@ Bundle 'altercation/vim-colors-solarized'
 
   function! AirlineInit2()
     let g:airline_section_a = airline#section#create(['mode'])
-    let g:airline_section_b = airline#section#create_left(['%f'])
-    let g:airline_section_d = airline#section#create(['filetype', '  ', 'ffenc', '  ', '%v'])
-    let g:airline_section_x = airline#section#create(["%{tagbar#currenttag('%s ','')}"])
-    let g:airline_section_y = airline#section#create([])
+    " let g:airline_section_b = airline#section#create_left(['%f'])
+    " let g:airline_section_x = airline#section#create(['filetype', '  ', 'ffenc', '  ', '%v', "%{tagbar#currenttag('%s ','')}"])
+    " let g:airline_section_y = airline#section#create([])
     let g:airline_section_z = airline#section#create_right(['%L'])
     let g:airline_section_warning = airline#section#create_right([])
   endfunction
