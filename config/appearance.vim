@@ -75,7 +75,7 @@ if !has("gui_running")
 
   hi StatusLine ctermbg=NONE cterm=NONE
   hi StatusLineNC ctermbg=NONE cterm=NONE
-
+  hi ColorColumn ctermbg=234
   hi vertsplit ctermbg=none
   
   set nonu
