@@ -12,7 +12,7 @@ Bundle 'ervandew/supertab'
 Bundle 'godlygeek/tabular'
 Bundle 'Raimondi/delimitMate'
 " Bundle 'scrooloose/nerdtree'
-Bundle 'MattesGroeger/vim-bookmarks'
+" Bundle 'MattesGroeger/vim-bookmarks'
 Bundle 'digitaltoad/vim-jade'
 
 Bundle 'altercation/vim-colors-solarized'
@@ -31,8 +31,8 @@ Bundle 'whatyouhide/vim-gotham'
 " TComment { " - https://github.com/tomtom/tcomment_vim
 
   Bundle 'tomtom/tcomment_vim'
-  noremap <leader>c :TComment<CR>
-  vnoremap <leader>c :TComment<CR>
+  map <leader>c :TComment<CR>
+  vmap <leader>c :TComment<CR>
 
 " }
 

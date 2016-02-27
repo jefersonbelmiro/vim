@@ -89,6 +89,8 @@ else
   " GVIM
   " ---------------------------------------------------------------
 
+  set background=dark
+  " colorscheme solarized
   colorscheme Tomorrow-Night
   " colorscheme molokai
 
