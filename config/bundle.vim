@@ -8,22 +8,22 @@ Bundle 'gmarik/vundle'
 Bundle 'shawncplus/phpcomplete.vim'
 Bundle 'tpope/vim-repeat'
 Bundle 'ervandew/supertab'
-Bundle 'tsaleh/vim-matchit'
+" Bundle 'tsaleh/vim-matchit'
 Bundle 'godlygeek/tabular'
 Bundle 'Raimondi/delimitMate'
 " Bundle 'scrooloose/nerdtree'
 Bundle 'MattesGroeger/vim-bookmarks'
 Bundle 'digitaltoad/vim-jade'
 
-" solarized
 Bundle 'altercation/vim-colors-solarized'
+Bundle 'whatyouhide/vim-gotham'
 
 " javascript {
 "   http://oli.me.uk/2013/06/29/equipping-vim-for-javascript/ 
 
     Bundle 'jelera/vim-javascript-syntax'
     Bundle 'pangloss/vim-javascript'
-    Bundle 'nathanaelkane/vim-indent-guides'
+    " Bundle 'nathanaelkane/vim-indent-guides'
     " Bundle 'marijnh/tern_for_vim'
 
 " } 
@@ -31,8 +31,8 @@ Bundle 'altercation/vim-colors-solarized'
 " TComment { " - https://github.com/tomtom/tcomment_vim
 
   Bundle 'tomtom/tcomment_vim'
-  map <leader>c :TComment<CR>
-  vmap <leader>c :TComment<CR>
+  noremap <leader>c :TComment<CR>
+  vnoremap <leader>c :TComment<CR>
 
 " }
 
@@ -140,8 +140,8 @@ Bundle 'altercation/vim-colors-solarized'
 "  DBGPavim xdebug {
 " - https://github.com/brookhong/DBGPavim
 
-  Bundle 'brookhong/DBGPavim'
-  map <leader>d :ToggleDebug<CR>
+  "Bundle 'brookhong/DBGPavim'
+  "map <leader>d :ToggleDebug<CR>
 
 " }
 
@@ -150,64 +150,67 @@ Bundle 'altercation/vim-colors-solarized'
   nnoremap <silent> tg :TagbarToggle<CR>
 " }
 
+" status line
+"Plugin 'itchyny/lightline.vim'
+
 " ------------------------------------------------------------------------------
 " airline {
 " ------------------------------------------------------------------------------
 
-  Bundle 'bling/vim-airline'
+  "Bundle 'bling/vim-airline'
 
-  function! AirlineInit()
-    let g:airline_section_a = airline#section#create(['mode'])
-    let g:airline_section_b = airline#section#create_left(['%f'])
-    let g:airline_section_c = airline#section#create(['filetype', '  ', 'ffenc', '  ', '%v'])
-    let g:airline_section_x = airline#section#create([])
-    let g:airline_section_y = airline#section#create([])
-    let g:airline_section_z = airline#section#create_right(['%L'])
-    let g:airline_section_warning = airline#section#create_right([])
-  endfunction
+  "function! AirlineInit()
+  "  let g:airline_section_a = airline#section#create(['mode'])
+  "  let g:airline_section_b = airline#section#create_left(['%f'])
+  "  let g:airline_section_c = airline#section#create(['filetype', '  ', 'ffenc', '  ', '%v'])
+  "  let g:airline_section_x = airline#section#create([])
+  "  let g:airline_section_y = airline#section#create([])
+  "  let g:airline_section_z = airline#section#create_right(['%L'])
+  "  let g:airline_section_warning = airline#section#create_right([])
+  "endfunction
 
-  function! AirlineInit2()
-    let g:airline_section_a = airline#section#create(['mode'])
-    let g:airline_section_b = airline#section#create_left(['%f'])
-    let g:airline_section_c = airline#section#create(['filetype', '  ', 'ffenc', '  ', '%v'])
-    let g:airline_section_x = airline#section#create(["%{tagbar#currenttag('%s ','')}"])
-    let g:airline_section_y = airline#section#create([])
-    let g:airline_section_z = airline#section#create_right(['%L'])
-    let g:airline_section_warning = airline#section#create_right([])
-  endfunction
+  "function! AirlineInit2()
+  "  let g:airline_section_a = airline#section#create(['mode'])
+  "  let g:airline_section_b = airline#section#create_left(['%f'])
+  "  let g:airline_section_c = airline#section#create(['filetype', '  ', 'ffenc', '  ', '%v'])
+  "  let g:airline_section_x = airline#section#create(["%{tagbar#currenttag('%s ','')}"])
+  "  let g:airline_section_y = airline#section#create([])
+  "  let g:airline_section_z = airline#section#create_right(['%L'])
+  "  let g:airline_section_warning = airline#section#create_right([])
+  "endfunction
  
-  autocmd VimEnter * call AirlineInit2()
+  "autocmd VimEnter * call AirlineInit2()
  
-  let g:airline_mode_map = {
-        \ '__' : '-',
-        \ 'n'  : 'N',
-        \ 'i'  : 'I',
-        \ 'R'  : 'R',
-        \ 'c'  : 'C',
-        \ 'v'  : 'V',
-        \ 'V'  : 'V',
-        \ '' : 'V',
-        \ 's'  : 'S',
-        \ 'S'  : 'S',
-        \ '' : 'S',
-        \ }
+  "let g:airline_mode_map = {
+  "      \ '__' : '-',
+  "      \ 'n'  : 'N',
+  "      \ 'i'  : 'I',
+  "      \ 'R'  : 'R',
+  "      \ 'c'  : 'C',
+  "      \ 'v'  : 'V',
+  "      \ 'V'  : 'V',
+  "      \ '' : 'V',
+  "      \ 's'  : 'S',
+  "      \ 'S'  : 'S',
+  "      \ '' : 'S',
+  "      \ }
  
-  " tagbar
-  let g:airline#extensions#tagbar#enabled = 1
+  "" tagbar
+  "let g:airline#extensions#tagbar#enabled = 1
  
-  " let g:airline_theme = 'ubaryd'
-  let g:airline#extensions#tabline#enabled = 1
-  let g:airline#extensions#tabline#show_buffers = 0
-  let g:airline#extensions#tabline#show_tab_nr = 0
-  let g:airline#extensions#tabline#fnamemod = ':t'
-  let g:airline#extensions#tabline#tab_min_count = 2
+  "" let g:airline_theme = 'ubaryd'
+  "let g:airline#extensions#tabline#enabled = 1
+  "let g:airline#extensions#tabline#show_buffers = 0
+  "let g:airline#extensions#tabline#show_tab_nr = 0
+  "let g:airline#extensions#tabline#fnamemod = ':t'
+  "let g:airline#extensions#tabline#tab_min_count = 2
  
-  if !exists('g:airline_symbols')
-    let g:airline_symbols = {}
-  endif
+  "if !exists('g:airline_symbols')
+  "  let g:airline_symbols = {}
+  "endif
  
-  let g:airline_left_sep = ''
-  let g:airline_right_sep = ''
+  "let g:airline_left_sep = ''
+  "let g:airline_right_sep = ''
  
 " ------------------------------------------------------------------------------
 " }

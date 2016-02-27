@@ -17,6 +17,51 @@ set colorcolumn=120
 " Formata Barra de Status
 "set statusline =%<%f\ \ %h%m%r%Y%=\ \ linha:\ %l,total\ :%L,%c%V\ %P 
 
+set statusline=%f
+set statusline+=\ \ 
+set statusline+=%=  " Switch to the right side
+set statusline+=%L
+function! HighlightSearch()
+  if &hls
+    return 'H'
+  else
+    return ''
+  endif
+endfunction
+
+" set statusline=
+" set statusline+=%7*\[%n]                                  "buffernr
+" set statusline+=%1*\ %<%F\                                "File+path
+" set statusline+=%2*\ %y\                                  "FileType
+" set statusline+=%3*\ %{''.(&fenc!=''?&fenc:&enc).''}      "Encoding
+" set statusline+=%3*\ %{(&bomb?\",BOM\":\"\")}\            "Encoding2
+" set statusline+=%4*\ %{&ff}\                              "FileFormat (dos/unix..) 
+" set statusline+=%5*\ %{&spelllang}\%{HighlightSearch()}\  "Spellanguage & Highlight on?
+" set statusline+=%8*\ %=\ row:%l/%L\ (%03p%%)\             "Rownumber/total (%)
+" set statusline+=%9*\ col:%03c\                            "Colnr
+" set statusline+=%0*\ \ %m%r%w\ %P\ \                      "Modified? Readonly? Top/bot.
+"
+" Fancy status line.
+" set statusline =
+" set statusline+=%n                                 "buffer number
+" set statusline+=%{'/'.bufnr('$')}\                 "buffer count
+" set statusline+=%f%m\                              "file name/modified flag
+" set statusline+=(%{strlen(&ft)?&ft:'none'})        "file type
+" set statusline+=%=                                 "indent right
+" set statusline+=U+%04B\                            "Unicode char under cursor
+" set statusline+=%-6.(%l/%{line('$')},%c%V%)\ %<%P  "position
+
+set statusline=
+set statusline+=%f%m\  "file name/modified flag
+set statusline+=%=                                 "indent right
+set statusline+=%r\          "file type
+set statusline+=%{strlen(&ft)?&ft:'none'}        "file type
+set statusline+=%1*\ %{''.(&fenc!=''?&fenc:&enc).''}      "Encoding
+set statusline+=%1*\ %{&ff}\                              "FileFormat (dos/unix..) 
+"set statusline+=%.200c  "position
+set statusline+=%3(%c%)\            " line and column"
+set statusline+=%1*%L  "position
+
 if !has("gui_running")                       
 
   " ---------------------------------------------------------------
@@ -24,26 +69,19 @@ if !has("gui_running")
   " ---------------------------------------------------------------
 
   set background=dark
+
+  " let g:airline_theme = 'ubaryd'
   colorscheme womprat
 
-  let g:airline_theme = 'ubaryd'
+  hi StatusLine ctermbg=NONE cterm=NONE
+  hi StatusLineNC ctermbg=NONE cterm=NONE
 
-  hi StatusLine   ctermfg=0   ctermbg=254 cterm=none
-  hi StatusLineNC ctermfg=244 ctermbg=254 cterm=none
+  hi vertsplit ctermbg=none
+  
+  set nonu
+  set fillchars+=vert:│
 
-  " Remove background das abas
-  hi TabLineFill ctermfg=none ctermbg=none cterm=none
-  hi TabLine ctermbg=238 cterm=none
-
-  " status line
-  hi StatusLineNC ctermbg=238 ctermfg=245 
-  hi StatusLine ctermbg=238 ctermfg=251 
-
-  " busca 
-  hi Search ctermbg=238 ctermfg=250 cterm=none
-
-  " linha limite em 120
-  hi ColorColumn ctermbg=235
+  "color gotham256
 
 else 
 
