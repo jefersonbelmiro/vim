@@ -77,6 +77,11 @@ if !has("gui_running")
   hi StatusLineNC ctermbg=NONE cterm=NONE
   hi ColorColumn ctermbg=234
   hi vertsplit ctermbg=none
+
+  hi TabLine cterm=none ctermbg=none
+  hi TabLineFill cterm=none ctermbg=none
+  hi TabLineSel cterm=bold,underline ctermbg=none
+  
   
   set nonu
   set fillchars+=vert:│
